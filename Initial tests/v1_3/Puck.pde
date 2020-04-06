@@ -163,6 +163,7 @@ class Puck{
   void mouseMove(){
     x = mouseX - mouseoffx;
     y = mouseY - mouseoffy;
+    updated = true;
   }
   
   void showMenu(){
@@ -216,34 +217,37 @@ class Puck{
       //bufferpuck1 = otherpuck;
       connectedpuck1 = otherpuck;
     }
-    
-    if(beginconnection1){
-      if(connectclock1 < 100){
-        connectclock1 += 1;
-      }else{
-        //if(connectedpuck1 != bufferpuck1){
-        //  connectedpuck1 = bufferpuck1;
-        //  //connectpuck1.connectedpucks.add(this);
-        //}
-        if(!connectedpucks.contains(connectedpuck1)){
-          connectedpucks.add(connectedpuck1);
-          connectedpuck1.connectedpucks.add(this);
+    if(circleincircle(x,y,size+aurasize,otherpuck.x,otherpuck.y,otherpuck.size+otherpuck.aurasize)){
+      if(beginconnection1){
+        if(connectclock1 < 100){
+          connectclock1 += 1;
+        }else{
+          //if(connectedpuck1 != bufferpuck1){
+          //  connectedpuck1 = bufferpuck1;
+          //  //connectpuck1.connectedpucks.add(this);
+          //}
+          if(!connectedpucks.contains(connectedpuck1)){
+            connectedpucks.add(connectedpuck1);
+            connectedpuck1.connectedpucks.add(this);
+          }
         }
       }
-    }
-    if(beginconnection2){
-      if(connectclock2 < 100){
-        connectclock2 += 1;
-      }else{
-        //if(connectedpuck2 != bufferpuck2){
-        //  connectedpuck2 = bufferpuck2;
-        //  //connectpuck2.connectedpucks.add(this);
-        //}
-        if(!connectedpucks.contains(connectedpuck2)){
-          connectedpucks.add(connectedpuck2);
-          connectedpuck2.connectedpucks.add(this);
+      if(beginconnection2){
+        if(connectclock2 < 100){
+          connectclock2 += 1;
+        }else{
+          //if(connectedpuck2 != bufferpuck2){
+          //  connectedpuck2 = bufferpuck2;
+          //  //connectpuck2.connectedpucks.add(this);
+          //}
+          if(!connectedpucks.contains(connectedpuck2)){
+            connectedpucks.add(connectedpuck2);
+            connectedpuck2.connectedpucks.add(this);
+          }
         }
       }
+    }else{
+      updated = false;
     }
   }
   
@@ -265,6 +269,7 @@ void checkAuras(ArrayList<Puck> allpucks){
     thispuck.beginconnection1 = false;
     thispuck.beginconnection2 = false;
   }
+  updated = false;
   
   if(allpucks.size() > 1){
     for(int p1 = 0; p1 < allpucks.size() - 1; p1++){
@@ -277,6 +282,7 @@ void checkAuras(ArrayList<Puck> allpucks){
               if(circleincircle(thispuck.x,thispuck.y,thispuck.size+thispuck.aurasize,thatpuck.x,thatpuck.y,thatpuck.size+thatpuck.aurasize)){
                 thispuck.connectTo(thatpuck);
                 thatpuck.connectTo(thispuck);
+                updated = true;
               }
             }
           }

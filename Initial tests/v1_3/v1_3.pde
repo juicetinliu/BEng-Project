@@ -1,4 +1,5 @@
 ArrayList<Puck> pucks = new ArrayList<Puck>();
+boolean updated = true;
 
 void setup(){
   size(1200,800);
@@ -32,6 +33,8 @@ void draw(){
     thispuck.display();
     thispuck.run();
   }
-  checkAuras(pucks);
+  if(updated){
+    checkAuras(pucks);
+  }
   checkPuckSpace(pucks);
 }
