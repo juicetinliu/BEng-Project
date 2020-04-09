@@ -4,18 +4,17 @@ class Puck{
   float size, aurasize;
   float rotation, comrotation;
   boolean selected, beginconnection;
-  int connectclock = 0;
   float mouseoffx, mouseoffy;
   boolean onspace;
   
   int selectedcomponent, terminals = 2;
-  int comno = 4;
+  int comno = 6;
     
   //testingauras
   boolean beginconnection1 = false;
-  int connectclock1 = 0;
+  int connectclock1 = 0, connectms1 = millis();
   boolean beginconnection2 = false;
-  int connectclock2 = 0;
+  int connectclock2 = 0, connectms2 = millis();
   boolean beginconnection3 = false; //three terminal
   int connectclock3 = 0; //three terminal
   Puck bufferpuck1 = null;
@@ -51,20 +50,20 @@ class Puck{
     //fill(255);
     //text(connectedpucks.size(),x,y-40);
     
-    for(int p = 0; p < connectedpucks.length; p++){
-      if(connectedpucks[p] != null){
-        Puck conpuck = connectedpucks[p];
-        stroke(255);
-        strokeWeight(2);
-        float angtopuck = atan2(conpuck.y-y,conpuck.x-x);
-        float x1 = x + size/2*cos(angtopuck);
-        float y1 = y + size/2*sin(angtopuck);
-        float x2 = conpuck.x - conpuck.size/2*cos(angtopuck);
-        float y2 = conpuck.y - conpuck.size/2*sin(angtopuck);
-        line(x1,y1,x2,y2);
-        fill(255);
-      }
-    }
+    //for(int p = 0; p < connectedpucks.length; p++){
+    //  if(connectedpucks[p] != null){
+    //    Puck conpuck = connectedpucks[p];
+    //    stroke(255);
+    //    strokeWeight(2);
+    //    float angtopuck = atan2(conpuck.y-y,conpuck.x-x);
+    //    float x1 = x + size/2*cos(angtopuck);
+    //    float y1 = y + size/2*sin(angtopuck);
+    //    float x2 = conpuck.x - conpuck.size/2*cos(angtopuck);
+    //    float y2 = conpuck.y - conpuck.size/2*sin(angtopuck);
+    //    line(x1,y1,x2,y2);
+    //    fill(255);
+    //  }
+    //}
     
     if(onspace){
       drawAura2();
@@ -156,7 +155,7 @@ class Puck{
         for(int i = 0; i < comno; i++){
           float frac = 1/float(comno);
           rotate(frac*PI);
-          drawComponent(i,0,-size/2-aurasize/2,size/2,frac*PI+PI/2, true);
+          drawComponent(i,0,-size/2-aurasize,size/4,frac*PI+PI/2, true);
           rotate(frac*PI);
           line(0,-size/2,0,-size/2-aurasize);
         }
@@ -191,21 +190,21 @@ class Puck{
     if(selected){
       mouseMove();
     }
-    //fill(255);
+    fill(255);
     //if(connectedpucks[0] != null){
     //  text("1: " + connectedpucks[0].id,x,y-60);
     //}
     //if(connectedpucks[1] != null){
     //  text("2:" + connectedpucks[1].id,x,y-80);
     //}
-    if(!beginconnection1){
+    if(!beginconnection1 && connectclock1 > 0){
       if(connectclock1 > 0){
         connectclock1 -= 5;
       }else{
         connectclock1 = 0;
       }
     }
-    if(!beginconnection2){
+    if(!beginconnection2 && connectclock2 > 0){
       if(connectclock2 > 0){
         connectclock2 -= 5;
       }else{
@@ -238,7 +237,10 @@ class Puck{
     if(circleincircle(x,y,size+aurasize,otherpuck.x,otherpuck.y,otherpuck.size+otherpuck.aurasize)){
       if(beginconnection1){
         if(connectclock1 < 100){
-          connectclock1 += 1;
+          if(mspassed(connectms1,5)){
+            connectclock1 += 1;
+            connectms1 = millis();
+          }
         }else{
           connectedpucks[0] = bufferpuck1;
           beginconnection1 = false;
@@ -246,7 +248,10 @@ class Puck{
       }
       if(beginconnection2){
         if(connectclock2 < 100){
-          connectclock2 += 1;
+          if(mspassed(connectms2,5)){
+            connectclock2 += 1;
+            connectms2 = millis();
+          }
         }else{
           connectedpucks[1] = bufferpuck2;
           beginconnection2 = false;

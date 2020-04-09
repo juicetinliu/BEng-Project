@@ -35,6 +35,7 @@ void draw(){
   }
   if(updated){
     checkAuras(pucks);
+    checkPuckSpace(pucks);
   }
-  checkPuckSpace(pucks);
+  
 }

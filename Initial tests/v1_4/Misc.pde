@@ -17,3 +17,7 @@ float limradians(float inrads){
     return inrads;
   }
 }
+
+boolean mspassed(int starttime, int interval){
+  return millis() > starttime + interval;
+}
