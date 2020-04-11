@@ -34,10 +34,12 @@ void draw(){
   rectMode(CENTER);
   rect(width/2,height*0.9,width,height*0.2);
   
+  
   for(Puck thispuck:pucks){
     thispuck.display();
     thispuck.run();
   }
+  
   for(Wire thiswire:wires){
     thiswire.display();
     thiswire.run();

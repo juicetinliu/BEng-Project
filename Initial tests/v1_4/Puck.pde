@@ -50,20 +50,20 @@ class Puck{
     //fill(255);
     //text(connectedpucks.size(),x,y-40);
     
-    for(int p = 0; p < connectedpucks.length; p++){
-      if(connectedpucks[p] != null){
-        Puck conpuck = connectedpucks[p];
-        stroke(255);
-        strokeWeight(2);
-        float angtopuck = atan2(conpuck.y-y,conpuck.x-x);
-        float x1 = x + size/2*cos(angtopuck);
-        float y1 = y + size/2*sin(angtopuck);
-        float x2 = conpuck.x - conpuck.size/2*cos(angtopuck);
-        float y2 = conpuck.y - conpuck.size/2*sin(angtopuck);
-        line(x1,y1,x2,y2);
-        fill(255);
-      }
-    }
+    //for(int p = 0; p < connectedpucks.length; p++){
+    //  if(connectedpucks[p] != null){
+    //    Puck conpuck = connectedpucks[p];
+    //    stroke(255);
+    //    strokeWeight(2);
+    //    float angtopuck = atan2(conpuck.y-y,conpuck.x-x);
+    //    float x1 = x + size/2*cos(angtopuck);
+    //    float y1 = y + size/2*sin(angtopuck);
+    //    float x2 = conpuck.x - conpuck.size/2*cos(angtopuck);
+    //    float y2 = conpuck.y - conpuck.size/2*sin(angtopuck);
+    //    line(x1,y1,x2,y2);
+    //    fill(255);
+    //  }
+    //}
     
     if(onspace){
       drawAura2();
@@ -288,7 +288,6 @@ class Puck{
 void connectPucks(Puck puckA, Puck puckB){
   int A = puckA.readyConnectTo(puckB);
   int B = puckB.readyConnectTo(puckA);
-  println(A + "," + B);
   if(A != 0 && B != 0){
     puckA.connectedpucks[A-1] = puckB;
     puckB.connectedpucks[B-1] = puckA;
@@ -302,6 +301,7 @@ void connectPucks(Puck puckA, Puck puckB){
     }else{
       puckB.beginconnection2 = false;
     }
+    createWire(puckA, A, puckB, B); 
     //updated = false;
   }else{
     updated = true;

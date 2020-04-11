@@ -6,7 +6,7 @@ void mousePressed(){
         thispuck.selected = true;
         thispuck.mouseoffx = mouseX - thispuck.x;
         thispuck.mouseoffy = mouseY - thispuck.y;
-        break;
+        return;
       }
     }
   }else if(mouseButton == RIGHT){
@@ -23,7 +23,7 @@ void mousePressed(){
         for(int p = 0; p < thispuck.connectedpucks.length; p++){
           thispuck.connectedpucks[p] = null;
         }
-        break;
+        return;
       }
     }
   }
