@@ -13,6 +13,10 @@ void setup(){
   pucks.add(new Puck(2, random(width),random(height),100));
   pucks.add(new Puck(3, random(width),random(height),100));
   pucks.add(new Puck(4, random(width),random(height),100));
+  //pucks.add(new Puck(5, random(width),random(height),100));
+  //pucks.add(new Puck(6, random(width),random(height),100));
+  //pucks.add(new Puck(7, random(width),random(height),100));
+  
   //pucks.add(new puck(3, width*3/4,height/2,50));
   //pucks.add(new puck(4, width/2,height/4,50));
   //pucks.add(new puck(5, width/2,height*3/4,50));
@@ -39,10 +43,9 @@ void draw(){
     thiswire.run();
   }
   
-  
+  println(updated);
   if(updated){
     checkAuras(pucks);
-    checkPuckSpace(pucks);
   }
   
 }
