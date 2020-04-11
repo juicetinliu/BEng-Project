@@ -73,7 +73,7 @@ class Puck{
     if(!onspace){
       drawPointers();
     }
-    drawComponent(selectedcomponent,x,y,size-15,rotation, false);
+    drawComponent(selectedcomponent,x,y,size-15,rotation,2, false);
     drawMenu();
     //fill(255);
     //text(rotation,x+10,y);
@@ -155,7 +155,12 @@ class Puck{
         for(int i = 0; i < comno; i++){
           float frac = 1/float(comno);
           rotate(frac*PI);
-          drawComponent(i,0,-size/2-aurasize,size/4,frac*PI+PI/2, true);
+          if(selectedcomponent == i){
+            drawComponent(i,0,-size/2-aurasize,size/4,frac*PI+PI/2,2, false);
+            strokeWeight(1);
+          }else{
+            drawComponent(i,0,-size/2-aurasize,size/4,frac*PI+PI/2,1, false);
+          }
           rotate(frac*PI);
           line(0,-size/2,0,-size/2-aurasize);
         }

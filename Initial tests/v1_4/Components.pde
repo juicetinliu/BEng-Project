@@ -1,10 +1,10 @@
-void drawComponent(int id, float x, float y, float size, float rotation, boolean customcolour){
+void drawComponent(int id, float x, float y, float size, float rotation, int strokeweight, boolean customcolour){
   pushMatrix();
   translate(x,y);
   rotate(radians(rotation));
   if(!customcolour){
     stroke(255);
-    strokeWeight(1);
+    strokeWeight(strokeweight);
     noFill();
   }
   switch(id){

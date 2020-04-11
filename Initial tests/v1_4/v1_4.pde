@@ -1,4 +1,5 @@
 ArrayList<Puck> pucks = new ArrayList<Puck>();
+ArrayList<Wire> wires = new ArrayList<Wire>();
 boolean updated = true;
 
 void setup(){
@@ -33,6 +34,12 @@ void draw(){
     thispuck.display();
     thispuck.run();
   }
+  for(Wire thiswire:wires){
+    thiswire.display();
+    thiswire.run();
+  }
+  
+  
   if(updated){
     checkAuras(pucks);
     checkPuckSpace(pucks);
