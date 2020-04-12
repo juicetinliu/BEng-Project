@@ -37,13 +37,19 @@ class Wire{
       for(int l = 0; l < lines.size(); l += 2){
         PVector thisanch = lines.get(l);
         PVector thiscont = lines.get(l+1);
+        stroke(255);
         bezier(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y);
+        stroke(255,102,0);
+        line(thisanch.x, thisanch.y, thiscont.x, thiscont.y);
       }
       noStroke();
       fill(255);
       ellipse(x,y,10,10);
     }else{
       bezier(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
+      stroke(255,102,0);
+      line(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y);
+      line(lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
     }
     //fill(255);
     //text(id,x,y-15);
@@ -57,7 +63,7 @@ class Wire{
         avg.add(thispuck.x,thispuck.y);
       }
       avg.div(connectedPucks.size());
-      
+      //PVector lulavg = new PVector(0,0);
       for(int p = 0; p < connectedPucks.size(); p++){
         Puck thispuck = connectedPucks.get(p);
         PVector anch = new PVector(0,0);
@@ -75,7 +81,12 @@ class Wire{
         cont.add(anch);
         lines.add(anch);
         lines.add(cont); 
+        //PVector lul = cont.copy();
+        //lul.sub(anch).setMag(100);
+        //lulavg.add(lul);
       }
+      //lulavg.setMag(100);
+      //avg.add(lulavg);
       x = avg.x;
       y = avg.y;
     }
