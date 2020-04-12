@@ -9,7 +9,7 @@ class Puck{
   
   int selectedcomponent, terminals = 2;
   int comno = 6;
-    
+  
   //testingauras
   boolean beginconnection1 = false;
   int connectclock1 = 0, connectms1 = millis();
@@ -17,14 +17,12 @@ class Puck{
   int connectclock2 = 0, connectms2 = millis();
   boolean beginconnection3 = false; //three terminal
   int connectclock3 = 0; //three terminal
-  Puck bufferpuck1 = null;
-  Puck bufferpuck2 = null; 
-  Puck bufferpuck3 = null; //three terminal
   //testingauras
     
-  Puck[] connectedpucks = new Puck[2];
+  Wire[] connectedWires = new Wire[2];
   
-  int menuclock;
+  
+  int menuclock = 0, menums = millis();
   boolean menushow;
   
   Puck(int id, float x, float y, float size){
@@ -41,38 +39,21 @@ class Puck{
     this.rotation = 0;
     this.comrotation = 0;
     this.selectedcomponent = 0;
-    for(int p = 0; p < connectedpucks.length; p++){
-      connectedpucks[p] = null;
+    for(int w = 0; w < connectedWires.length; w++){
+      connectedWires[w] = null;
     }
   }
   
   void display(){
-    //fill(255);
-    //text(connectedpucks.size(),x,y-40);
-    
-    //for(int p = 0; p < connectedpucks.length; p++){
-    //  if(connectedpucks[p] != null){
-    //    Puck conpuck = connectedpucks[p];
-    //    stroke(255);
-    //    strokeWeight(2);
-    //    float angtopuck = atan2(conpuck.y-y,conpuck.x-x);
-    //    float x1 = x + size/2*cos(angtopuck);
-    //    float y1 = y + size/2*sin(angtopuck);
-    //    float x2 = conpuck.x - conpuck.size/2*cos(angtopuck);
-    //    float y2 = conpuck.y - conpuck.size/2*sin(angtopuck);
-    //    line(x1,y1,x2,y2);
-    //    fill(255);
-    //  }
-    //}
     
     if(onspace){
       drawAura2();
     }
     
     drawDisc();
-    if(!onspace){
-      drawPointers();
-    }
+    //if(!onspace){
+    //  drawPointers();
+    //}
     drawComponent(selectedcomponent,x,y,size-15,rotation,2, false);
     drawMenu();
     //fill(255);
@@ -128,17 +109,37 @@ class Puck{
     arc(x,y,size+connectan2,size+connectan2,PI/2+rotrad,3*PI/2+rotrad);
   }
   
-  void drawPointers(){
-    stroke(255);
-    strokeWeight(1);
-    line(x+size*0.5*cos(radians(rotation-90)),y+size*0.5*sin(radians(rotation-90)),x+size*0.6*cos(radians(rotation-90)),y+size*0.6*sin(radians(rotation-90)));
-    stroke(255,0,0);
-    strokeWeight(2);
-    line(x+size*0.5*cos(radians(comrotation-90)),y+size*0.5*sin(radians(comrotation-90)),x+size*0.6*cos(radians(comrotation-90)),y+size*0.6*sin(radians(comrotation-90)));
+  void drawPointers(int menuclock){
+    //stroke(255);
+    //strokeWeight(1);
+    //pushMatrix();
+    //translate(x,y);
+    //rotate(radians(rotation));
+    //line(0,-size*0.5,0,-size*0.6);
+    //popMatrix();
+    
+    //stroke(255,0,0);
+    //strokeWeight(2);
+    if(menuclock > 90){
+      fill(255,map(menuclock,100,90,0,255));
+    }else if(menuclock < 10){
+      fill(255,map(menuclock,0,10,0,255));
+    }else{
+      fill(255);
+    }
+    noStroke();
+    //fill(255);
+    pushMatrix();
+    translate(x,y);
+    rotate(radians(comrotation));
+    //line(0,-size*0.5,0,-size*0.6);
+    triangle(-size*0.1,-size*0.45,size*0.1,-size*0.45,0,-size*0.55);
+    popMatrix();
   }
   
   void drawMenu(){
     if(menushow){
+      drawPointers(menuclock);
       if(menuclock > 90){
         stroke(255,map(menuclock,100,90,0,255));
       }else if(menuclock < 10){
@@ -149,17 +150,23 @@ class Puck{
       strokeWeight(1);
       noFill();
       if(menuclock > 0){
-        menuclock--;
+        if(mspassed(menums,10)){
+          menuclock--;
+          menums = millis();
+        }
+        
         pushMatrix();
         translate(x,y);
         for(int i = 0; i < comno; i++){
           float frac = 1/float(comno);
           rotate(frac*PI);
           if(selectedcomponent == i){
-            drawComponent(i,0,-size/2-aurasize,size/4,frac*PI+PI/2,2, false);
+            strokeWeight(3);
+            drawComponent(i,0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true);
             strokeWeight(1);
           }else{
-            drawComponent(i,0,-size/2-aurasize,size/4,frac*PI+PI/2,1, false);
+            drawComponent(i,0,-size/2-aurasize,size/4,frac*PI+PI/2,1, true);
+            strokeWeight(1);
           }
           rotate(frac*PI);
           line(0,-size/2,0,-size/2-aurasize);
@@ -195,13 +202,14 @@ class Puck{
     if(selected){
       mouseMove();
     }
-    fill(255);
-    if(connectedpucks[0] != null){
-      text("1: " + connectedpucks[0].id,x,y-70);
-    }
-    if(connectedpucks[1] != null){
-      text("2: " + connectedpucks[1].id,x,y-85);
-    }
+    
+    //fill(255);
+    //if(connectedWires[0] != null){
+    //  text("1: " + connectedWires[0].id,x,y-70);
+    //}
+    //if(connectedWires[1] != null){
+    //  text("2: " + connectedWires[1].id,x,y-85);
+    //}
     
     if(updated){
       if(circleinrect(this.x,this.y,this.size,width/2,height*0.9,width,height*0.2)){
@@ -228,59 +236,54 @@ class Puck{
     }
   }
   
-  int readyConnectTo(Puck otherpuck){
-    float angtopuck = atan2(otherpuck.y-y,otherpuck.x-x);
+  int readyConnectTo(Puck otherPuck){
+    float angtopuck = atan2(otherPuck.y-y,otherPuck.x-x);
     float rotrad = radians(rotation);
     float combang = limradians(angtopuck - rotrad);
+    int sendBack = 0;
     if(combang > PI/2 && combang < 3*PI/2){
-      if(otherpuck != connectedpucks[1]){
-        beginconnection2 = true;
-        bufferpuck2 = otherpuck;
+      if(connectedWires[1] != null){
+        if(connectedWires[1].connectedPucks.contains(otherPuck)){
+          beginconnection2 = false;
+        }else{
+          beginconnection2 = true;
+        }
       }else{
-        beginconnection2 = false;
-        bufferpuck2 = null;
-        return 0;
+        beginconnection2 = true;
       }
     }else{
-      if(otherpuck != connectedpucks[0]){
-        beginconnection1 = true;
-        bufferpuck1 = otherpuck;
+      if(connectedWires[0] != null){
+        if(connectedWires[0].connectedPucks.contains(otherPuck)){
+          beginconnection1 = false;
+        }else{
+          beginconnection1 = true;
+        }
       }else{
-        beginconnection1 = false;
-        bufferpuck1 = null;
-        return 0;
+        beginconnection1 = true;
       }
     }
     
-    //if(circleincircle(x,y,size+aurasize,otherpuck.x,otherpuck.y,otherpuck.size+otherpuck.aurasize)){
-      if(beginconnection1){
-        if(connectclock1 < 100){
-          if(mspassed(connectms1,5)){
-            connectclock1 += 1;
-            connectms1 = millis();
-          }
-        }else{
-          //connectedpucks[0] = bufferpuck1; //create wire connection between bufferpuck1 and this
-          //beginconnection1 = false;
-          return 1;
+    if(beginconnection1){
+      if(connectclock1 < 100){
+        if(mspassed(connectms1,5)){
+          connectclock1 += 1;
+          connectms1 = millis();
         }
+      }else{
+        sendBack = 1;
       }
-      if(beginconnection2){
-        if(connectclock2 < 100){
-          if(mspassed(connectms2,5)){
-            connectclock2 += 1;
-            connectms2 = millis();
-          }
-        }else{
-          //connectedpucks[1] = bufferpuck2;
-          //beginconnection2 = false;
-          return 2;
+    }
+    if(beginconnection2){
+      if(connectclock2 < 100){
+        if(mspassed(connectms2,5)){
+          connectclock2 += 1;
+          connectms2 = millis();
         }
+      }else{
+        sendBack = 2;
       }
-    //}else{
-    //  updated = false;
-    //}
-    return 0;
+    }
+    return sendBack;
   }
   
 }
@@ -288,9 +291,18 @@ class Puck{
 void connectPucks(Puck puckA, Puck puckB){
   int A = puckA.readyConnectTo(puckB);
   int B = puckB.readyConnectTo(puckA);
+  //println(A + "," + B);
   if(A != 0 && B != 0){
-    puckA.connectedpucks[A-1] = puckB;
-    puckB.connectedpucks[B-1] = puckA;
+    if(puckA.connectedWires[A-1] == null && puckB.connectedWires[B-1] == null){
+      createWire(puckA, A, puckB, B);
+    }else if(puckA.connectedWires[A-1] == null){
+      addToWire(puckA, A, puckB.connectedWires[B-1]);
+    }else if(puckB.connectedWires[B-1] == null){
+      addToWire(puckB, B, puckA.connectedWires[A-1]);
+    }else{
+      combineWires(puckA.connectedWires[A-1], puckB.connectedWires[B-1]);
+    }
+    
     if(A == 1){
       puckA.beginconnection1 = false;
     }else{
@@ -301,11 +313,13 @@ void connectPucks(Puck puckA, Puck puckB){
     }else{
       puckB.beginconnection2 = false;
     }
-    createWire(puckA, A, puckB, B); 
-    //updated = false;
   }else{
     updated = true;
   }
+  //if(puckA.connectedWires[A-1] == null
+  //if(puckA.connectedWires[A-1] == puckB.connectedWires[B-1]){ 
+  
+  //createWire(puckA, A, puckB, B);
 }
 
 void checkAuras(ArrayList<Puck> allpucks){

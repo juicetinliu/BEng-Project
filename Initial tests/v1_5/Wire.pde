@@ -2,17 +2,18 @@ class Wire{
   int id;
   float x, y;
   float handlelength;
+  float handlelim = 200;
   
   ArrayList<Puck> connectedPucks = new ArrayList<Puck>();
   IntList sides = new IntList();
   ArrayList<PVector> lines = new ArrayList<PVector>();
   
-  Wire(int id, float x, float y, ArrayList<Puck> connected){
-    this.id = id;
-    this.x = x;
-    this.y = y;
-    //this.connectedPucks = connected;
-  }
+  //Wire(int id, float x, float y, ArrayList<Puck> connected){
+  //  this.id = id;
+  //  this.x = x;
+  //  this.y = y;
+  //  //this.connectedPucks = connected;
+  //}
   
   Wire(int id, ArrayList<Puck> connected, IntList sides){
     this.id = id;
@@ -32,73 +33,101 @@ class Wire{
     stroke(255);
     strokeWeight(2);
     noFill();
-    //for(Puck thispuck:connectedPucks){
-    //  line(lines.get(1).x,lines.get(1).y,thispuck.x,thispuck.y);
-    //}
+    if(connectedPucks.size() > 2){
+      for(int l = 0; l < lines.size(); l += 2){
+        PVector thisanch = lines.get(l);
+        PVector thiscont = lines.get(l+1);
+        bezier(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y);
+      }
+      noStroke();
+      fill(255);
+      ellipse(x,y,10,10);
+    }else{
+      bezier(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
+    }
     //fill(255);
-    //noStroke();
-    //ellipse(lines.get(1).x,lines.get(1).y,5,5);
-    //text(id,x,y-10);
-    //line(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y);
-    //line(lines.get(2).x, lines.get(2).y, lines.get(3).x, lines.get(3).y);
-    bezier(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(2).x, lines.get(2).y, lines.get(3).x, lines.get(3).y);
+    //text(id,x,y-15);
   }
   
-  void updatexy(){
+  void update(){
+    lines.clear();
     if(connectedPucks.size() > 1){
       PVector avg = new PVector(0,0);
-      PVector anch1 = new PVector(0,0);
-      PVector anch2 = new PVector(0,0);
-      PVector cont1 = new PVector(1,0);
-      PVector cont2 = new PVector(1,0);
-      for(int p = 0; p < connectedPucks.size(); p++){
-        Puck thispuck = connectedPucks.get(p);
+      for(Puck thispuck:connectedPucks){
         avg.add(thispuck.x,thispuck.y);
-        if(p == 0){
-          anch1.set(thispuck.x,thispuck.y);
-          if(sides.get(p) == 2){
-            cont1.rotate(PI + radians(thispuck.rotation));
-          }else{
-            cont1.rotate(radians(thispuck.rotation));
-          }
-        }else{
-          anch2.set(thispuck.x,thispuck.y);
-          if(sides.get(p) == 2){
-            cont2.rotate(PI + radians(thispuck.rotation));
-          }else{
-            cont2.rotate(radians(thispuck.rotation));
-          }
-        }
       }
       avg.div(connectedPucks.size());
-      avg.sub(anch1);
-      handlelength = avg.mag();
-      cont1.setMag(handlelength);
-      cont2.setMag(handlelength);
-      cont1.add(anch1);
-      cont2.add(anch2);
-      lines.set(0,anch1);
-      lines.set(1,cont1);
-      lines.set(2,cont2);
-      lines.set(3,anch2);
-      //lines.set(1,avg);
-      //lines.set(0,new PVector(connectedPucks.get(0).x,connectedPucks.get(0).y));
-      //lines.set(2,new PVector(connectedPucks.get(1).x,connectedPucks.get(1).y));
+      
+      for(int p = 0; p < connectedPucks.size(); p++){
+        Puck thispuck = connectedPucks.get(p);
+        PVector anch = new PVector(0,0);
+        PVector cont = new PVector(1,0);
+        PVector handle = avg.copy();
+        anch.set(thispuck.x,thispuck.y);
+        if(sides.get(p) == 2){
+          cont.rotate(PI + radians(thispuck.rotation));
+        }else{
+          cont.rotate(radians(thispuck.rotation));
+        }
+        
+        handlelength = handle.sub(anch).mag();
+        cont.setMag(max(handlelim,handlelength));
+        cont.add(anch);
+        lines.add(anch);
+        lines.add(cont); 
+      }
+      x = avg.x;
+      y = avg.y;
     }
   }
   
   void run(){
     setid();
+    
     if(updated){
-      updatexy();
+      update();
     }
   }
   
   void setid(){
     id = wires.indexOf(this);
   }
-  //float 
   
+  void checkDestroy(){
+    if(connectedPucks.size() <= 1){
+      for(int p = 0; p < connectedPucks.size(); p++){
+        Puck thispuck = connectedPucks.get(p);
+        thispuck.connectedWires[sides.get(p)-1] = null;
+      }
+      wires.remove(this);
+    }
+  }
+  
+}
+
+void addToWire(Puck puckA, int A, Wire thiswire){
+  thiswire.connectedPucks.add(puckA);
+  thiswire.sides.append(A);
+  thiswire.update();
+  //wires.add(thiswire);
+  puckA.connectedWires[A-1] = thiswire;
+  println("added " + puckA.id + ":" + A + " to wire " + thiswire.id);
+}
+
+void combineWires(Wire wireA, Wire wireB){
+  if(!wireA.connectedPucks.equals(wireB.connectedPucks)){
+    wireA.connectedPucks.addAll(wireB.connectedPucks);
+    wireA.sides.append(wireB.sides);
+    for(int p = 0; p < wireB.connectedPucks.size(); p++){
+      Puck thispuck = wireB.connectedPucks.get(p);
+      thispuck.connectedWires[wireB.sides.get(p)-1] = wireA;
+    }
+    wireA.update();
+    wires.remove(wireB);
+    println("combined wire " + wireA.id + " with wire " + wireB.id);
+  }else{
+    println("no changes to wire " + wireA.id);    
+  }
 }
 
 void createWire(Puck puckA, int A, Puck puckB, int B){
@@ -107,6 +136,9 @@ void createWire(Puck puckA, int A, Puck puckB, int B){
   thiswire.connectedPucks.add(puckB);
   thiswire.sides.append(A);
   thiswire.sides.append(B);
-  thiswire.updatexy();
+  thiswire.update();
   wires.add(thiswire);
+  puckA.connectedWires[A-1] = thiswire;
+  puckB.connectedWires[B-1] = thiswire;
+  println("created wire " + thiswire.id + " between " + puckA.id + ":" + A + " & " + puckB.id + ":" + B);
 }

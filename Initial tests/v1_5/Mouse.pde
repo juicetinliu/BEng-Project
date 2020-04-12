@@ -12,16 +12,19 @@ void mousePressed(){
   }else if(mouseButton == RIGHT){
     for(Puck thispuck:pucks){
       if(pointincircle(mouseX,mouseY,thispuck.x,thispuck.y,thispuck.size)){
-        for(int p = 0; p < thispuck.connectedpucks.length; p++){
-          if(thispuck.connectedpucks[p] != null){
-            Puck otherpuck = thispuck.connectedpucks[p];
-            for(int o = 0; o < otherpuck.connectedpucks.length; o++){
-              otherpuck.connectedpucks[o] = null;
+        for(int w = 0; w < thispuck.connectedWires.length; w++){
+          Wire thiswire = thispuck.connectedWires[w];
+          if(thiswire != null){
+            int puckind = thiswire.connectedPucks.indexOf(thispuck);
+            if(puckind != -1){
+              thiswire.connectedPucks.remove(thispuck);
+              thiswire.sides.remove(puckind);
             }
+            thiswire.update();
+            thiswire.checkDestroy();
+            thispuck.connectedWires[w] = null;
           }
-        }
-        for(int p = 0; p < thispuck.connectedpucks.length; p++){
-          thispuck.connectedpucks[p] = null;
+          
         }
         return;
       }
