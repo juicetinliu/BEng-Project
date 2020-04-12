@@ -39,7 +39,7 @@ class Wire{
         PVector thiscont = lines.get(l+1);
         stroke(255);
         bezier(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y);
-        stroke(255,102,0);
+        stroke(255,102,0,128);
         line(thisanch.x, thisanch.y, thiscont.x, thiscont.y);
       }
       noStroke();
@@ -47,7 +47,7 @@ class Wire{
       ellipse(x,y,10,10);
     }else{
       bezier(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
-      stroke(255,102,0);
+      stroke(255,102,0,128);
       line(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y);
       line(lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
     }
@@ -63,7 +63,7 @@ class Wire{
         avg.add(thispuck.x,thispuck.y);
       }
       avg.div(connectedPucks.size());
-      //PVector lulavg = new PVector(0,0);
+      PVector lulavg = new PVector(0,0);
       for(int p = 0; p < connectedPucks.size(); p++){
         Puck thispuck = connectedPucks.get(p);
         PVector anch = new PVector(0,0);
@@ -76,17 +76,18 @@ class Wire{
           cont.rotate(radians(thispuck.rotation));
         }
         
-        handlelength = handle.sub(anch).mag();
-        cont.setMag(max(handlelim,handlelength));
+        handlelength = max(0,handle.sub(anch).mag());
+        cont.setMag(handlelength);
         cont.add(anch);
         lines.add(anch);
-        lines.add(cont); 
-        //PVector lul = cont.copy();
-        //lul.sub(anch).setMag(100);
-        //lulavg.add(lul);
+        lines.add(limtoscreen(cont)); 
+        PVector lul = cont.copy();
+        lul.sub(anch).setMag(handlelength);
+        lulavg.add(lul);
       }
-      //lulavg.setMag(100);
-      //avg.add(lulavg);
+      lulavg.div(4.3);
+      avg.add(lulavg);
+      avg = limtoscreen(avg);
       x = avg.x;
       y = avg.y;
     }

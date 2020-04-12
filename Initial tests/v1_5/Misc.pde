@@ -21,3 +21,8 @@ float limradians(float inrads){
 boolean mspassed(int starttime, int interval){
   return millis() > starttime + interval;
 }
+
+PVector limtoscreen(PVector limvect){
+  return limvect.set(max(0,min(width,limvect.x)),max(0,min(height*0.8,limvect.y)));
+  
+}
