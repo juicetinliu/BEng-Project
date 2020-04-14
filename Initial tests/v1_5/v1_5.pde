@@ -2,6 +2,8 @@ ArrayList<Puck> pucks = new ArrayList<Puck>();
 ArrayList<Wire> wires = new ArrayList<Wire>();
 boolean updated = true;
 
+int puckSize = 100;
+
 void setup(){
   size(1200,800);
   //smooth();
@@ -9,13 +11,13 @@ void setup(){
   //pucks.add(new Puck(1, width/2,height/2,50));
   //pucks.add(new Puck(2, width/4,height/2,50));
   randomSeed(16);
-  pucks.add(new Puck(1, random(width),random(height),100));
-  pucks.add(new Puck(2, random(width),random(height),100));
-  pucks.add(new Puck(3, random(width),random(height),100));
-  pucks.add(new Puck(4, random(width),random(height),100));
-  //pucks.add(new Puck(5, random(width),random(height),100));
-  //pucks.add(new Puck(6, random(width),random(height),100));
-  //pucks.add(new Puck(7, random(width),random(height),100));
+  pucks.add(new Puck(1, random(width),random(height),puckSize));
+  pucks.add(new Puck(2, random(width),random(height),puckSize));
+  pucks.add(new Puck(3, random(width),random(height),puckSize));
+  pucks.add(new Puck(4, random(width),random(height),puckSize));
+  //pucks.add(new Puck(5, random(width),random(height),puckSize));
+  //pucks.add(new Puck(6, random(width),random(height),puckSize));
+  //pucks.add(new Puck(7, random(width),random(height),puckSize));
   
   //pucks.add(new puck(3, width*3/4,height/2,50));
   //pucks.add(new puck(4, width/2,height/4,50));
