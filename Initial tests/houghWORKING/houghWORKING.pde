@@ -19,7 +19,7 @@ int ciry = -1;
 //vvv PARAMETERS FOR SAMPLING vvv
 int xyspacing = 2;
 int rotspacing = 5;
-
+int checkring = 10;
 
 void setup() {
   size(1280, 480);
@@ -111,21 +111,56 @@ void draw() {
     image(houghFrame, 640, 0);
     
     stroke(255,102,0,128);
-    strokeWeight(5);
+    strokeWeight(1);
     noFill();
     ellipse(640/2,480/2,circlerad*2,circlerad*2);
+    stroke(0,255,102,128);
+    ellipse(640/2,480/2,(circlerad-checkring)*2,(circlerad-checkring)*2);
     
+    //strokeWeight(5);
     if(cirx != -1 && ciry != -1){
       stroke(255,0,0);
       ellipse(cirx,ciry,circlerad*2,circlerad*2);
+      stroke(0,255,0);
+      ellipse(cirx,ciry,(circlerad-checkring)*2,(circlerad-checkring)*2);
       fill(255,0,0);
       text(maxvote,cirx,ciry);
+      int maxgreen = 0;
+      int greenang = -1;
+      for(int th = 0; th < 360; th += 1){
+        float thrad = radians(th);
+        int a = cirx - int((circlerad-checkring) * cos(thrad));
+        int b = ciry - int((circlerad-checkring) * sin(thrad));
+        if(a >= 0 && a < 640 && b >= 0 && b < 480){
+          if(green(cam.pixels[b*cam.width+a]) > maxgreen){
+            maxgreen = int(green(cam.pixels[b*cam.width+a]));
+            greenang = th;
+          }
+        }
+      }
+      if(greenang != -1){
+        float greenangrad = radians(greenang);
+        pushMatrix();
+        translate(cirx,ciry);
+        rotate(greenangrad+PI/2);
+        stroke(0,255,0);
+        line(0,0,0,100);
+        fill(0,255,0);
+        text(maxgreen,0,100);
+        popMatrix();
+      }
     }
   }
   fill(255);
   text(frameRate,10,10);
   text(xyspacing,10,20);
   text(rotspacing,10,30);
+  fill(255,0,0);
+  text(red(cam.pixels[mouseY*cam.width+mouseX]),mouseX,mouseY+10);
+  fill(0,255,0);
+  text(green(cam.pixels[mouseY*cam.width+mouseX]),mouseX,mouseY);
+  fill(0,0,255);
+  text(blue(cam.pixels[mouseY*cam.width+mouseX]),mouseX,mouseY-10);
 }
 
 void resethough(){
