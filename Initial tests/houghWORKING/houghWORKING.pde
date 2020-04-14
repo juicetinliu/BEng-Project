@@ -69,7 +69,7 @@ void draw() {
             int a = x - int(circlerad * cos(thrad));
             int b = y - int(circlerad * sin(thrad));
             if(a >= 0 && a < 640 && b >= 0 && b < 480){
-              hough[a][b] += 2;
+              hough[a][b] += 4;
               if(a > 0 && a < 639 && b > 0 && b < 479){
                 hough[a-1][b] ++;
                 hough[a+1][b] ++;
@@ -82,7 +82,7 @@ void draw() {
       }
     }
     
-    int maxvote = 0;
+    int maxvote = 50;
     //int maxvote = int(map(mouseX,0,width,0,200));
     
     //WHILE NUMBER OF CIRCLES LESS THAN WANTED NUMBER 
@@ -155,12 +155,16 @@ void draw() {
   text(frameRate,10,10);
   text(xyspacing,10,20);
   text(rotspacing,10,30);
+  
+  stroke(255);
+  fill(0);
+  rect(mouseX-40,mouseY-40,40,40);
   fill(255,0,0);
-  text(red(cam.pixels[mouseY*cam.width+mouseX]),mouseX,mouseY+10);
-  fill(0,255,0);
-  text(green(cam.pixels[mouseY*cam.width+mouseX]),mouseX,mouseY);
-  fill(0,0,255);
-  text(blue(cam.pixels[mouseY*cam.width+mouseX]),mouseX,mouseY-10);
+  text(int(red(cam.pixels[mouseY*cam.width+mouseX])),mouseX-35,mouseY-25);
+  fill(0,255,102);
+  text(int(green(cam.pixels[mouseY*cam.width+mouseX])),mouseX-35,mouseY-15);
+  fill(0,102,255);
+  text(int(blue(cam.pixels[mouseY*cam.width+mouseX])),mouseX-35,mouseY-5);
 }
 
 void resethough(){
