@@ -1,6 +1,6 @@
 class Ring{
   int x, y;
-  int id;
+  int id, rotint;
   float rotation;
   int houghVote, rotVote;
   
@@ -23,7 +23,7 @@ class Ring{
     ellipse(x,y,(circlerad-checkring)*2,(circlerad-checkring)*2);
     
     fill(255,0,0);
-    text(houghVote,x,y);
+    text(id,x,y);
     
     pushMatrix();
     translate(x,y);
@@ -46,13 +46,40 @@ class Ring{
         if(green(cam.pixels[b*cam.width+a]) > greenthresh){
           //maxgreen = int(green(cam.pixels[b*cam.width+a]));
           rotation = thrad;
+          rotint = th;
           rotVote = greenthresh;
           return;
         }
       }
     }
     
-  } 
+  }
+  void setID(){
+    int idout = 0;
+    //int[] bits = new int[3];
+    int redthresh = 80;
+    for(int bt = 0; bt < 3; bt += 1){
+      float thrad = radians((1+bt)*90)+rotation;
+      int a = x - int((circlerad-checkring) * cos(thrad));
+      int b = y - int((circlerad-checkring) * sin(thrad));
+      stroke(255,0,0);
+      strokeWeight(1);
+      line(x,y,a,b);
+      if(a >= 0 && a < 640 && b >= 0 && b < 480){
+        if(red(cam.pixels[b*cam.width+a]) > redthresh){
+          //bits[bt] = 1;
+          idout += pow(2,bt);
+        }else{
+          //bits[bt] = 0;
+        }
+      }else{
+        id = -1;
+        return;
+        //bits[bt] = -1;
+      }
+    }
+    id = idout;
+  }
 }
 
 boolean findRings(int expectedRings, int[][] houghar, boolean showHough){
@@ -109,4 +136,24 @@ boolean findRings(int expectedRings, int[][] houghar, boolean showHough){
   }
   
   return true;
+}
+
+float limdegrees(float indegrees){ //limits degrees to 0 - 360
+  if(indegrees > 360){
+    return indegrees % 360;
+  }else if(indegrees < 0){
+      return indegrees % 360 + 360;
+  }else{
+    return indegrees;
+  }
+}
+
+float limradians(float inrads){  //limits radians to 0 - 2*PI
+  if(inrads > 2*PI){
+    return inrads % (2*PI);
+  }else if(inrads < 0){
+      return inrads % (2*PI) + 2*PI;
+  }else{
+    return inrads;
+  }
 }

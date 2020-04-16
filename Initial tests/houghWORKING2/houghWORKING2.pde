@@ -89,21 +89,26 @@ void draw() {
     //image(cannyFrame, 0, 0);
     image(houghFrame, 640, 0);
     
+    //refRing();
     for(Ring thisring:Rings){
-      
       thisring.setAngle();
+      thisring.setID();
       thisring.display();
     }
     
-    stroke(255,102,0,128);
-    strokeWeight(1);
-    noFill();
-    ellipse(640/2,480/2,circlerad*2,circlerad*2);
-    stroke(0,255,102,128);
-    ellipse(640/2,480/2,(circlerad-checkring)*2,(circlerad-checkring)*2);
+    
   }
   hudText();
   pixelColorTool();
+}
+
+void refRing(){
+  stroke(255,102,0,128);
+  strokeWeight(1);
+  noFill();
+  ellipse(640/2,480/2,circlerad*2,circlerad*2);
+  stroke(0,255,102,128);
+  ellipse(640/2,480/2,(circlerad-checkring)*2,(circlerad-checkring)*2);
 }
 
 void hudText(){
