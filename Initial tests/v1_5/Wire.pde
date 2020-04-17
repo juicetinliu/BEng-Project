@@ -66,6 +66,32 @@ class Wire{
       PVector lulavg = new PVector(0,0);
       for(int p = 0; p < connectedPucks.size(); p++){
         Puck thispuck = connectedPucks.get(p);
+        PVector anch = new PVector(thispuck.x,thispuck.y);
+        PVector cont = new PVector(1,0);
+        PVector handle = avg.copy();
+        
+        if(sides.get(p) == 2){
+          cont.rotate(PI + radians(thispuck.rotation));
+        }else{
+          cont.rotate(radians(thispuck.rotation));
+        }
+        
+        handlelength = max(0,handle.sub(anch).mag());
+        cont.setMag(handlelength);
+        cont.add(anch);
+        
+        cont.sub(anch).setMag(handlelength);
+        lulavg.add(cont);
+      }
+      lulavg.div(4.3);
+      avg.add(lulavg);
+      avg = limtoscreen(avg);
+      
+      x = avg.x;
+      y = avg.y;
+      
+      for(int p = 0; p < connectedPucks.size(); p++){
+        Puck thispuck = connectedPucks.get(p);
         PVector anch = new PVector(0,0);
         PVector cont = new PVector(1,0);
         PVector handle = avg.copy();
@@ -76,20 +102,17 @@ class Wire{
           cont.rotate(radians(thispuck.rotation));
         }
         
-        handlelength = max(0,handle.sub(anch).mag());
+        handlelength = handle.sub(anch).mag();
         cont.setMag(handlelength);
         cont.add(anch);
+        
         lines.add(anch);
         lines.add(limtoscreen(cont)); 
+        
         PVector lul = cont.copy();
         lul.sub(anch).setMag(handlelength);
         lulavg.add(lul);
       }
-      lulavg.div(4.3);
-      avg.add(lulavg);
-      avg = limtoscreen(avg);
-      x = avg.x;
-      y = avg.y;
     }
   }
   
