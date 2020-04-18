@@ -1,14 +1,15 @@
 class Puck{
   int id;
   float x, y;
-  float size, aurasize;
+  float size, aurasize, ringthickness;
   float rotation, comrotation, valrotation;
   boolean selected;
   float mouseoffx, mouseoffy;
   boolean oncomspace, onvalspace;
   
-  int selectedcomponent, selectedvalue, selectedprefix, terminals = 2;
-  int comno = 6;
+  Component selectedComponent;
+  int selectedvalue, selectedprefix;
+  int comno = components.size();
   
   //testingauras
   boolean beginconnection1 = false;
@@ -19,7 +20,7 @@ class Puck{
   int connectclock3 = 0; //three terminal
   //testingauras
     
-  Wire[] connectedWires = new Wire[2];
+  Wire[] connectedWires;
   
   String valtext;
   int menuclock = 0, menums = millis(), menualpha;
@@ -30,20 +31,23 @@ class Puck{
     this.x = x;
     this.y = y;
     this.size = size;
-    this.selected = false; 
-    this.mouseoffx = 0;
-    this.mouseoffy = 0;
     this.aurasize = 20;
-    //this.onvalspace = true;
+    this.ringthickness = 10;
+
     this.rotation = 0;
     this.comrotation = 0;
     this.valrotation = 0;
     
-    this.selectedcomponent = 0;
-    this.selectedvalue = 0;
-    this.selectedprefix = 0;
-    this.valtext = generateComponentText(selectedcomponent, selectedvalue, selectedprefix);
     
+    this.selected = false; 
+    this.mouseoffx = 0;
+    this.mouseoffy = 0;
+    
+    this.selectedComponent = components.get(0);
+    resetComponent();
+    
+    //change later?
+    this.connectedWires = new Wire[3];
     for(int w = 0; w < connectedWires.length; w++){
       connectedWires[w] = null;
     }
@@ -52,30 +56,29 @@ class Puck{
   void display(){
     
     if(!onvalspace && !oncomspace){
-      drawAura2();
+      drawAura();
     }
     
     drawDisc();
     if(onvalspace){
+      fill(255,100);
+      textAlign(CENTER,CENTER);
+      text(valtext,x,y+size/4);
       stroke(255,map(menualpha,0,255,255,50));
       strokeWeight(2);
       noFill();
-      drawComponent(selectedcomponent,x,y,size-15,rotation,2, true);
+      selectedComponent.drawComponent(x,y,size-15,rotation,2, true);
     }else{
       fill(255,100);
       textAlign(CENTER,CENTER);
       text(valtext,x,y+size/4);
-      drawComponent(selectedcomponent,x,y,size-15,rotation,2, false);
+      selectedComponent.drawComponent(x,y,size-15,rotation,2, false);
     }
     drawMenu();
-    //fill(255);
-    //text(rotation,x+10,y);
-    //text(id,x,y);
   }
   
   void drawDisc(){
     stroke(255);
-    int ringthickness = 10;
     strokeWeight(ringthickness);
     
     if(selected){
@@ -95,7 +98,7 @@ class Puck{
     ellipse(x, y, size-ringthickness,size-ringthickness);
   }
   
-  void drawAura2(){
+  void drawAura(){
     float totsize = size + aurasize;
     float rotrad = radians(rotation);
     
@@ -123,20 +126,8 @@ class Puck{
   }
   
   void drawPointers(){
-    //stroke(255);
-    //strokeWeight(1);
-    //pushMatrix();
-    //translate(x,y);
-    //rotate(radians(rotation));
-    //line(0,-size*0.5,0,-size*0.6);
-    //popMatrix();
-    
-    //stroke(255,0,0);
-    //strokeWeight(2);
-    
     fill(255,menualpha);
     noStroke();
-    //fill(255);
     pushMatrix();
     translate(x,y);
     if(oncomspace){
@@ -144,7 +135,6 @@ class Puck{
     }else if(onvalspace){
       rotate(radians(valrotation));
     }
-    //line(0,-size*0.5,0,-size*0.6);
     triangle(-size*0.1,-size*0.45,size*0.1,-size*0.45,0,-size*0.55);
     popMatrix();
   }
@@ -161,7 +151,7 @@ class Puck{
       if(oncomspace){
         drawComMenu();
       }else if(onvalspace){
-        if(selectedcomponent !=  0 && selectedcomponent != 3){
+        if(selectedComponent.valueChange){
           drawValMenu();
         }
       }
@@ -184,12 +174,12 @@ class Puck{
       for(int i = 0; i < comno; i++){
         float frac = 1/float(comno);
         rotate(frac*PI);
-        if(selectedcomponent == i){
+        if(selectedComponent.equals(components.get(i))){
           strokeWeight(3);
-          drawComponent(i,0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true);
+          components.get(i).drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true);
           strokeWeight(1);
         }else{
-          drawComponent(i,0,-size/2-aurasize,size/4,frac*PI+PI/2,1, true);
+          components.get(i).drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,1, true);
           strokeWeight(1);
         }
         rotate(frac*PI);
@@ -210,16 +200,6 @@ class Puck{
         menums = millis();
       }
       
-      pushMatrix();
-      translate(x,y);
-      rotate(radians(valrotation));
-      stroke(255);
-      strokeWeight(1);
-      line(0,-size/2,0,-size/2-aurasize*1.5);
-      //line(0,-size/2-aurasize/2,0,-size/2-aurasize*0.4);
-      //line(0,-size/2-aurasize,0,-size/2-aurasize*1.1);
-      popMatrix();
-      
       strokeWeight(aurasize/2);
       stroke(intCodetoColour(selectedprefix-1,menualpha));
       ellipse(x,y,size+aurasize*1.5,size+aurasize*1.5); //base ring color
@@ -230,6 +210,28 @@ class Puck{
       strokeWeight(1);
       ellipse(x,y,size+aurasize,size+aurasize);
       ellipse(x,y,size+aurasize*2,size+aurasize*2);
+      
+      pushMatrix();
+      translate(x,y);
+      rotate(radians(valrotation));
+      fill(255, menualpha);
+      noStroke();
+      ellipse(0,-size/2-aurasize*0.75,aurasize/2,aurasize/2);
+      popMatrix();
+      
+      pushMatrix();
+      translate(x,y);
+      stroke(255, menualpha);
+      strokeWeight(1);
+      for(int i = 0; i < 10; i++){
+        for(int j = 0; j < 9; j++){
+          rotate(radians(3.6));
+          line(0,-size/2-aurasize,0,-size/2-aurasize*1.25);
+        }
+        rotate(radians(3.6));
+        line(0,-size/2-aurasize,0,-size/2-aurasize*1.5);
+      }
+      popMatrix();
       
       fill(255, menualpha);
       textAlign(CENTER,CENTER);
@@ -255,49 +257,52 @@ class Puck{
   }
   
   void selectComponent(){
-    selectedcomponent = min(comno-1,int(map(comrotation,0,360,0,comno)));
-    //print(selectedcomponent);
-    manageComponent();
+    Component prev = selectedComponent;
+    selectedComponent = components.get(min(comno-1,int(map(comrotation,0,360,0,comno))));
+    if(!prev.equals(selectedComponent)){
+      resetComponent();
+    }
   }
   
   boolean selectValue(int delta){
-    if(selectedcomponent ==  0 || selectedcomponent == 3){ // wire or switch
+    if(!selectedComponent.valueChange){ // wire or switch
       return false;
     }else{
-      int rangehi = 999, rangelo = 1; // 1 - 999
+      int valhi = selectedComponent.valHi, vallo = selectedComponent.valLo;
+      int prehi = selectedComponent.preHi, prelo = selectedComponent.preLo;
       if(delta > 0){
-        if(selectedvalue + delta > rangehi){
-          if(selectedprefix < 4){
-            selectedvalue = selectedvalue + delta - rangehi;
+        if(selectedvalue + delta > valhi){
+          if(selectedprefix < prehi){
+            selectedvalue = selectedvalue + delta - valhi;
             selectedprefix += 1;
           }else{
-            selectedvalue = rangehi;
+            selectedvalue = valhi;
           }
         }else{
           selectedvalue += delta;
         }
       }else{
-        if(selectedvalue + delta < rangelo){
-          if(selectedprefix > -4){
-            selectedvalue = selectedvalue + delta + rangehi;
+        if(selectedvalue + delta < vallo){
+          if(selectedprefix > prelo){
+            selectedvalue = selectedvalue + delta + valhi;
             selectedprefix -= 1;
           }else{
-            selectedvalue = rangelo;
+            selectedvalue = vallo;
           }
         }else{
           selectedvalue += delta;
         }
       }
-      valtext = generateComponentText(selectedcomponent, selectedvalue, selectedprefix);
+      valtext = selectedComponent.generateComponentText(selectedvalue, selectedprefix);
       return true;
     }
   }
   
-  void manageComponent(){
-    selectedvalue = componentToDefaultValue(selectedcomponent);
-    selectedprefix = componentToDefaultPrefix(selectedcomponent);
+  void resetComponent(){
+    selectedvalue = selectedComponent.dValue;
+    selectedprefix = selectedComponent.dPrefix;
     valrotation = int(selectedvalue*0.36);    
-    valtext = generateComponentText(selectedcomponent, selectedvalue, selectedprefix);
+    valtext = selectedComponent.generateComponentText(selectedvalue, selectedprefix);
   }
   
   void run(){
