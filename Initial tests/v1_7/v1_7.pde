@@ -5,6 +5,8 @@ ArrayList<Zone> zones = new ArrayList<Zone>();
 Runzone runzone;
 
 
+boolean circuitRun = false;
+
 boolean updated = true;
 
 int puckSize = 100;
@@ -43,13 +45,16 @@ void setup(){
   textFont(font, 12);
 }
 void draw(){
-  background(0);
+  if(circuitRun){
+    background(50);
+  }else{
+    background(0);
+  }
   
   fill(255);
   textAlign(LEFT);
   text(frameRate,10,10);
   
-  text(wires.size(),10,30);
   drawZones();
   
   //println(updated);
@@ -78,7 +83,9 @@ void drawZones(){
       runzone.display(color(128),true,color(255),true);
       runzone.run();
     }else{
-      thisz.display(color(128,100),true,color(255),true);
+      if(!circuitRun){
+        thisz.display(color(128,100),true,color(255),true);
+      }
     }
   }
   

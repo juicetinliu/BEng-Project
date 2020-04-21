@@ -127,6 +127,7 @@ class Runzone extends Zone{
           if(ThePuck.x < x-sliderlength/2){
             state = 4;
           }
+          circuitRun = false;
         }else{
           reset();
         }
@@ -139,6 +140,7 @@ class Runzone extends Zone{
           if(ThePuck.x > x-sliderlength/2){
             state = 3;
           }
+          circuitRun = true;
           //RUN THE SIMULATION
         }else{
           reset();
@@ -162,6 +164,7 @@ class Runzone extends Zone{
   }
   
   void reset(){
+    circuitRun = false;
     ThePuck.MASTERPUCK = false;
     ThePuck = null;
     state = 0;
@@ -172,9 +175,10 @@ class Runzone extends Zone{
     
     if(state == 0){
       if(zonebarclock > 0){
-        float anix = map(zonebarclock, 0, zonebanidur, 0, 50);
+        float anix = map(zonebarclock, 0, zonebanidur, 0, sliderlength);
+        float anialph = map(zonebarclock, 0, zonebanidur, 255, 0);
         noStroke();
-        fill(fcolor);
+        fill(fcolor, anialph);
         rectMode(CENTER);
         rect(x-anix/2,y,anix,w+5);
         
@@ -215,9 +219,6 @@ class Runzone extends Zone{
       line(x-anix,y-w/2-2.5,x,y-w/2-2.5);
       arc(x,y,w+5,w+5,-PI/2,PI/2);
       arc(x-anix,y,w+5,w+5,PI/2,3*PI/2);
-      //float loadang = map(loadSolver,0,100,0,2*PI);
-      //float loadrad = map(loadSolver,0,100,0,20);
-      
     }else if(state == 3 || state == 4){
       noStroke();
       if(state == 4){
