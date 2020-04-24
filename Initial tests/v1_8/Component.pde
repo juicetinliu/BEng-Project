@@ -1,15 +1,16 @@
 class Component{
   int id;
-  String name;
+  String name, NGname;
   char unit;
   int dPrefix, preHi, preLo;
   int dValue, valHi, valLo;
   boolean valueChange;
   int terminals;
   
-  Component(int id, String name, int terminals, char unit, int dPrefix, int preHi, int preLo, int dValue, int valHi, int valLo, boolean valueChange){
+  Component(int id, String name, String NGname, int terminals, char unit, int dPrefix, int preHi, int preLo, int dValue, int valHi, int valLo, boolean valueChange){
     this.id = id;
     this.name = name;
+    this.NGname = NGname;
     this.unit = unit;
     this.dPrefix = dPrefix;
     this.dValue = dValue;
@@ -21,9 +22,10 @@ class Component{
     this.terminals = terminals;
   }
   
-  Component(int id, String name, int terminals, boolean valueChange){
+  Component(int id, String name, String NGname, int terminals, boolean valueChange){
     this.id = id;
     this.name = name;
+    this.NGname = NGname;
     this.valueChange = valueChange;
     this.unit = '\0';
     this.dPrefix = '0';

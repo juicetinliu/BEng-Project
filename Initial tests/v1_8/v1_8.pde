@@ -6,7 +6,7 @@ Runzone runzone;
 
 
 boolean circuitRun = false;
-
+boolean checked = false;
 boolean updated = true;
 
 int puckSize = 100;
@@ -15,32 +15,12 @@ void setup(){
   size(1200,800);
   //smooth();
   //pixelDensity(displayDensity());
-  //pucks.add(new Puck(1, width/2,height/2,50));
-  //pucks.add(new Puck(2, width/4,height/2,50));
+  
   randomSeed(15);
   createComponents();
   createZones();
-  pucks.add(new Puck(1, random(width),random(height),puckSize));
-  pucks.add(new Puck(2, random(width),random(height),puckSize));
-  pucks.add(new Puck(3, random(width),random(height),puckSize));
-  pucks.add(new Puck(4, random(width),random(height),puckSize));
-  //pucks.add(new Puck(5, random(width),random(height),puckSize));
-  //pucks.add(new Puck(6, random(width),random(height),puckSize));
-  //pucks.add(new Puck(7, random(width),random(height),puckSize));
-  //pucks.add(new Puck(8, random(width),random(height),puckSize));
-  //pucks.add(new Puck(9, random(width),random(height),puckSize));
-  //pucks.add(new Puck(10, random(width),random(height),puckSize));
+  addPucks(4);
   
-  //pucks.add(new Puck(11, random(width),random(height),puckSize));
-  //pucks.add(new Puck(12, random(width),random(height),puckSize));
-  
-  //pucks.add(new Puck(5, random(width),random(height),puckSize));
-  //pucks.add(new Puck(6, random(width),random(height),puckSize));
-  //pucks.add(new Puck(7, random(width),random(height),puckSize));
-  
-  //pucks.add(new puck(3, width*3/4,height/2,50));
-  //pucks.add(new puck(4, width/2,height/4,50));
-  //pucks.add(new puck(5, width/2,height*3/4,50));
   PFont font = loadFont("HelveticaNeue-20.vlw");
   textFont(font, 12);
 }
@@ -72,9 +52,12 @@ void draw(){
     thispuck.display();
     thispuck.run();
   }
-  
-  
-  
+}
+
+void addPucks(int num){
+  for(int i = 1; i <= num; i++){
+    pucks.add(new Puck(i, random(width),random(height),puckSize));
+  }
 }
 
 void drawZones(){
@@ -92,12 +75,12 @@ void drawZones(){
 }
 
 void createComponents(){
-  components.add(new Component(0, "Wire", 2, false));
-  components.add(new Component(1, "Resistor", 2, 'Ω', 1, 4, -4, 1, 999, 1, true));
-  components.add(new Component(2, "Capacitor", 2, 'F', 0, 4, -4, 1, 999, 1, true));
-  components.add(new Component(3, "Switch", 2, false));
-  components.add(new Component(4, "Inductor", 2, 'H', 0, 4, -4, 1, 999, 1, true));
-  components.add(new Component(5, "VoltageSource", 2, 'V', 0, 4, -4, 1, 999, 1, true));
+  components.add(new Component(0, "Wire", "", 2, false));
+  components.add(new Component(1, "Resistor", "R", 2, 'Ω', 1, 4, -4, 1, 999, 1, true));
+  components.add(new Component(2, "Capacitor", "C", 2, 'F', 0, 4, -4, 1, 999, 1, true));
+  components.add(new Component(3, "Switch", "", 2, false));
+  components.add(new Component(4, "Inductor", "L", 2, 'H', 0, 4, -4, 1, 999, 1, true));
+  components.add(new Component(5, "VoltageSource", "V", 2, 'V', 0, 4, -4, 1, 999, 1, true));
 }
 
 void createZones(){

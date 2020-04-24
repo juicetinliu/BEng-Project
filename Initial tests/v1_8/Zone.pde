@@ -128,6 +128,7 @@ class Runzone extends Zone{
             state = 4;
           }
           circuitRun = false;
+          checked = false;
         }else{
           reset();
         }
@@ -141,6 +142,11 @@ class Runzone extends Zone{
             state = 3;
           }
           circuitRun = true;
+          if(!checked){
+            if(!checkCircuit()){
+              print("fail");
+            }
+          }
           //RUN THE SIMULATION
         }else{
           reset();

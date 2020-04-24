@@ -1,0 +1,9 @@
+HEHE
+1 2 1 48
+2 0 2 48
+4 1 0 48
+.control
+op
+print allv
+.endc
+.end

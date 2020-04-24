@@ -27,6 +27,56 @@ PVector limtoscreen(PVector limvect){
   
 }
 
+String prefixCodetoNGCode(char prefix){
+  switch(prefix){
+    case 'T': //tera
+      return "T";
+    case 'G': //giga
+      return "G";
+    case 'M': //mega
+      return "Meg";
+    case 'k': //kilo
+      return "K";
+    case 'N': //normal??
+      return "";
+    case 'm': //milli
+      return "m";
+    case 'µ': //micro
+      return "u";
+    case 'n': //nano 
+      return "n";
+    case 'p': //pico 
+      return "p";
+    default:
+      return "";
+  }
+}
+
+String intCodetoNGCode(int intCode){
+  switch(intCode){
+    case 4: //tera
+      return "T";
+    case 3: //giga
+      return "G";
+    case 2: //mega
+      return "Meg";
+    case 1: //kilo
+      return "K";
+    case 0: //normal??
+      return "";
+    case -1: //milli
+      return "m";
+    case -2: //micro
+      return "u";
+    case -3: //nano 
+      return "n";
+    case -4: //pico 
+      return "p";
+    default:
+      return "";
+  }
+}
+
 int prefixCodetoInt(char prefix){
   switch(prefix){
     case 'T': //tera
