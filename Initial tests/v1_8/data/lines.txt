@@ -1,7 +1,11 @@
 HEHE
-1 2 1 48
-2 0 2 48
-4 1 0 48
+R1 4 2 1K
+R2 0 1 1K
+R3 4 1 2K
+R4 2 3 2K
+R5 4 1 2K
+R7 3 2 2K
+V8 3 0 1
 .control
 op
 print allv

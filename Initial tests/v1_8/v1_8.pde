@@ -19,7 +19,7 @@ void setup(){
   randomSeed(15);
   createComponents();
   createZones();
-  addPucks(4);
+  addPucks(8);
   
   PFont font = loadFont("HelveticaNeue-20.vlw");
   textFont(font, 12);

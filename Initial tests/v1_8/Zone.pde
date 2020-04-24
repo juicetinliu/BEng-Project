@@ -128,7 +128,12 @@ class Runzone extends Zone{
             state = 4;
           }
           circuitRun = false;
-          checked = false;
+          if(checked){
+            checked = false;
+            for(Wire tw:wires){
+              tw.hideVoltages();
+            }
+          }
         }else{
           reset();
         }
@@ -143,8 +148,12 @@ class Runzone extends Zone{
           }
           circuitRun = true;
           if(!checked){
-            if(!checkCircuit()){
-              print("fail");
+            checked = true;
+            if(checkCircuit()){
+              NGCircuit();
+              println("yay");
+            }else{
+              println("fail");
             }
           }
           //RUN THE SIMULATION

@@ -3,16 +3,19 @@ class Wire{
   float x, y;
   float handlelength;
   float handlelim = 200;
+  float voltage = 0;
+  boolean showVoltage = false;
   
   ArrayList<Puck> connectedPucks = new ArrayList<Puck>();
   IntList sides = new IntList();
   ArrayList<PVector> lines = new ArrayList<PVector>();
   
-  Wire(int id, ArrayList<Puck> connected, IntList sides){
-    this.id = id;
-    this.connectedPucks = connected;
-    this.sides = sides;
-  }
+  //Wire(int id, ArrayList<Puck> connected, IntList sides){
+  //  this.id = id;
+  //  this.connectedPucks = connected;
+  //  this.sides = sides;
+  //  this.voltage = 0;
+  //}
   
   Wire(int id){
     this.id = id;
@@ -20,6 +23,18 @@ class Wire{
     lines.add(new PVector(0,0));
     lines.add(new PVector(0,0));
     lines.add(new PVector(0,0));
+  }
+  
+  void updateVoltage(float voltage){
+    this.voltage = voltage; 
+  }
+  
+  void showVoltages(){
+    showVoltage = true;
+  }
+  
+  void hideVoltages(){
+    showVoltage = false;
   }
   
   void display(){
@@ -44,10 +59,30 @@ class Wire{
       //line(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y);
       //line(lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
     }
+    float tx = x;
+    float ty = y;
+    if(connectedPucks.size() <= 2){
+      tx = bezierPoint(lines.get(0).x, lines.get(1).x, lines.get(3).x, lines.get(2).x, 0.5);
+      ty = bezierPoint(lines.get(0).y, lines.get(1).y, lines.get(3).y, lines.get(2).y, 0.5);
+    }
     //fill(255);
-    //text(id,x,y-15);
+    //text(id,tx,ty-15);
+    
+    if(showVoltage){
+      fill(255);
+      text(voltage,tx,ty-15);
+    }
+    if(id == 0){
+      strokeWeight(2);
+      stroke(255);
+      line(tx,ty,tx,ty+puckSize*0.2);
+      line(tx-puckSize*0.15,ty+puckSize*0.2,tx+puckSize*0.15,ty+puckSize*0.2);
+      line(tx-puckSize*0.1,ty+puckSize*0.25,tx+puckSize*0.1,ty+puckSize*0.25);
+      line(tx-puckSize*0.05,ty+puckSize*0.30,tx+puckSize*0.05,ty+puckSize*0.30);
+    }
   }
   
+  //calculate average point as average of all bezier curves???
   void update(){
     lines.clear();
     if(connectedPucks.size() > 1){

@@ -92,6 +92,13 @@ class Puck{
       }
       drawMenu();
     }
+    //fill(255);
+    //text(id, x, y);
+    //for(int c = 0; c < selectedComponent.terminals; c++){
+    //  if(connectedWires[c] != null){
+    //     text(connectedWires[c].id,x+c*20,y-20);
+    //  }
+    //}
   }
   
   void drawDisc(){
