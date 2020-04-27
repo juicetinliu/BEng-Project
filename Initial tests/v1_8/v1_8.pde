@@ -9,20 +9,24 @@ boolean circuitRun = false;
 boolean checked = false;
 boolean updated = true;
 
-int puckSize = 100;
+//int puckSize = 100;
+int puckSize;
+
 
 void setup(){
-  size(1200,800);
+  //size(1200,800);
+  size(900,600);
   //smooth();
   //pixelDensity(displayDensity());
-  
+  puckSize = height/8;
   randomSeed(15);
   createComponents();
   createZones();
   addPucks(8);
   
   PFont font = loadFont("HelveticaNeue-20.vlw");
-  textFont(font, 12);
+  //textFont(font, 12);
+  textFont(font, 9);
 }
 void draw(){
   if(circuitRun){

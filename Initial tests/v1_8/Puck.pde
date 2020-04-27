@@ -33,8 +33,8 @@ class Puck{
     this.x = x;
     this.y = y;
     this.size = size;
-    this.aurasize = 20;
-    this.ringthickness = 10;
+    this.aurasize = size*0.2; //20
+    this.ringthickness = size*0.1; //10
 
     this.rotation = 0;
     this.comrotation = 0;
