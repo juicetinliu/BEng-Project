@@ -150,7 +150,8 @@ class Runzone extends Zone{
           if(!checked){
             checked = true;
             if(checkCircuit()){
-              NGCircuit();
+              
+              //NGCircuitRT();
               println("yay");
             }else{
               println("fail");

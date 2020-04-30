@@ -15,7 +15,19 @@
 void NGCircuitRT(){
   StringList lines = new StringList();
   
+  
+  for(Wire tw:wires){
+    tw.voltage = 0;
+  }
+  
   lines.append("HEHE"); //TITLE
+  
+  String icline = ".ic";
+  for(int w = 1; w < wires.size(); w++){
+    Wire tw = wires.get(w);
+    icline += " v(" + tw.id + ")=" + tw.voltage;
+  }
+  lines.append(icline); //.ic v(1)=.......
   
   for(Puck chkpuck:pucks){
     String thisline = "";
@@ -26,7 +38,12 @@ void NGCircuitRT(){
         for(int ck = 0; ck < thiscomp.terminals; ck++){
           thisline += chkpuck.connectedWires[ck].id + " ";
         }
-        thisline += chkpuck.selectedvalue + intCodetoNGCode(chkpuck.selectedprefix);
+        if(thiscomp.id == 5){ //PULSE(0 V 0s 1fs 1fs)
+          thisline += "PULSE(0 " + chkpuck.selectedvalue + intCodetoNGCode(chkpuck.selectedprefix);
+          thisline += " 0s 1fs 1fs)";
+        }else{
+          thisline += chkpuck.selectedvalue + intCodetoNGCode(chkpuck.selectedprefix);
+        }
         lines.append(thisline);
       }
     }
@@ -34,14 +51,30 @@ void NGCircuitRT(){
   
   
   //.control
-  //op
-  //print allv
+  //tran <step> <duration> uic
+  //let k = length(time) - 1
+  //print time[k] v(1)[k] v(2)[k]
   //.endc
   //.end
   
   lines.append(".control");
-  lines.append("op");
-  lines.append("print allv");
+  
+  String tranline = "tran ";
+  float RTStepSize = 0.1;
+  tranline += RTStepSize/10 + "s ";
+  tranline += RTStepSize + "s uic";
+  lines.append(tranline);
+  
+  lines.append("let k = length(time) - 1");
+  
+  String printline = "print time[k]";
+  for(int w = 1; w < wires.size(); w++){
+    Wire tw = wires.get(w);
+    printline += " v(" + tw.id + ")[k]";
+  }
+  
+  lines.append(printline);
+  
   lines.append(".endc");
   lines.append(".end");
   
@@ -66,22 +99,8 @@ void NGCircuitRT(){
     print("ERR: ");
     println(line);
   }
-  
-  for(Wire tw:wires){
-    tw.voltage = 0;
-  }
-  
-  NGparseOutput(output);
-  
+    
   for(Wire tw:wires){
     tw.showVoltages();
-  }
-}
-
-void NGparseOutput(StringList output){
-  for(int o = 7; o < output.size(); o++){
-    String line = output.get(o);
-    String[] list = split(line, " = ");
-    wires.get(o-6).updateVoltage(float(list[1].trim()));
   }
 }
