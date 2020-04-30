@@ -1,11 +1,15 @@
 HEHE
-.ic v(1)=0.9944012 v(2)=1.0
-R1 2 1 270
-V2 2 0 PULSE(0 1 0s 1fs 1fs)
-C4 1 0 1m
+.ic v(1)=0.003429694 v(2)=0.3905459 v(3)=5.0
+R1 0 1 1
+C2 3 2 1m
+L4 1 2 1
+S5 3 2 9 0 switch1 OFF
+Vs5 9 0 0
+V6 3 0 PULSE(0 5 0s 1fs 1fs)
+.model switch1 sw vt=1
 .control
-tran 0.01s 0.1s uic
+tran 0.0105s 0.105s uic
 let k = length(time) - 1
-print time[k] v(1)[k] v(2)[k]
+print time[k] v(1)[k] v(2)[k] v(3)[k]
 .endc
 .end

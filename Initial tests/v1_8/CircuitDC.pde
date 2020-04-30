@@ -23,6 +23,9 @@ boolean checkCircuit(){
           return false;
         }
       }
+      if(thiscomp.id == 0){
+        return false;
+      }
       if(thiscomp.id == 5){
         voltagesource = true;
       }

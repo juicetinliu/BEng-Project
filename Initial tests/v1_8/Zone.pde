@@ -164,7 +164,7 @@ class Runzone extends Zone{
           }
           if(circuitRun){
             if(mspassed(circuitSimTimer,int(circuitSimStep*1000))){
-              NGCircuitRT(0.1);
+              NGCircuitRT(float(millis() - circuitSimTimer)/1000);
               circuitSimTimer = millis();
             }
             

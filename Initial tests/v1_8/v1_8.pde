@@ -22,7 +22,7 @@ void setup(){
   randomSeed(15);
   createComponents();
   createZones();
-  addPucks(4);
+  addPucks(6);
   
   PFont font = loadFont("HelveticaNeue-20.vlw");
   //textFont(font, 12);
@@ -79,12 +79,12 @@ void drawZones(){
 }
 
 void createComponents(){
-  components.add(new Component(0, "Wire", "", 2, false));
-  components.add(new Component(1, "Resistor", "R", 2, 'Ω', 1, 4, -4, 1, 999, 1, true));
-  components.add(new Component(2, "Capacitor", "C", 2, 'F', 0, 4, -4, 1, 999, 1, true));
-  components.add(new Component(3, "Switch", "", 2, false));
-  components.add(new Component(4, "Inductor", "L", 2, 'H', 0, 4, -4, 1, 999, 1, true));
-  components.add(new Component(5, "VoltageSource", "V", 2, 'V', 0, 4, -4, 1, 999, 1, true));
+  components.add(new Component(0, "Wire", "", 2, false, 1));
+  components.add(new Component(1, "Resistor", "R", 2, 'Ω', 1, 4, -4, 1, 999, 1, true, 1));
+  components.add(new Component(2, "Capacitor", "C", 2, 'F', 0, 4, -4, 1, 999, 1, true, 1));
+  components.add(new Component(3, "Switch", "S", 2, false, 2));
+  components.add(new Component(4, "Inductor", "L", 2, 'H', 0, 4, -4, 1, 999, 1, true, 1));
+  components.add(new Component(5, "VoltageSource", "V", 2, 'V', 0, 4, -4, 1, 999, 1, true, 4));
 }
 
 void createZones(){

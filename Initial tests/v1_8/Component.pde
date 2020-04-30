@@ -4,10 +4,11 @@ class Component{
   char unit;
   int dPrefix, preHi, preLo;
   int dValue, valHi, valLo;
+  int dState, noStates;
   boolean valueChange;
   int terminals;
   
-  Component(int id, String name, String NGname, int terminals, char unit, int dPrefix, int preHi, int preLo, int dValue, int valHi, int valLo, boolean valueChange){
+  Component(int id, String name, String NGname, int terminals, char unit, int dPrefix, int preHi, int preLo, int dValue, int valHi, int valLo, boolean valueChange, int noStates){
     this.id = id;
     this.name = name;
     this.NGname = NGname;
@@ -20,9 +21,11 @@ class Component{
     this.valHi = valHi; 
     this.valLo = valLo;
     this.terminals = terminals;
+    this.noStates = noStates;
+    this.dState = 0;
   }
   
-  Component(int id, String name, String NGname, int terminals, boolean valueChange){
+  Component(int id, String name, String NGname, int terminals, boolean valueChange, int noStates){
     this.id = id;
     this.name = name;
     this.NGname = NGname;
@@ -31,9 +34,11 @@ class Component{
     this.dPrefix = '0';
     this.dValue = '0';
     this.terminals = terminals;
+    this.noStates = noStates;
+    this.dState = 0;
   }
   
-  void drawComponent(float x, float y, float size, float rotation, int strokeweight, boolean customcolour){
+  void drawComponent(float x, float y, float size, float rotation, int strokeweight, boolean customcolour, int state){
     pushMatrix();
     translate(x,y);
     rotate(radians(rotation));
@@ -43,6 +48,10 @@ class Component{
       noFill();
     }
     switch(id){
+      case 0: //default: wire
+        line(-size/2,0,size/2,0);
+      break;
+      
       case 1: //resistor
         rectMode(CENTER);
         rect(0,0,size*0.8,size*0.2);
@@ -58,9 +67,25 @@ class Component{
       break;
       
       case 3: //switch
-        line(-size*0.3,0,size*0.25,-size*0.25);
-        line(-size/2,0,-size*0.3,0);
-        line(size/2,0,size*0.3,0);
+        switch(state){
+          case 0:
+            line(-size*0.3,0,size*0.25,-size*0.25);
+            line(-size/2,0,-size*0.3,0);
+            line(size/2,0,size*0.3,0);
+          break;
+          
+          case 1:
+            line(-size*0.3,0,size*0.3,0);
+            line(-size/2,0,-size*0.3,0);
+            line(size/2,0,size*0.3,0);
+          break;
+          
+          default:
+            line(-size*0.3,0,size*0.25,-size*0.25);
+            line(-size/2,0,-size*0.3,0);
+            line(size/2,0,size*0.3,0);
+          break;
+        }
       break;
       
       case 4: //inductor

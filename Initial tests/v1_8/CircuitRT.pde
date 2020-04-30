@@ -28,7 +28,30 @@ void NGCircuitRT(float RTStepSize){
     String thisline = "";
     if(!chkpuck.MASTERPUCK){
       Component thiscomp = chkpuck.selectedComponent;
-      if(thiscomp.id != 0 || thiscomp.id != 3){
+      
+      if(thiscomp.id == 3){
+        thisline += thiscomp.NGname + chkpuck.id + " ";
+        for(int ck = 0; ck < thiscomp.terminals; ck++){
+          thisline += chkpuck.connectedWires[ck].id + " ";
+        }
+        
+        int swvplus = wires.size() + chkpuck.id;
+        String nxtline = "";
+        nxtline += "Vs" + chkpuck.id + " " + swvplus + " 0 ";
+        
+        thisline += swvplus + " 0 switch1 ";
+        if(chkpuck.selectedstate == 0){
+          thisline += "OFF";
+          nxtline += "0";
+        }else{
+          thisline += "ON";
+          nxtline += "2";
+        }
+        lines.append(thisline);
+        lines.append(nxtline);
+      }else if(thiscomp.id == 0){
+        //nothing for wire
+      }else{
         thisline += thiscomp.NGname + chkpuck.id + " ";
         for(int ck = 0; ck < thiscomp.terminals; ck++){
           thisline += chkpuck.connectedWires[ck].id + " ";
@@ -44,6 +67,8 @@ void NGCircuitRT(float RTStepSize){
     }
   }
   
+  
+  lines.append(".model switch1 sw vt=1");
   
   //.control
   //tran <step> <duration> uic
@@ -87,16 +112,16 @@ void NGCircuitRT(float RTStepSize){
   
   exec(output, errors, "/usr/local/bin/ngspice", thepath);
   
-  for(int o = 0; o < output.size(); o++){
-    String line = output.get(o);
-    print(o + ": ");
-    println(line);
-  }
+  //for(int o = 0; o < output.size(); o++){
+  //  String line = output.get(o);
+  //  print(o + ": ");
+  //  println(line);
+  //}
   
-  for(String line: errors){
-    print("ERR: ");
-    println(line);
-  }
+  //for(String line: errors){
+  //  print("ERR: ");
+  //  println(line);
+  //}
   
   NGparseOutputRT(output);
   
