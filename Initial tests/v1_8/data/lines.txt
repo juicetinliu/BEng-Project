@@ -1,12 +1,11 @@
 HEHE
-.ic v(1)=1.0 v(2)=1.0 v(3)=1.0
-R1 2 3 1K
-R2 1 2 1K
-R4 0 1 1K
-V5 3 0 PULSE(0 1 0s 1fs 1fs)
+.ic v(1)=0.9944012 v(2)=1.0
+R1 2 1 270
+V2 2 0 PULSE(0 1 0s 1fs 1fs)
+C4 1 0 1m
 .control
 tran 0.01s 0.1s uic
 let k = length(time) - 1
-print time[k] v(1)[k] v(2)[k] v(3)[k]
+print time[k] v(1)[k] v(2)[k]
 .endc
 .end

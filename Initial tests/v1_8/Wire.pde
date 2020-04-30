@@ -65,8 +65,8 @@ class Wire{
       tx = bezierPoint(lines.get(0).x, lines.get(1).x, lines.get(3).x, lines.get(2).x, 0.5);
       ty = bezierPoint(lines.get(0).y, lines.get(1).y, lines.get(3).y, lines.get(2).y, 0.5);
     }
-    fill(255);
-    text(id,tx,ty-15);
+    //fill(255);
+    //text(id,tx,ty-15);
     
     if(showVoltage){
       fill(255);
@@ -204,4 +204,10 @@ void createWire(Puck puckA, int A, Puck puckB, int B){
   puckA.connectedWires[A-1] = thiswire;
   puckB.connectedWires[B-1] = thiswire;
   println("created wire " + thiswire.id + " between " + puckA.id + ":" + A + " & " + puckB.id + ":" + B);
+}
+
+void setWireVoltagesZero(){
+  for(Wire tw:wires){
+    tw.voltage = 0;
+  }
 }

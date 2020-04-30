@@ -22,7 +22,7 @@ void setup(){
   randomSeed(15);
   createComponents();
   createZones();
-  addPucks(5);
+  addPucks(4);
   
   PFont font = loadFont("HelveticaNeue-20.vlw");
   //textFont(font, 12);

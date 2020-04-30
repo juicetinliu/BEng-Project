@@ -52,6 +52,9 @@ class Runzone extends Zone{
   int state; //0 - idle, 1 - setting MASTERPUCK, 2 - ready with MASTERPUCK, 3 - turning with MASTERPUCK
   float sliderlength;
   Puck ThePuck = null;
+  int circuitSimTimer;
+  float circuitSimStep = 0.1; //s
+  
   
   Runzone(int id, String label, int type, float x, float y, float w, float h){
     super(id, label, type, x, y, w, h);
@@ -146,16 +149,25 @@ class Runzone extends Zone{
           if(ThePuck.x > x-sliderlength/2){
             state = 3;
           }
-          circuitRun = true;
           if(!checked){
             checked = true;
             if(checkCircuit()){
-              
               //NGCircuitRT();
               println("yay");
+              circuitRun = true;
+              setWireVoltagesZero();
+              circuitSimTimer = millis();
             }else{
               println("fail");
+              circuitRun = false;
             }
+          }
+          if(circuitRun){
+            if(mspassed(circuitSimTimer,int(circuitSimStep*1000))){
+              NGCircuitRT(0.1);
+              circuitSimTimer = millis();
+            }
+            
           }
           //RUN THE SIMULATION
         }else{

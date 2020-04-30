@@ -12,13 +12,8 @@
 //4, "Inductor"
 //5, "VoltageSource"
 
-void NGCircuitRT(){
+void NGCircuitRT(float RTStepSize){
   StringList lines = new StringList();
-  
-  
-  for(Wire tw:wires){
-    tw.voltage = 0;
-  }
   
   lines.append("HEHE"); //TITLE
   
@@ -60,7 +55,9 @@ void NGCircuitRT(){
   lines.append(".control");
   
   String tranline = "tran ";
-  float RTStepSize = 0.1;
+  
+  //float RTStepSize = 0.1;
+  
   tranline += RTStepSize/10 + "s ";
   tranline += RTStepSize + "s uic";
   lines.append(tranline);
@@ -79,6 +76,7 @@ void NGCircuitRT(){
   lines.append(".end");
   
   String[] string = new String[1];
+  
   String savepath = "data/lines.txt";
   saveStrings(savepath, lines.array(string));
   
@@ -99,8 +97,19 @@ void NGCircuitRT(){
     print("ERR: ");
     println(line);
   }
-    
+  
+  NGparseOutputRT(output);
+  
   for(Wire tw:wires){
     tw.showVoltages();
+  }
+}
+
+void NGparseOutputRT(StringList output){
+  int outlen = output.size();
+  for(int o = outlen - wires.size() + 1; o < outlen; o++){
+    String line = output.get(o);
+    String[] list = split(line, " = ");
+    wires.get(o + wires.size() - outlen).updateVoltage(float(list[1].trim()));
   }
 }
