@@ -13,7 +13,7 @@
 //5, "VoltageSource"
 
 boolean checkCircuit(){ 
-  boolean voltagesource = false;
+  //boolean voltagesource = false;
   for(int p = 0; p < pucks.size(); p++){
     Puck checkpuck = pucks.get(p);
     if(!checkpuck.MASTERPUCK){
@@ -26,16 +26,16 @@ boolean checkCircuit(){
       if(thiscomp.id == 0){
         return false;
       }
-      if(thiscomp.id == 5){
-        voltagesource = true;
-      }
+      //if(thiscomp.id == 5){
+      //  voltagesource = true;
+      //}
     }   
   }
-  if(voltagesource){
+  //if(voltagesource){
     return true;
-  }else{
-    return false;
-  }
+  //}else{
+  //  return false;
+  //}
 }
 
 void NGCircuit(){

@@ -1,14 +1,13 @@
 HEHE
-.ic v(1)=0.003429694 v(2)=0.3905459 v(3)=5.0
-R1 0 1 1
-C2 3 2 1m
-L4 1 2 1
-S5 3 2 9 0 switch1 OFF
-Vs5 9 0 0
-V6 3 0 PULSE(0 5 0s 1fs 1fs)
+.ic v(1)=-1.36198E-4 v(2)=-2.73285E-4 v(3)=-1.36642E-4
+R1 0 3 1
+C2 2 1 1 ic=-1.37087E-4
+C4 1 0 1 ic=-1.36198E-4
+R5 3 2 1
 .model switch1 sw vt=1
+.model diode1 D(Ron=0.1 Roff=1Meg Vfwd=0.7)
 .control
-tran 0.0105s 0.105s uic
+tran 0.0108s 0.108s uic
 let k = length(time) - 1
 print time[k] v(1)[k] v(2)[k] v(3)[k]
 .endc

@@ -22,6 +22,7 @@ class Puck{
   //testingauras
     
   Wire[] connectedWires;
+  float[] extraInformation = new float[1]; //0 - inductorcurrent
   
   String valtext;
   int menuclock = 0, menums = millis(), menualpha;
@@ -54,6 +55,7 @@ class Puck{
     for(int w = 0; w < connectedWires.length; w++){
       connectedWires[w] = null;
     }
+    this.extraInformation[0] = 0;
   }
   
   void display(){
@@ -87,6 +89,11 @@ class Puck{
         selectedComponent.drawComponent(x,y,size-15,rotation,2, false, selectedstate);
       }
       drawMenu();
+    }
+    
+    if(selectedComponent.id == 4 || selectedComponent.id == 2){
+      fill(255);
+      text(extraInformation[0], x + 100, y);
     }
   }
   
@@ -401,6 +408,9 @@ class Puck{
     selectedvalue = selectedComponent.dValue;
     selectedprefix = selectedComponent.dPrefix;
     selectedstate = selectedComponent.dState;
+    for(int i = 0; i < extraInformation.length; i++){
+      extraInformation[i] = 0;
+    }
     valrotation = int(selectedvalue*0.36);
     staterotation = 0;
     valtext = selectedComponent.generateComponentText(selectedvalue, selectedprefix);
@@ -580,6 +590,14 @@ void checkAuras(ArrayList<Puck> allpucks){
           }
         }
       }
+    }
+  }
+}
+
+void setPuckInformationZero(){
+  for(Puck tp:pucks){
+    for(int i = 0; i < tp.extraInformation.length; i++){
+      tp.extraInformation[i] = 0;
     }
   }
 }

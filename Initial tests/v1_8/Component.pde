@@ -104,6 +104,13 @@ class Component{
         ellipse(0,0,size,size);
       break;
       
+      case 6: //diode
+        triangle(-size*0.15,-size*0.2,-size*0.15,size*0.2,size*0.15,0);
+        line(-size/2,0,-size*0.15,0);
+        line(size/2,0,size*0.15,0);
+        line(size*0.15,-size*0.2,size*0.15,size*0.2);
+      break;
+      
       default: //wire
         line(-size/2,0,size/2,0);
       break;
