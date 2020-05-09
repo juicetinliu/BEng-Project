@@ -3,18 +3,18 @@ import processing.video.*;
 Capture cam;
 
 ArrayList<Ring> Rings = new ArrayList<Ring>();
-int ringcount = 2;
+int ringcount, bigringno = 0;
 
 OpenCV opencv;
 PImage cannyFrame,houghFrame;
 int swidth, sheight;
 
 int[][] hough;
-int circlerad = 24;
-float scalex = 2.9739583;
-float scaley = 2.6666667;
-int offx = -39;
-int offy = -29;
+int circlerad = 23;
+float scalex = 3.323958;
+float scaley = 2.9966664;
+int offx = -209;
+int offy = -289;
 boolean finetune = false;
 boolean cleanup = false;
 
@@ -23,18 +23,19 @@ boolean changecanny = false;
 int canny1 = 255, canny2 = 255;
 int xyspacing = 2;
 int rotspacing = 5;
-int checkring = 3;
+int checkring = 2;
 int houghThresh = 0;
-
-
 
 void setup() {
   //size(640, 480);
   fullScreen();
   //print(width, height);
   
-  swidth = 640;
-  sheight = 480; //480
+  swidth = 720;
+  sheight = 540; //480
+  loadValues();
+  //swidth = 640;
+  //sheight = 480; //480
   
   String[] cameras = Capture.list();
   if (cameras == null) {
@@ -47,7 +48,7 @@ void setup() {
     println("Available cameras:");
     printArray(cameras);
     //960/540
-    cam = new Capture(this, swidth, sheight, cameras[0]);
+    cam = new Capture(this, swidth, sheight, cameras[1]);
     print(cam.width + " x " + cam.height);
     cam.start();
   }
@@ -57,16 +58,20 @@ void setup() {
   hough = new int[swidth][sheight];
   
   houghFrame = new PImage(swidth, sheight);
+  
+  Rings.add(new Ring(0,0,1));
+  Rings.add(new Ring(0,0,2));
+  Rings.add(new Ring(0,0,3));
+  ringcount = Rings.size();
 }
 
-//circlerad = int(map(mouseX,0,width,0,30));
-//xyspacing = int(map(mouseX,0,width,1,20));
-//rotspacing = int(map(mouseY,0,height,1,60));
-
 void draw() {
-  if (cam.available() == true) {
-    //circlerad = int(map(mouseX,0,width,0,30));
-
+  if (cam.available() == true){
+    if(cleanup){
+      noCursor();
+    }else{
+      cursor();
+    }
     cam.read();
     opencv.loadImage(cam);
     opencv.gray();
@@ -77,30 +82,11 @@ void draw() {
     opencv.findCannyEdges(canny1,canny2);
     //opencv.findCannyEdges(255,255);
     cannyFrame = opencv.getSnapshot();
-    resethough();
+    resetHough();
     
-    for(int y = 0; y < sheight; y += xyspacing){
-      for(int x = 0; x < swidth; x += xyspacing){
-        for(int th = 0; th < 360; th += rotspacing){
-          if(blue(cannyFrame.pixels[y*cam.width+x]) > 0){
-            float thrad = radians(th);
-            int a = x - int(circlerad * cos(thrad));
-            int b = y - int(circlerad * sin(thrad));
-            if(a >= 0 && a < swidth && b >= 0 && b < sheight){
-              hough[a][b] += 4;
-              if(a > 0 && a < swidth-1 && b > 0 && b < sheight-1){
-                hough[a-1][b] ++;
-                hough[a+1][b] ++;
-                hough[a][b-1] ++;
-                hough[a][b+1] ++;
-              }
-            }
-          }
-        }
-      }
-    }
+    voteHough();
     
-    findRings(ringcount, hough, houghThresh, true);
+    bigringno = findRings(ringcount, hough, houghThresh, true);
     background(255);
     if(!cleanup){
       image(cam, 0, height-cam.height/2, cam.width/2, cam.height/2);
@@ -109,13 +95,11 @@ void draw() {
     }
     //image(cannyFrame, 640, 0);
 
-    //image(cannyFrame, 0, 0);
+    //image(cam, offx, offy, cam.width*scalex, cam.height*scaley);
     //image(houghFrame, 0, 0);
     //background(255);
-    //refRing();
+    refRing(scalex,scaley);
     for(Ring thisring:Rings){
-      thisring.setAngle();
-      thisring.setID();
       thisring.display(scalex, scaley , offx, offy, 50);
     }
     
@@ -123,20 +107,26 @@ void draw() {
   }
   if(!cleanup){
     hudText(color(0));
+    pixelColorTool();
   }
-  //pixelColorTool();
   fill(0);
   textAlign(CENTER,CENTER);
-  text("udlr for offset; wasd for scale; c for canny; h to hide; qe for houghThresh", width/2, height-10); 
+  text("udlr for offset; wasd for scale; c for canny; h to hide; qe for houghThresh; space/r to save/reset; zx for checkring", width/2, height-10);
+  textAlign(RIGHT,CENTER);
+  text(bigringno,width,height-10);
 }
 
-void refRing(){
+void refRing(float scalex, float scaley){
+  pushMatrix();
+  translate(mouseX,mouseY);
+  scale(scalex,scaley);
   stroke(255,102,0,128);
   strokeWeight(1);
   noFill();
-  ellipse(640/2,480/2,circlerad*2,circlerad*2);
+  ellipse(0,0,circlerad*2,circlerad*2);
   stroke(0,255,102,128);
-  ellipse(640/2,480/2,(circlerad-checkring)*2,(circlerad-checkring)*2);
+  ellipse(0,0,(circlerad-checkring)*2,(circlerad-checkring)*2);
+  popMatrix();
 }
 
 void hudText(color textcolor){
@@ -153,7 +143,9 @@ void hudText(color textcolor){
   text(xyspacing,40,20);
   text(rotspacing,40,30);
   text(circlerad,40,60);
-  text(houghThresh,40,70);
+  text(checkring,40,70);
+  text(houghThresh,40,110);
+  
   if(finetune){
     fill(255,0,0);
   }
@@ -169,7 +161,8 @@ void hudText(color textcolor){
   text("Can1:",40,40);
   text("Can2:",40,50);
   text("crad:",40,60);
-  text("hthr:",40,70);
+  text("check:",40,70);
+  text("hthr:",40,110);
   text("scal:",40,80);
   text("offx:",40,90);
   text("offy:",40,100);
@@ -177,31 +170,93 @@ void hudText(color textcolor){
 
 void pixelColorTool(){
   textAlign(LEFT,BASELINE);
-  if(mouseX < width/2){
-    stroke(255);
-    fill(0);
-    rect(mouseX-40,mouseY-40,40,40);
-    fill(255,0,0);
-    text(int(red(cam.pixels[mouseY*cam.width+mouseX])),mouseX-35,mouseY-25);
-    fill(0,255,102);
-    text(int(green(cam.pixels[mouseY*cam.width+mouseX])),mouseX-35,mouseY-15);
-    fill(0,102,255);
-    text(int(blue(cam.pixels[mouseY*cam.width+mouseX])),mouseX-35,mouseY-5);
-  }else{
-    stroke(255);
-    fill(0);
-    rect(mouseX-40,mouseY-15,40,15);
-    fill(255);
-    text(hough[mouseX-width/2][mouseY],mouseX-35,mouseY-5);
-  }
+  loadPixels();
+  stroke(0);
+  color pixc = pixels[mouseY*width+mouseX];
+  fill(pixc);
+  rect(mouseX-41,mouseY-41,40,40);
+  fill(255,0,0);
+  text(int(red(pixc)),mouseX-36,mouseY-26);
+  fill(0,255,102);
+  text(int(green(pixc)),mouseX-36,mouseY-16);
+  fill(0,102,255);
+  text(int(blue(pixc)),mouseX-36,mouseY-6);
 }
 
-void resethough(){
+void resetHough(){
   for(int y = 0; y < sheight; y++){
     for(int x = 0; x < swidth; x++){
       hough[x][y] = 0;
     }
   }
+}
+
+void voteHough(){
+  for(int y = 0; y < sheight; y += xyspacing){
+    for(int x = 0; x < swidth; x += xyspacing){
+      for(int th = 0; th < 360; th += rotspacing){
+        if(blue(cannyFrame.pixels[y*cam.width+x]) > 0){
+          float thrad = radians(th);
+          int a = x - int(circlerad * cos(thrad));
+          int b = y - int(circlerad * sin(thrad));
+          if(a >= 0 && a < swidth && b >= 0 && b < sheight){
+            hough[a][b] += 9;
+            if(a > 0 && a < swidth-1 && b > 0 && b < sheight-1){
+              hough[a-1][b] += 4;
+              hough[a+1][b] += 4;
+              hough[a][b-1] += 4;
+              hough[a][b+1] += 4;
+              hough[a-1][b-1] += 1;
+              hough[a+1][b-1] += 1;
+              hough[a-1][b+1] += 1;
+              hough[a+1][b+1] += 1;
+              //if(a > 1 && a < swidth-2 && b > 1 && b < sheight-2){
+              //  hough[a-2][b] += 1;
+              //  hough[a+2][b] += 1;
+              //  hough[a][b-2] += 1;
+              //  hough[a][b+2] += 1;
+              //}
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void saveValues(){
+  StringList linesout = new StringList();
+  
+  linesout.append(str(circlerad));
+  linesout.append(str(checkring));
+  linesout.append(str(houghThresh));
+  linesout.append(str(scalex));
+  linesout.append(str(scaley));
+  linesout.append(str(offx));
+  linesout.append(str(offy));
+  String[] string = new String[1];
+  
+  String savepath = "lines.txt";
+  saveStrings(savepath, linesout.array(string));
+}
+
+void loadValues(){
+  
+  String[] lines = loadStrings("lines.txt");
+  int linctr = 0;
+  circlerad = int(lines[linctr]);
+  linctr++;
+  checkring = int(lines[linctr]);
+  linctr++;
+  houghThresh = int(lines[linctr]);
+  linctr++;
+  scalex = float(lines[linctr]);
+  linctr++;
+  scaley = float(lines[linctr]);
+  linctr++;
+  offx = int(lines[linctr]);
+  linctr++;
+  offy = int(lines[linctr]);
 }
 
 
@@ -277,6 +332,13 @@ void keyPressed(){
     houghThresh = max(0,houghThresh - 1);
   }else if(keyCode == 69){//e
     houghThresh = min(255,houghThresh + 1);
+  }else if(keyCode == 32){//SPACE
+    saveValues();
+  }else if(keyCode == 82){//r
+    loadValues();
+  }else if(keyCode == 90){//z
+    checkring = max(0,checkring - 1);
+  }else if(keyCode == 88){//x
+    checkring = min(10,checkring + 1);
   }
-  
 }
