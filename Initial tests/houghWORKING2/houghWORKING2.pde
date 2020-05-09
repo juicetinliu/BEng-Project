@@ -7,19 +7,34 @@ int ringcount = 2;
 
 OpenCV opencv;
 PImage cannyFrame,houghFrame;
+int swidth, sheight;
 
 int[][] hough;
-int circlerad = 40;
+int circlerad = 24;
+float scalex = 2.9739583;
+float scaley = 2.6666667;
+int offx = -39;
+int offy = -29;
+boolean finetune = false;
+boolean cleanup = false;
 
 //vvv PARAMETERS FOR SAMPLING vvv
 boolean changecanny = false;
 int canny1 = 255, canny2 = 255;
 int xyspacing = 2;
 int rotspacing = 5;
-int checkring = 5;
+int checkring = 3;
+int houghThresh = 0;
+
+
 
 void setup() {
-  size(1280, 480);
+  //size(640, 480);
+  fullScreen();
+  //print(width, height);
+  
+  swidth = 640;
+  sheight = 480; //480
   
   String[] cameras = Capture.list();
   if (cameras == null) {
@@ -31,45 +46,49 @@ void setup() {
   } else {
     println("Available cameras:");
     printArray(cameras);
-    cam = new Capture(this, cameras[0]);
+    //960/540
+    cam = new Capture(this, swidth, sheight, cameras[0]);
     print(cam.width + " x " + cam.height);
     cam.start();
   }
   
   opencv = new OpenCV(this, cam.width, cam.height);
   
-  hough = new int[640][480];
+  hough = new int[swidth][sheight];
   
-  houghFrame = new PImage(640,480);
+  houghFrame = new PImage(swidth, sheight);
 }
 
-//circlerad = int(map(mouseX,0,width,0,240));
+//circlerad = int(map(mouseX,0,width,0,30));
 //xyspacing = int(map(mouseX,0,width,1,20));
 //rotspacing = int(map(mouseY,0,height,1,60));
 
 void draw() {
   if (cam.available() == true) {
+    //circlerad = int(map(mouseX,0,width,0,30));
+
     cam.read();
     opencv.loadImage(cam);
+    opencv.gray();
     if(changecanny){
-      canny1 = int(map(mouseX,0,width,0,255));
-      canny2 = int(map(mouseY,0,height,0,255));
+      canny1 = min(255,int(map(mouseX,0,width/2,0,255)));
+      canny2 = min(255,int(map(mouseY,0,height/2,canny1,255)));
     }
     opencv.findCannyEdges(canny1,canny2);
     //opencv.findCannyEdges(255,255);
     cannyFrame = opencv.getSnapshot();
     resethough();
     
-    for(int y = 0; y < 480; y += xyspacing){
-      for(int x = 0; x < 640; x += xyspacing){
+    for(int y = 0; y < sheight; y += xyspacing){
+      for(int x = 0; x < swidth; x += xyspacing){
         for(int th = 0; th < 360; th += rotspacing){
           if(blue(cannyFrame.pixels[y*cam.width+x]) > 0){
             float thrad = radians(th);
             int a = x - int(circlerad * cos(thrad));
             int b = y - int(circlerad * sin(thrad));
-            if(a >= 0 && a < 640 && b >= 0 && b < 480){
+            if(a >= 0 && a < swidth && b >= 0 && b < sheight){
               hough[a][b] += 4;
-              if(a > 0 && a < 639 && b > 0 && b < 479){
+              if(a > 0 && a < swidth-1 && b > 0 && b < sheight-1){
                 hough[a-1][b] ++;
                 hough[a+1][b] ++;
                 hough[a][b-1] ++;
@@ -81,25 +100,34 @@ void draw() {
       }
     }
     
-    findRings(ringcount, hough, true);
-    
-    image(cam, 0, 0);
+    findRings(ringcount, hough, houghThresh, true);
+    background(255);
+    if(!cleanup){
+      image(cam, 0, height-cam.height/2, cam.width/2, cam.height/2);
+      image(cannyFrame, 0, height-cannyFrame.height, cannyFrame.width/2, cannyFrame.height/2);
+      image(houghFrame, 0, height-houghFrame.height*3/2, houghFrame.width/2, houghFrame.height/2);
+    }
     //image(cannyFrame, 640, 0);
 
     //image(cannyFrame, 0, 0);
-    image(houghFrame, 640, 0);
-    
+    //image(houghFrame, 0, 0);
+    //background(255);
     //refRing();
     for(Ring thisring:Rings){
       thisring.setAngle();
       thisring.setID();
-      thisring.display();
+      thisring.display(scalex, scaley , offx, offy, 50);
     }
     
     
   }
-  hudText();
-  pixelColorTool();
+  if(!cleanup){
+    hudText(color(0));
+  }
+  //pixelColorTool();
+  fill(0);
+  textAlign(CENTER,CENTER);
+  text("udlr for offset; wasd for scale; c for canny; h to hide; qe for houghThresh", width/2, height-10); 
 }
 
 void refRing(){
@@ -111,8 +139,8 @@ void refRing(){
   ellipse(640/2,480/2,(circlerad-checkring)*2,(circlerad-checkring)*2);
 }
 
-void hudText(){
-  fill(255);
+void hudText(color textcolor){
+  fill(textcolor);
   textAlign(LEFT,CENTER);
   text(frameRate,10,10);
   if(changecanny){
@@ -121,17 +149,30 @@ void hudText(){
   text(canny1,40,40);
   text(canny2,40,50);
   
-  fill(255);
+  fill(textcolor);
   text(xyspacing,40,20);
   text(rotspacing,40,30);
   text(circlerad,40,60);
+  text(houghThresh,40,70);
+  if(finetune){
+    fill(255,0,0);
+  }
+  text(scalex + "," + scaley,40,80);
+  text(offx,40,90);
+  text(offy,40,100);
   
+  fill(textcolor);
   textAlign(RIGHT,CENTER);
-  text("Can1:",40,40);
-  text("Can2:",40,50);
+
   text("xy:",40,20);
   text("rot:",40,30);
+  text("Can1:",40,40);
+  text("Can2:",40,50);
   text("crad:",40,60);
+  text("hthr:",40,70);
+  text("scal:",40,80);
+  text("offx:",40,90);
+  text("offy:",40,100);
 }
 
 void pixelColorTool(){
@@ -156,8 +197,8 @@ void pixelColorTool(){
 }
 
 void resethough(){
-  for(int y = 0; y < 480; y++){
-    for(int x = 0; x < 640; x++){
+  for(int y = 0; y < sheight; y++){
+    for(int x = 0; x < swidth; x++){
       hough[x][y] = 0;
     }
   }
@@ -165,15 +206,77 @@ void resethough(){
 
 
 void mousePressed(){
-  changecanny = !changecanny;
-
+  //changecanny = !changecanny;
+  finetune = !finetune;
 }
 
 void mouseWheel(MouseEvent event) {
   float e = event.getCount();
   if(e > 0){
-    circlerad = min(circlerad + 1, 480);
+    circlerad = min(circlerad + 1, min(sheight,swidth));
   }else{
-    circlerad = max(circlerad - 1, 10);
+    circlerad = max(circlerad - 1, 1);
   }
+}
+
+void keyPressed(){
+  print(keyCode);
+  if(keyCode == 38){
+    if(finetune){
+      offy -= 1;
+    }else{
+      offy -= 10;
+    }
+  }else if(keyCode == 40){
+    if(finetune){
+      offy += 1;
+    }else{
+      offy += 10;
+    }
+  }else if(keyCode == 37){
+    if(finetune){
+      offx -= 1;
+    }else{
+      offx -= 10;
+    }
+  }else if(keyCode == 39){
+    if(finetune){
+      offx += 1;
+    }else{
+      offx += 10;
+    }
+  }else if(keyCode == 87){ //w
+    if(finetune){
+      scaley -= 0.001;
+    }else{
+      scaley -= 0.01;
+    }
+  }else if(keyCode == 83){//s
+    if(finetune){
+      scaley += 0.001;
+    }else{
+      scaley += 0.01;
+    }
+  }else if(keyCode == 65){//a
+    if(finetune){
+      scalex -= 0.001;
+    }else{
+      scalex -= 0.01;
+    }
+  }else if(keyCode == 68){//d
+    if(finetune){
+      scalex += 0.001;
+    }else{
+      scalex += 0.01;
+    }
+  }else if(keyCode == 67){//c
+    changecanny = !changecanny;
+  }else if(keyCode == 72){//h
+    cleanup = !cleanup;
+  }else if(keyCode == 81){//q
+    houghThresh = max(0,houghThresh - 1);
+  }else if(keyCode == 69){//e
+    houghThresh = min(255,houghThresh + 1);
+  }
+  
 }
