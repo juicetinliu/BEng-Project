@@ -11,25 +11,6 @@
 //3, "Switch"
 //4, "Inductor"
 //5, "VoltageSource"
-//6, "Diode"
-
-boolean checkCircuit(){ 
-  for(int p = 0; p < pucks.size(); p++){
-    Puck checkpuck = pucks.get(p);
-    if(!checkpuck.MASTERPUCK){
-      Component thiscomp = checkpuck.selectedComponent;
-      for(int ck = 0; ck < thiscomp.terminals; ck++){ 
-        if(checkpuck.connectedWires[ck] == null){ //all pucks must have connections to nodes
-          return false;
-        }
-      }
-      if(thiscomp.id == 0){ //no pucks can be wires
-        return false;
-      }
-    }   
-  }
-  return true;
-}
 
 void NGCircuitRT(float RTStepSize, boolean firstiteration){
   StringList lines = new StringList();
@@ -104,11 +85,11 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
         }
         String val = chkpuck.selectedvalue + intCodetoNGCode(chkpuck.selectedprefix);
         if(thiscomp.id == 5){ //PULSE(0 V 0s 1fs 1fs)
-          //if(firstiteration){
-          //  thisline += "PULSE( 0 " + val;
-          //}else{
+          if(firstiteration){
+            thisline += "PULSE( 0 " + val;
+          }else{
             thisline += "PULSE(" + val + " " + val;
-          //}
+          }
           thisline += " 0s 1fs 1fs)";
         }else{
           thisline += val;
@@ -118,7 +99,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
         //  //thisline += " ic=" + chkpuck.extraInformation[0];
         //}else 
         if(thiscomp.id == 2){ //capacitor
-          thisline += " ic=" + chkpuck.extraInformation[1];
+          thisline += " ic=" + chkpuck.extraInformation[0];
         }
         lines.append(thisline);
       }
@@ -223,7 +204,7 @@ void NGparseOutputRT(StringList output){
         thispuck.extraInformation[0] = float(list[1].trim());
         lineptr--;
       }else if(thiscomp.id == 2){ //capacitor
-        thispuck.extraInformation[1] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
+        thispuck.extraInformation[0] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
         //lineptr--;
       }
     }

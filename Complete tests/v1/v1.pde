@@ -14,28 +14,33 @@ int puckSize;
 
 
 void setup(){
-  size(1200,800);
+  fullScreen();
   //size(900,600);
   //smooth();
   //pixelDensity(displayDensity());
+  setuphough();
   puckSize = height/8;
   randomSeed(15);
   createComponents();
   createZones();
-  addPucks(4);
+  addPucks(3);
   
   PFont font = loadFont("HelveticaNeue-20.vlw");
   textFont(font, 12);
   //textFont(font, 9);
 }
 void draw(){
+  if (cam.available() == true){
+    hough();
+  }
+  
   if(circuitRun){
     background(50);
   }else{
-    background(0);
+    background(255);
   }
   
-  fill(255);
+  fill(0);
   textAlign(LEFT);
   text(frameRate,10,10);
   
@@ -47,6 +52,7 @@ void draw(){
     thiswire.run();
   }
   
+  
   if(updated){
     checkAuras(pucks);
   }
@@ -55,6 +61,9 @@ void draw(){
     thispuck.display();
     thispuck.run();
   }
+  //for(Ring thisring:Rings){
+  //  thisring.display(scalex, scaley , offx, offy, 50);
+  //}
 }
 
 void addPucks(int num){

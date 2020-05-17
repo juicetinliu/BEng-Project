@@ -1,21 +1,3 @@
-float bezierLength(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2, float precision) {
-  if (precision <= 0 || precision >= 1) return -1;
-
-  float l = 0;
-  float i = 0;
-  while (i+precision <= 1) {
-    float xPos1 = bezierPoint(x1, cx1, cx2, x2, i);
-    float xPos2 = bezierPoint(x1, cx1, cx2, x2, i+precision);
-    float yPos1 = bezierPoint(y1, cy1, cy2, y2, i);
-    float yPos2 = bezierPoint(y1, cy1, cy2, y2, i+precision);
-    l += dist(xPos1, yPos1, xPos2, yPos2);
-    //println(i+precision);
-    i += precision;
-  }
-
-  return l;
-}
-
 float limdegrees(float indegrees){
   if(indegrees > 360){
     return indegrees % 360;

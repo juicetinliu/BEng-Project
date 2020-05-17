@@ -164,17 +164,13 @@ class Runzone extends Zone{
               circuitRun = false;
             }
           }
-          if(circuitRun){  //RUN THE SIMULATION
+          if(circuitRun){
             if(mspassed(circuitSimTimer,int(circuitSimStep*1000))){
               NGCircuitRT(float(millis() - circuitSimTimer)/1000, false);
               circuitSimTimer = millis();
             }
-          }else{
-            background(255,0,0,128);
-            fill(255);
-            text("FAILED", width/2, height/2);
           }
-          
+          //RUN THE SIMULATION
         }else{
           reset();
         }

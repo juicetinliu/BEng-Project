@@ -38,15 +38,15 @@ class Wire{
   }
   
   void display(){
+    stroke(255);
+    strokeWeight(2);
+    noFill();
     if(connectedPucks.size() > 2){
       for(int l = 0; l < lines.size(); l += 2){
         PVector thisanch = lines.get(l);
         PVector thiscont = lines.get(l+1);
-        stroke(255);
-        strokeWeight(2);
-        noFill();
+        //stroke(255);
         bezier(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y);
-        moveElectrons(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y, 1, 50);
         //stroke(255,102,0,128);
         //line(thisanch.x, thisanch.y, thiscont.x, thiscont.y);
       }
@@ -54,11 +54,7 @@ class Wire{
       fill(255);
       ellipse(x,y,10,10);
     }else{
-      stroke(255);
-      strokeWeight(2);
-      noFill();
       bezier(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
-      moveElectrons(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y, 1, 50);
       //stroke(255,102,0,128);
       //line(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y);
       //line(lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
@@ -69,8 +65,8 @@ class Wire{
       tx = bezierPoint(lines.get(0).x, lines.get(1).x, lines.get(3).x, lines.get(2).x, 0.5);
       ty = bezierPoint(lines.get(0).y, lines.get(1).y, lines.get(3).y, lines.get(2).y, 0.5);
     }
-    //fill(255);
-    //text(id,tx,ty+15);
+    fill(255);
+    text(id,tx,ty+15);
     
     //if(showVoltage){
       fill(255);
@@ -150,6 +146,7 @@ class Wire{
   
   void run(){
     setid();
+    
     if(updated){
       update();
     }
@@ -169,19 +166,6 @@ class Wire{
     }
   }
   
-  void moveElectrons(float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy, float speed, int density){
-    float wireLength = bezierLength(ax,ay,bx,by,cx,cy,dx,dy,0.01);
-    int electronNo = max(1,int(wireLength/density));
-    float percentMotion = speed * (millis()/1000.0) % 1.0;  // 0 - 1
-    for(int i = 0; i < electronNo; i++){
-      float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
-      fill(255,255,0);
-      noStroke();
-      float x = bezierPoint(ax, bx, cx, dx, percentMoved);
-      float y = bezierPoint(ay, by, cy, dy, percentMoved);
-      ellipse(x,y,10,10);
-    }
-  }
 }
 
 void addToWire(Puck puckA, int A, Wire thiswire){

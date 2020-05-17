@@ -48,7 +48,7 @@ void setuphough() {
     println("Available cameras:");
     printArray(cameras);
     //960/540
-    cam = new Capture(this, swidth, sheight, cameras[1]);
+    cam = new Capture(this, swidth, sheight, cameras[0]);
     print(cam.width + " x " + cam.height);
     cam.start();
   }
@@ -85,7 +85,8 @@ void hough() {
   
   voteHough();
   
-  bigringno = findRings(ringcount, hough, houghThresh, true);
+  //bigringno = 
+  findRings(ringcount, hough, houghThresh, false);
   //background(255);
   //if(!cleanup){
   //  image(cam, 0, height-cam.height/2, cam.width/2, cam.height/2);
@@ -107,7 +108,7 @@ void hough() {
   }
     
   //if(!cleanup){
-    hudText(color(0));
+    //hudText(color(0));
   //  pixelColorTool();
   //}
   //fill(0);
@@ -116,26 +117,6 @@ void hough() {
   //textAlign(RIGHT,CENTER);
   //text(bigringno,width,height-10);
 }
-
-
-void houghtopuck(float scalex, float scaley, int offx, int offy){
-  for(Ring thisr:Rings){
-    pucks.get(thisr.id-1).ringMove((thisr.x+offx)*scalex,(thisr.y+offy)*scaley);
-  }
-}
-
-//void refRing(float scalex, float scaley){
-//  pushMatrix();
-//  translate(mouseX,mouseY);
-//  scale(scalex,scaley);
-//  stroke(255,102,0,128);
-//  strokeWeight(1);
-//  noFill();
-//  ellipse(0,0,circlerad*2,circlerad*2);
-//  stroke(0,255,102,128);
-//  ellipse(0,0,(circlerad-checkring)*2,(circlerad-checkring)*2);
-//  popMatrix();
-//}
 
 void hudText(color textcolor){
   fill(textcolor);
@@ -574,7 +555,7 @@ int findRings(int expectedRings, int[][] houghar, int houghthresh, boolean showH
       //ellipse(cirx,ciry, 50,50);
       float rrot = checkRot(cirx,ciry);
       int rid = checkID(cirx,ciry,rrot);
-      println(cirx + "," + ciry + ":" + rrot + "," + rid);
+      //println(cirx + "," + ciry + ":" + rrot + "," + rid);
       if(rid != -1 || rrot != -1){
         for(Ring thisr:Rings){
           if(thisr.id == rid){

@@ -8,7 +8,6 @@ class Puck{
   float mouseoffx, mouseoffy;
   int currZone;
   
-  
   Component selectedComponent;
   int selectedvalue, selectedprefix, selectedstate;
   int comno = components.size();
@@ -23,7 +22,7 @@ class Puck{
   //testingauras
     
   Wire[] connectedWires;
-  float[] extraInformation = new float[2]; //0 - currents, 1 - capacitor-voltage
+  float[] extraInformation = new float[1]; //0 - inductorcurrent
   
   String valtext;
   int menuclock = 0, menums = millis(), menualpha;
@@ -56,9 +55,7 @@ class Puck{
     for(int w = 0; w < connectedWires.length; w++){
       connectedWires[w] = null;
     }
-    for(int e = 0; e < extraInformation.length; e++){
-      extraInformation[e] = 0;
-    }
+    this.extraInformation[0] = 0;
   }
   
   void display(){
@@ -94,29 +91,29 @@ class Puck{
       drawMenu();
     }
     
-    //if(selectedComponent.id == 4 || selectedComponent.id == 2){
-    //  fill(255);
-    //  text(extraInformation[0], x + 100, y);
-    //}
+    if(selectedComponent.id == 4 || selectedComponent.id == 2){
+      fill(255);
+      text(extraInformation[0], x + 100, y);
+    }
   }
   
   void drawDisc(){
     stroke(255);
     strokeWeight(ringthickness);
     
-    if(selected){
-      fill(50);
-    }else{
-      if(pointincircle(mouseX,mouseY,x,y,size)){
-        fill(128);
-      }else{
+    //if(selected){
+    //  fill(50);
+    //}else{
+    //  if(pointincircle(mouseX,mouseY,x,y,size)){
+    //    fill(128);
+    //  }else{
         if(currZone != -1){
           fill(128,0,0);
         }else{
           fill(0);
         }
-      }
-    }
+    //  }
+    //}
     
     ellipse(x, y, size-ringthickness,size-ringthickness);
   }
@@ -346,9 +343,38 @@ class Puck{
     }
   }
   
+  void ringRotate(float rotrad){
+    float rotdeg = limdegrees(degrees(rotrad));
+    if(currZone == 0){
+      if(comrotation != rotdeg){
+        comrotation = rotdeg;
+        selectComponent();
+        showMenu();
+      }
+    }else if(currZone == 1){
+      //float mult = pow(10,min(2,int(abs(e)/4)));
+      //e = e*mult;
+      //if(selectComValue(int(e))){
+      //  valrotation = int(selectedvalue*0.36);
+      //}
+      //showMenu();
+    }else{
+      if(rotation != rotdeg){
+        rotation = rotdeg;
+      }
+    }
+    
+  }
+  
   void mouseMove(){
     x = mouseX - mouseoffx;
     y = mouseY - mouseoffy;
+    updated = true;
+  }
+  
+  void ringMove(float x, float y){
+    this.x = x;
+    this.y = y;
     updated = true;
   }
   
@@ -437,9 +463,9 @@ class Puck{
   
   void run(){
     
-    if(selected){
-      mouseMove();
-    }
+    //if(selected){
+    //  mouseMove();
+    //}
     
     if(updated){
       currZone = checkZone();
