@@ -9,7 +9,6 @@ class Wire{
   ArrayList<Puck> connectedPucks = new ArrayList<Puck>();
   IntList sides = new IntList();
   ArrayList<PVector> lines = new ArrayList<PVector>();
-  
   //Wire(int id, ArrayList<Puck> connected, IntList sides){
   //  this.id = id;
   //  this.connectedPucks = connected;
@@ -46,19 +45,18 @@ class Wire{
         strokeWeight(2);
         noFill();
         bezier(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y);
-        moveElectrons(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y, 1, 50);
         //stroke(255,102,0,128);
         //line(thisanch.x, thisanch.y, thiscont.x, thiscont.y);
       }
       noStroke();
       fill(255);
       ellipse(x,y,10,10);
+      
     }else{
       stroke(255);
       strokeWeight(2);
       noFill();
       bezier(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
-      moveElectrons(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y, 1, 50);
       //stroke(255,102,0,128);
       //line(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y);
       //line(lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
@@ -69,13 +67,15 @@ class Wire{
       tx = bezierPoint(lines.get(0).x, lines.get(1).x, lines.get(3).x, lines.get(2).x, 0.5);
       ty = bezierPoint(lines.get(0).y, lines.get(1).y, lines.get(3).y, lines.get(2).y, 0.5);
     }
+    
     //fill(255);
     //text(id,tx,ty+15);
-    
+   
     //if(showVoltage){
       fill(255);
       text(voltage,tx,ty-15);
     //}
+    drawCurrents(tx, ty);
     if(id == 0){
       strokeWeight(2);
       stroke(255);
@@ -84,6 +84,37 @@ class Wire{
       line(tx-puckSize*0.1,ty+puckSize*0.25,tx+puckSize*0.1,ty+puckSize*0.25);
       line(tx-puckSize*0.05,ty+puckSize*0.30,tx+puckSize*0.05,ty+puckSize*0.30);
     }
+  }
+  
+  void drawCurrents(float x, float y){
+    //text(connectedPucks.size(),x+50,y - 10);
+    //text(sides.size(),x+50,y);
+    //text(lines.size(),x+50,y + 10);
+    float current = 0;
+    if(connectedPucks.size() > 2){
+      for(int l = 0; l < lines.size(); l += 2){
+        Puck thispuck = connectedPucks.get(l/2);
+        PVector thisanch = lines.get(l);
+        PVector thiscont = lines.get(l+1);
+        
+        if(sides.get(l/2) == 1){
+          current = thispuck.extraInformation[0];
+        }else{
+          current = -thispuck.extraInformation[0];
+        }
+        moveElectrons(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y, current, 50);
+      }
+    }else{
+      Puck thispuck = connectedPucks.get(0);
+      if(sides.get(0) == 1){
+        current = thispuck.extraInformation[0];
+      }else{
+        current = -thispuck.extraInformation[0];
+      }
+      moveElectrons(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y, current, 50);
+    }
+    
+    
   }
   
   //calculate average point as average of all bezier curves???
@@ -172,14 +203,27 @@ class Wire{
   void moveElectrons(float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy, float speed, int density){
     float wireLength = bezierLength(ax,ay,bx,by,cx,cy,dx,dy,0.01);
     int electronNo = max(1,int(wireLength/density));
-    float percentMotion = speed * (millis()/1000.0) % 1.0;  // 0 - 1
-    for(int i = 0; i < electronNo; i++){
-      float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
-      fill(255,255,0);
-      noStroke();
-      float x = bezierPoint(ax, bx, cx, dx, percentMoved);
-      float y = bezierPoint(ay, by, cy, dy, percentMoved);
-      ellipse(x,y,10,10);
+    float percentMotion = speed * (millis()/1000.0) % 1.0;  // 0 - 1 per SECOND
+    if(speed > 0){
+      for(int i = 0; i < electronNo; i++){
+        float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
+        fill(255,255,0);
+        noStroke();
+        float x = bezierPoint(ax, bx, cx, dx, percentMoved);
+        float y = bezierPoint(ay, by, cy, dy, percentMoved);
+        ellipse(x,y,10,10);
+        text(percentMoved, x, y-15);
+      }
+    }else{
+      for(int i = 1; i <= electronNo; i++){
+        float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
+        fill(255,255,0);
+        noStroke();
+        float x = bezierPoint(ax, bx, cx, dx, percentMoved);
+        float y = bezierPoint(ay, by, cy, dy, percentMoved);
+        ellipse(x,y,10,10);
+        text(percentMoved, x, y-15);
+      }
     }
   }
 }

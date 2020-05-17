@@ -95,8 +95,9 @@ class Puck{
     }
     
     //if(selectedComponent.id == 4 || selectedComponent.id == 2){
-    //  fill(255);
-    //  text(extraInformation[0], x + 100, y);
+      fill(255);
+      text("I: " + extraInformation[0], x + 100, y);
+      text("V: " + extraInformation[1], x + 100, y-15);
     //}
   }
   
