@@ -92,13 +92,16 @@ class Puck{
         selectedComponent.drawComponent(x,y,size-15,rotation,2, false, selectedstate);
       }
       drawMenu();
+      
+      if(showDebug){
+        fill(255);
+        text("ID: " + id, x, y - 75);
+        text("I: " + extraInformation[0], x + 100, y);
+        if(selectedComponent.id == 2 || selectedComponent.id == 6){
+          text("V: " + extraInformation[1], x + 100, y-15);
+        }
+      }
     }
-    
-    //if(selectedComponent.id == 4 || selectedComponent.id == 2){
-      fill(255);
-      text("I: " + extraInformation[0], x + 100, y);
-      text("V: " + extraInformation[1], x + 100, y-15);
-    //}
   }
   
   void drawDisc(){
@@ -109,10 +112,15 @@ class Puck{
       fill(50);
     }else{
       if(pointincircle(mouseX,mouseY,x,y,size)){
-        fill(128);
+        if(removemode){
+          stroke(128,0,0);
+          fill(128,0,0);
+        }else{
+          fill(128);
+        }
       }else{
         if(currZone != -1){
-          fill(128,0,0);
+          fill(150);
         }else{
           fill(0);
         }
@@ -250,6 +258,8 @@ class Puck{
         line(0,-size/2,0,-(size/2)-aurasize);
       }
       popMatrix();
+      fill(255,menualpha);
+      text(selectedComponent.name, x, y - size);
     }else{
       menushow = false;
     }
@@ -436,7 +446,12 @@ class Puck{
     return outz;
   }
   
+  void setid(){
+    id = pucks.indexOf(this) + 1;
+  }
+  
   void run(){
+    setid();
     
     if(selected){
       mouseMove();

@@ -158,7 +158,7 @@ class Runzone extends Zone{
               setWireVoltagesZero();
               //setPuckInformationZero();
               circuitSimTimer = millis();
-              NGCircuitRT(0.1);//first iteration
+              NGCircuitRT(0.1, true);//first iteration
             }else{
               println("fail");
               circuitRun = false;
@@ -166,13 +166,14 @@ class Runzone extends Zone{
           }
           if(circuitRun){  //RUN THE SIMULATION
             if(mspassed(circuitSimTimer,int(circuitSimStep*1000))){
-              NGCircuitRT(float(millis() - circuitSimTimer)/1000);
+              NGCircuitRT(float(millis() - circuitSimTimer)/1000, false);
               circuitSimTimer = millis();
             }
-          }else{
-            background(255,0,0,128);
-            fill(255);
-            text("FAILED", width/2, height/2);
+          //}else{
+            //background(100,0,0,255);
+            
+            //fill(255);
+            //text("FAILED", width/2, height/2);
           }
           
         }else{

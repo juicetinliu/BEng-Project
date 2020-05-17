@@ -1,19 +1,16 @@
 HEHE
-.ic v(1)=17.0 v(2)=5.666667
-S1 2 1S1 4 0 switch1 ON
-VST1 4 0 2
-VS1 1S1 1 0
-R2 0 2R2 1
-VR2 2R2 2 0
-V4 1 0V4 PULSE(17 17 0s 1fs 1fs)
-VV4 0V4 0 0
-R5 2 0R5 1
-VR5 0R5 0 0
+.ic v(1)=75.16188 v(2)=158.0
+C1 2 1C1 211 ic=82.83812
+VC1 1C1 1 0
+R2 0 1R2 18
+VR2 1R2 1 0
+V3 2 0V3 PULSE(158 158 0s 1fs 1fs)
+VV3 0V3 0 0
 .model switch1 sw vt=1
 .model diode1 D(Ron=0.1 Roff=1Meg Vfwd=0.7)
 .control
-tran 0.0107s 0.107s uic
+tran 0.0106s 0.106s uic
 let k = length(time) - 1
-print time[k] i(VS1)[k] i(VR2)[k] i(VV4)[k] i(VR5)[k] v(1)[k] v(2)[k]
+print time[k] i(VC1)[k] i(VR2)[k] i(VV3)[k] v(1)[k] v(2)[k]
 .endc
 .end

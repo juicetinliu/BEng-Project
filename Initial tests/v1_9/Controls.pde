@@ -3,7 +3,21 @@ void mousePressed(){
   if(mouseButton == LEFT){
     for(Puck thispuck:pucks){
       if(pointincircle(mouseX,mouseY,thispuck.x,thispuck.y,thispuck.size)){
-        thispuck.select();
+        if(removemode){
+          if(!thispuck.noConnections()){
+            thispuck.removeConnections();
+          }
+          pucks.remove(thispuck);
+          removemode = false;
+        }else{
+          thispuck.select();
+        }
+        return;
+      }
+    }
+    for(Button thisbutton:buttons){
+      if(thisbutton.clicked()){
+        thisbutton.doAction();
         return;
       }
     }
@@ -34,5 +48,12 @@ void mouseWheel(MouseEvent event) {
     if(thispuck.selected){
       thispuck.mouseRotate(e);
     }
+  }
+}
+
+void keyPressed(){
+  //print(keyCode);
+  if(keyCode == 88){ //X
+    showDebug = !showDebug;
   }
 }

@@ -69,13 +69,18 @@ class Wire{
     }
     
     //fill(255);
-    //text(id,tx,ty+15);
+    //
    
-    //if(showVoltage){
+    if(showDebug){
       fill(255);
-      text(voltage,tx,ty-15);
-    //}
-    drawCurrents(tx, ty);
+      text("ID: " + id,tx,ty+15);
+      text("V: " + voltage,tx,ty-15);
+    }
+    
+    if(circuitRun){
+      drawCurrents(tx, ty);
+    }
+    
     if(id == 0){
       strokeWeight(2);
       stroke(255);
@@ -98,18 +103,18 @@ class Wire{
         PVector thiscont = lines.get(l+1);
         
         if(sides.get(l/2) == 1){
-          current = thispuck.extraInformation[0];
-        }else{
           current = -thispuck.extraInformation[0];
+        }else{
+          current = thispuck.extraInformation[0];
         }
         moveElectrons(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y, current, 50);
       }
     }else{
       Puck thispuck = connectedPucks.get(0);
       if(sides.get(0) == 1){
-        current = thispuck.extraInformation[0];
-      }else{
         current = -thispuck.extraInformation[0];
+      }else{
+        current = thispuck.extraInformation[0];
       }
       moveElectrons(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y, current, 50);
     }
@@ -204,25 +209,24 @@ class Wire{
     float wireLength = bezierLength(ax,ay,bx,by,cx,cy,dx,dy,0.01);
     int electronNo = max(1,int(wireLength/density));
     float percentMotion = speed * (millis()/1000.0) % 1.0;  // 0 - 1 per SECOND
+    fill(255,255,0);
+    noStroke();
     if(speed > 0){
       for(int i = 0; i < electronNo; i++){
         float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
-        fill(255,255,0);
-        noStroke();
+        
         float x = bezierPoint(ax, bx, cx, dx, percentMoved);
         float y = bezierPoint(ay, by, cy, dy, percentMoved);
         ellipse(x,y,10,10);
-        text(percentMoved, x, y-15);
+        //text(percentMoved, x, y-15);
       }
     }else{
       for(int i = 1; i <= electronNo; i++){
         float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
-        fill(255,255,0);
-        noStroke();
         float x = bezierPoint(ax, bx, cx, dx, percentMoved);
         float y = bezierPoint(ay, by, cy, dy, percentMoved);
         ellipse(x,y,10,10);
-        text(percentMoved, x, y-15);
+        //text(percentMoved, x, y-15);
       }
     }
   }

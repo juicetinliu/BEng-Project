@@ -2,13 +2,17 @@ ArrayList<Puck> pucks = new ArrayList<Puck>();
 ArrayList<Wire> wires = new ArrayList<Wire>();
 ArrayList<Component> components = new ArrayList<Component>();
 ArrayList<Zone> zones = new ArrayList<Zone>();
+
+ArrayList<Button> buttons = new ArrayList<Button>();
+boolean removemode = false;
+
 Runzone runzone;
 
 
 boolean circuitRun = false;
 boolean checked = false;
 boolean updated = true;
-
+boolean showDebug = false;
 //int puckSize = 100;
 int puckSize;
 
@@ -20,6 +24,8 @@ void setup(){
   //pixelDensity(displayDensity());
   puckSize = height/8;
   randomSeed(15);
+  buttons.add(new Button("AddPucks", height*2/80,height*3/80,height*3/80));
+  buttons.add(new Button("RemovePucks", height*2/80,height*7/80,height*3/80));
   createComponents();
   createZones();
   addPucks(5);
@@ -31,6 +37,8 @@ void setup(){
 void draw(){
   if(circuitRun){
     background(50);
+  }else if(removemode){
+    background(100,0,0);
   }else{
     background(0);
   }
@@ -40,6 +48,9 @@ void draw(){
   text(frameRate,10,10);
   
   drawZones();
+  for(Button thisbutton:buttons){
+    thisbutton.display();
+  }
   
   //println(updated);
   for(Wire thiswire:wires){
@@ -83,7 +94,7 @@ void createComponents(){
   components.add(new Component(2, "Capacitor", "C", 2, 'F', 0, 4, -4, 1, 999, 1, true, 1));
   components.add(new Component(3, "Switch", "S", 2, false, 2));
   components.add(new Component(4, "Inductor", "L", 2, 'H', 0, 4, -4, 1, 999, 1, true, 1));
-  components.add(new Component(5, "VoltageSource", "V", 2, 'V', 0, 4, -4, 1, 999, 1, true, 4));
+  components.add(new Component(5, "Voltage Source", "V", 2, 'V', 0, 4, -4, 1, 999, 1, true, 4));
   components.add(new Component(6, "Diode", "D", 2, false, 1));
 }
 

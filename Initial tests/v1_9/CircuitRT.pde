@@ -31,7 +31,7 @@ boolean checkCircuit(){
   return true;
 }
 
-void NGCircuitRT(float RTStepSize){
+void NGCircuitRT(float RTStepSize, boolean firstiteration){
   StringList lines = new StringList();
   
   lines.append("HEHE"); //TITLE
@@ -92,7 +92,11 @@ void NGCircuitRT(float RTStepSize){
           
           //===== ADD INFORMATION =====
           if(thiscomp.id == 5){ //VOLTAGE SOURCES
-            thisline += "PULSE(" + val + " " + val;
+            if(firstiteration){
+              thisline += "PULSE( 0 " + val;
+            }else{
+              thisline += "PULSE(" + val + " " + val;
+            }
             thisline += " 0s 1fs 1fs)"; //ADD VALUE OF VOLTAGE SOURCE
           
           }else{
@@ -105,6 +109,8 @@ void NGCircuitRT(float RTStepSize){
             if(thiscomp.id == 4){ //INDUCTOR
               thisline += " ic=" + chkpuck.extraInformation[0]; //ADD INITIAL CURRENT
             }else if(thiscomp.id == 2){ //CAPACITOR
+              thisline += " ic=" + chkpuck.extraInformation[1]; //ADD INITIAL VOLTAGE
+            }else if(thiscomp.id == 6){ //DIODE
               thisline += " ic=" + chkpuck.extraInformation[1]; //ADD INITIAL VOLTAGE
             }
           }
@@ -125,7 +131,8 @@ void NGCircuitRT(float RTStepSize){
   
   lines.append(".model switch1 sw vt=1");
   lines.append(".model diode1 D(Ron=0.1 Roff=1Meg Vfwd=0.7)");
-  
+
+  //lines.append(".MODEL diode1 D(IS=4.352E-9 N=1.906 BV=110 IBV=0.0001 RS=0.6458 CJO=7.048E-13 VJ=0.869 M=0.03 FC=0.5 TT=3.48E-9 ");
   //lines.append(".option rshunt = 1.0e12");
   //lines.append(".option rseries = 1.0e-4");
   
@@ -181,7 +188,6 @@ void NGCircuitRT(float RTStepSize){
   
   StringList output = new StringList();
   StringList errors = new StringList();
-  
   exec(output, errors, "/usr/local/bin/ngspice", thepath);
   
   for(int o = 0; o < output.size(); o++){
@@ -222,6 +228,9 @@ void NGparseOutputRT(StringList output){
         thispuck.extraInformation[0] = float(list[1].trim());
         lineptr--;
         if(thiscomp.id == 2){ //capacitor
+          thispuck.extraInformation[1] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
+          //lineptr--;
+        }else if(thiscomp.id == 6){ //capacitor
           thispuck.extraInformation[1] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
           //lineptr--;
         }
