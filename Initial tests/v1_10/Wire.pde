@@ -138,10 +138,20 @@ class Wire{
         PVector cont = new PVector(1,0);
         PVector handle = avg.copy();
         
-        if(sides.get(p) == 2){
-          cont.rotate(PI + radians(thispuck.rotation));
+        if(thispuck.selectedComponent.terminals == 3){
+          if(sides.get(p) == 3){
+            cont.rotate(radians(thispuck.rotation) + PI);
+          }else if(sides.get(p) == 2){
+            cont.rotate(radians(thispuck.rotation) + PI/3);
+          }else{
+            cont.rotate(radians(thispuck.rotation) - PI/3);
+          }
         }else{
-          cont.rotate(radians(thispuck.rotation));
+          if(sides.get(p) == 2){
+            cont.rotate(PI + radians(thispuck.rotation));
+          }else{
+            cont.rotate(radians(thispuck.rotation));
+          }
         }
         
         handlelength = max(0,handle.sub(anch).mag());
@@ -164,10 +174,21 @@ class Wire{
         PVector cont = new PVector(1,0);
         PVector handle = avg.copy();
         anch.set(thispuck.x,thispuck.y);
-        if(sides.get(p) == 2){
-          cont.rotate(PI + radians(thispuck.rotation));
+        
+        if(thispuck.selectedComponent.terminals == 3){
+          if(sides.get(p) == 3){
+            cont.rotate(radians(thispuck.rotation) + PI);
+          }else if(sides.get(p) == 2){
+            cont.rotate(radians(thispuck.rotation) + PI/3);
+          }else{
+            cont.rotate(radians(thispuck.rotation) - PI/3);
+          }
         }else{
-          cont.rotate(radians(thispuck.rotation));
+          if(sides.get(p) == 2){
+            cont.rotate(PI + radians(thispuck.rotation));
+          }else{
+            cont.rotate(radians(thispuck.rotation));
+          }
         }
         
         handlelength = handle.sub(anch).mag();

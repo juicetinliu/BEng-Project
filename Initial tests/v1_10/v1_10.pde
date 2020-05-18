@@ -89,13 +89,14 @@ void drawZones(){
 }
 
 void createComponents(){
-  components.add(new Component(0, "Wire", "", 2, false, 1));
-  components.add(new Component(1, "Resistor", "R", 2, 'Ω', 0, 4, -4, 1, 999, 1, true, 1));
-  components.add(new Component(2, "Capacitor", "C", 2, 'F', 0, 4, -4, 1, 999, 1, true, 1));
-  components.add(new Component(3, "Switch", "S", 2, false, 2));
-  components.add(new Component(4, "Inductor", "L", 2, 'H', 0, 4, -4, 1, 999, 1, true, 1));
-  components.add(new Component(5, "Voltage Source", "V", 2, 'V', 0, 4, -4, 1, 999, 1, true, 4));
-  components.add(new Component(6, "Diode", "D", 2, false, 1));
+  components.add(new Component(0, "Wire", "", 2, false, 1, 1));
+  components.add(new Component(1, "Resistor", "R", 2, 'Ω', 0, 4, -4, 1, 999, 1, true, 1, 1));
+  components.add(new Component(2, "Capacitor", "C", 2, 'F', 0, 4, -4, 1, 999, 1, true, 1, 1));
+  components.add(new Component(3, "Switch", "S", 2, false, 2, 1));
+  components.add(new Component(4, "Inductor", "L", 2, 'H', 0, 4, -4, 1, 999, 1, true, 1, 1));
+  components.add(new Component(5, "Voltage Source", "V", 2, 'V', 0, 4, -4, 1, 999, 1, true, 1, 4));
+  components.add(new Component(6, "Diode", "D", 2, false, 1, 1));
+  components.add(new Component(7, "BJT", "Q", 3, false, 1, 2));
 }
 
 void createZones(){

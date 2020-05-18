@@ -36,6 +36,14 @@ float limradians(float inrads){
   }
 }
 
+boolean withinradians(float inrad, float lowrad, float hirad){
+  if(lowrad > hirad){
+    return (inrad > lowrad && inrad <= 2*PI) || (inrad >= 0 && inrad < hirad);
+  }else{
+    return inrad > lowrad && inrad < hirad;
+  }
+}
+
 boolean mspassed(int starttime, int interval){
   return millis() > starttime + interval;
 }

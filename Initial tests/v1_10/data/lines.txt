@@ -1,17 +1,16 @@
 HEHE
-.ic v(1)=5.0 v(2)=2.5
-R1 0 2R1 1
-VR1 2R1 2 0
-S3 2 1S3 6 0 switch1 ON
-VST3 6 0 2
-VS3 1S3 1 0
-V4 1 0V4 PULSE(5 5 0s 1fs 1fs)
+.ic v(1)=3.0 v(2)=5.0
+V1 2 0V1 PULSE(5 5 0s 1fs 1fs)
+VV1 0V1 0 0
+Q2 2 1 0 QMODN
+V4 1 0V4 PULSE(3 3 0s 1fs 1fs)
 VV4 0V4 0 0
 .model switch1 sw vt=1
 .model diode1 D(Ron=0.1 Roff=1Meg Vfwd=0.7)
+.model QMODN NPN level=1
 .control
-tran 0.0107s 0.107s uic
+tran 0.0105s 0.105s uic
 let k = length(time) - 1
-print time[k] i(VR1)[k] i(VS3)[k] i(VV4)[k] v(1)[k] v(2)[k]
+print time[k] i(VV1)[k] i(VV4)[k] v(1)[k] v(2)[k]
 .endc
 .end

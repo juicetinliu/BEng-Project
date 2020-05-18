@@ -12,6 +12,7 @@
 //4, "Inductor"
 //5, "VoltageSource"
 //6, "Diode"
+//7, "BJT"
 
 boolean checkCircuit(){ 
   for(int p = 0; p < pucks.size(); p++){
@@ -44,10 +45,10 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
   lines.append(icline); //.ic v(1)=.......
   
   for(Puck chkpuck:pucks){
-    String thisline = "";
     if(!chkpuck.MASTERPUCK){
-      Component thiscomp = chkpuck.selectedComponent;
+      String thisline = "";
       
+      Component thiscomp = chkpuck.selectedComponent;
       String IDcode = thiscomp.NGname + chkpuck.id; //NAME AND ID
       
       if(thiscomp.id == 3){ //switch
@@ -93,14 +94,14 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           //===== ADD INFORMATION =====
           if(thiscomp.id == 5){ //VOLTAGE SOURCES
             if(firstiteration){
-              thisline += "PULSE( 0 " + val;
+              thisline += "PULSE(0 " + val;
             }else{
               thisline += "PULSE(" + val + " " + val;
             }
             thisline += " 0s 1fs 1fs)"; //ADD VALUE OF VOLTAGE SOURCE
           
           }else{
-            if(thiscomp.id == 6){ //DIODE MODEL
+            if(thiscomp.id == 6){ //ADD DIODE MODEL
               thisline += "diode1";
             }else{
               thisline += val; //ADD VALUE OF COMPONENT
@@ -123,6 +124,21 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           
           lines.append(thisline);
           lines.append(nxtline);
+        }else if(thiscomp.terminals == 3){ //FOR THREE TERMINAL COMPONENTS
+          if(thiscomp.id == 7){ //BJT
+            thisline += IDcode + " "; //ADD NAME AND ID
+          
+            //===== ADD NODES =====
+            thisline += chkpuck.connectedWires[0].id + " "; //ADD COLLECTOR NODE
+            thisline += chkpuck.connectedWires[2].id + " "; //ADD BASE NODE
+            thisline += chkpuck.connectedWires[1].id + " "; //ADD EMITTER NODE
+            thisline += "QMODN"; //ADD BJT MODEL
+            //thisline += " ic=" + chkpuck.extraInformation[0] + ", " + chkpuck.extraInformation[1]; //ADD INITIAL VOLTAGES (VBE, VCE)
+            
+
+            lines.append(thisline);
+          }
+          
         }
       }
     }
@@ -131,7 +147,9 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
   
   lines.append(".model switch1 sw vt=1");
   lines.append(".model diode1 D(Ron=0.1 Roff=1Meg Vfwd=0.7)");
-
+  lines.append(".model QMODN NPN level=1");
+  //lines.append(".model QMODP PNP level=1");
+  
   //lines.append(".MODEL diode1 D(IS=4.352E-9 N=1.906 BV=110 IBV=0.0001 RS=0.6458 CJO=7.048E-13 VJ=0.869 M=0.03 FC=0.5 TT=3.48E-9 ");
   //lines.append(".option rshunt = 1.0e12");
   //lines.append(".option rseries = 1.0e-4");
@@ -162,7 +180,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
   for(Puck chkpuck:pucks){
     if(!chkpuck.MASTERPUCK){
       Component thiscomp = chkpuck.selectedComponent;
-      if(thiscomp.id != 0){ //inductor
+      if(thiscomp.id != 0 && thiscomp.id != 7){
         printline += " i(V" + thiscomp.NGname + chkpuck.id + ")[k]";
       }
     }
@@ -211,14 +229,14 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
 void NGparseOutputRT(StringList output){
   int outlen = output.size();
   
-  for(int o = outlen - wires.size() + 1; o < outlen; o++){
+  for(int o = outlen - wires.size() + 1; o < outlen; o++){ //FIRST PARSE NODAL VOLTAGES
     String line = output.get(o);
     String[] list = split(line, " = ");
     wires.get(o + wires.size() - outlen).updateVoltage(float(list[1].trim()));
   }
   
   int lineptr = outlen - wires.size();
-  for(int p = pucks.size() - 1; p >= 0; p--){
+  for(int p = pucks.size() - 1; p >= 0; p--){ //THEN PARSE COMPONENT INFORMATION AND CURRENTS
     Puck thispuck = pucks.get(p);
     if(!thispuck.MASTERPUCK){
       Component thiscomp = thispuck.selectedComponent;
@@ -227,10 +245,9 @@ void NGparseOutputRT(StringList output){
         String[] list = split(line, " = ");
         thispuck.extraInformation[0] = float(list[1].trim());
         lineptr--;
-        if(thiscomp.id == 2){ //capacitor
+        if(thiscomp.id == 2){ //CAPACITOR VOLTAGE
           thispuck.extraInformation[1] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
-          //lineptr--;
-        }else if(thiscomp.id == 6){ //capacitor
+        }else if(thiscomp.id == 6){ //DIODE VOLTAGE
           thispuck.extraInformation[1] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
           //lineptr--;
         }

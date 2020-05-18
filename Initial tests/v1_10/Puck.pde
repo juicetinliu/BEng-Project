@@ -10,20 +10,15 @@ class Puck{
   
   
   Component selectedComponent;
-  int selectedvalue, selectedprefix, selectedstate;
+  int selectedvalue, selectedprefix, selectedstate, selectedtype;
   int comno = components.size();
   
-  //testingauras
-  boolean beginconnection1 = false;
-  int connectclock1 = 0, connectms1 = millis();
-  boolean beginconnection2 = false;
-  int connectclock2 = 0, connectms2 = millis();
-  boolean beginconnection3 = false; //three terminal
-  int connectclock3 = 0; //three terminal
-  //testingauras
+  IntList beginconnection = new IntList();
+  IntList connectclock = new IntList();
+  IntList connectms = new IntList();
     
   Wire[] connectedWires;
-  float[] extraInformation = new float[2]; //0 - currents, 1 - capacitor-voltage
+  float[] extraInformation = new float[2]; //ALL: 0 - currents, 1 - capacitor-voltage || BJT: 0 - VBE, 1 - VCE
   
   String valtext;
   int menuclock = 0, menums = millis(), menualpha;
@@ -51,6 +46,11 @@ class Puck{
     this.selectedComponent = components.get(0);
     resetComponent();
     
+    for(int i = 0; i < 3; i++){
+      beginconnection.append(0);
+      connectclock.append(0);
+      connectms.append(millis());
+    }
     //change later?
     this.connectedWires = new Wire[3];
     for(int w = 0; w < connectedWires.length; w++){
@@ -84,12 +84,12 @@ class Puck{
         stroke(255,map(menualpha,0,255,255,50));
         strokeWeight(2);
         noFill();
-        selectedComponent.drawComponent(x,y,size-15,rotation,2, true, selectedstate);
+        selectedComponent.drawComponent(x,y,size-15,rotation,2, true, selectedstate, selectedtype);
       }else{
         fill(255,100);
         textAlign(CENTER,CENTER);
         text(valtext,x,y+size/4);
-        selectedComponent.drawComponent(x,y,size-15,rotation,2, false, selectedstate);
+        selectedComponent.drawComponent(x,y,size-15,rotation,2, false, selectedstate, selectedtype);
       }
       drawMenu();
       
@@ -133,28 +133,32 @@ class Puck{
   void drawAura(){
     float totsize = size + aurasize;
     float rotrad = radians(rotation);
-    
     fill(255,128);
     noStroke();
     ellipse(x, y, totsize, totsize);
-    
-    stroke(0);
-    strokeWeight(1);
     pushMatrix();
     translate(x,y);
     rotate(rotrad);
-    line(0, totsize/2, 0, -totsize/2);
+    int terminals = selectedComponent.terminals;
+    if(terminals == 3){
+      rotate(-2*PI/12);
+    }
+    for(int i = 0; i < terminals; i++){
+      stroke(0);
+      strokeWeight(1);
+      float connectAng = 2*PI/terminals;
+      
+      line(0, 0, 0, -totsize/2);
+      
+      int currclock = connectclock.get(i);
+      fill(255,map(currclock,0,100,50,255));
+      noStroke();
+      float connectRad = map(currclock,0,100,0,aurasize);
+      arc(0,0,size+connectRad,size+connectRad,-PI/2,-PI/2+connectAng);
+      
+      rotate(connectAng);
+    }
     popMatrix();
-    
-    fill(255,map(connectclock1,0,100,50,255));
-    noStroke();
-    float connectan1 = map(connectclock1,0,100,0,aurasize);
-    arc(x,y,size+connectan1,size+connectan1,-PI/2+rotrad,PI/2+rotrad);
-    
-    fill(255,map(connectclock2,0,100,50,255));
-    noStroke();
-    float connectan2 = map(connectclock2,0,100,0,aurasize);
-    arc(x,y,size+connectan2,size+connectan2,PI/2+rotrad,3*PI/2+rotrad);
   }
   
   void drawPointers(){
@@ -215,10 +219,10 @@ class Puck{
         rotate(frac*PI);
         if(selectedstate == i){
           strokeWeight(3);
-          selectedComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, i);
+          selectedComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, i, selectedtype);
           strokeWeight(1);
         }else{
-          selectedComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, i);
+          selectedComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, i, selectedtype);
           strokeWeight(1);
         }
         rotate(frac*PI);
@@ -248,10 +252,10 @@ class Puck{
         rotate(frac*PI);
         if(selectedComponent.equals(components.get(i))){
           strokeWeight(3);
-          components.get(i).drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, 0);
+          components.get(i).drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, 0, 0);
           strokeWeight(1);
         }else{
-          components.get(i).drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,1, true, 0);
+          components.get(i).drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,1, true, 0, 0);
           strokeWeight(1);
         }
         rotate(frac*PI);
@@ -381,6 +385,9 @@ class Puck{
     selectedComponent = components.get(min(comno-1,int(map(comrotation,0,360,0,comno))));
     if(!prev.equals(selectedComponent)){
       resetComponent();
+      if(prev.terminals != selectedComponent.terminals){
+        removeConnections();
+      }
     }
   }
   
@@ -469,18 +476,13 @@ class Puck{
       }
     }
     
-    if(!beginconnection1 && connectclock1 > 0){
-      if(connectclock1 > 0){
-        connectclock1 -= 5;
-      }else{
-        connectclock1 = 0;
-      }
-    }
-    if(!beginconnection2 && connectclock2 > 0){
-      if(connectclock2 > 0){
-        connectclock2 -= 5;
-      }else{
-        connectclock2 = 0;
+    for(int i = 0; i < 3; i++){
+      if(beginconnection.get(i) == 0 && connectclock.get(i) > 0){
+        if(connectclock.get(i) > 0){
+          connectclock.sub(i,5);
+        }else{
+          connectclock.set(i,0);
+        }
       }
     }
   }
@@ -495,18 +497,20 @@ class Puck{
   }
   
   void removeConnections(){
-    for(int w = 0; w < connectedWires.length; w++){
-      Wire thiswire = connectedWires[w];
-      if(thiswire != null){
-        int puckind = thiswire.connectedPucks.indexOf(this);
-        thiswire.connectedPucks.remove(this);
-        thiswire.sides.remove(puckind);
-        thiswire.checkDestroy();
-        thiswire.update();
-        connectedWires[w] = null;
+    if(!this.noConnections()){
+      for(int w = 0; w < connectedWires.length; w++){
+        Wire thiswire = connectedWires[w];
+        if(thiswire != null){
+          int puckind = thiswire.connectedPucks.indexOf(this);
+          thiswire.connectedPucks.remove(this);
+          thiswire.sides.remove(puckind);
+          thiswire.checkDestroy();
+          thiswire.update();
+          connectedWires[w] = null;
+        }
       }
+      println("removed connections from " + id);
     }
-    println("removed connections from " + id);
   }
   
   int readyConnectTo(Puck otherPuck){
@@ -514,46 +518,37 @@ class Puck{
     float rotrad = radians(rotation);
     float combang = limradians(angtopuck - rotrad);
     int sendBack = 0;
-    if(combang > PI/2 && combang < 3*PI/2){
-      if(connectedWires[1] != null){
-        if(connectedWires[1].connectedPucks.contains(otherPuck)){
-          beginconnection2 = false;
+    float offset = -PI/2;
+    
+    int terminals = selectedComponent.terminals;
+    float connectAng = 2*PI/terminals;
+    if(terminals == 3){
+      offset += -2*PI/12;
+    }
+    for(int i = 0; i < terminals; i++){
+      if(withinradians(combang, limradians(offset + i*connectAng), limradians(offset + (i+1)*connectAng))){
+        if(connectedWires[i] != null){
+          if(connectedWires[i].connectedPucks.contains(otherPuck)){
+            beginconnection.set(i,0);
+          }else{
+            beginconnection.set(i,1);
+          }
         }else{
-          beginconnection2 = true;
+          beginconnection.set(i,1);
         }
-      }else{
-        beginconnection2 = true;
-      }
-    }else{
-      if(connectedWires[0] != null){
-        if(connectedWires[0].connectedPucks.contains(otherPuck)){
-          beginconnection1 = false;
-        }else{
-          beginconnection1 = true;
-        }
-      }else{
-        beginconnection1 = true;
       }
     }
     
-    if(beginconnection1){
-      if(connectclock1 < 100){
-        if(mspassed(connectms1,5)){
-          connectclock1 += 1;
-          connectms1 = millis();
+    for(int i = 0; i < 3; i++){
+      if(beginconnection.get(i) == 1){
+        if(connectclock.get(i) < 100){
+          if(mspassed(connectms.get(i),5)){
+            connectclock.add(i,1);
+            connectms.set(i,millis());
+          }
+        }else{
+          sendBack = i+1;
         }
-      }else{
-        sendBack = 1;
-      }
-    }
-    if(beginconnection2){
-      if(connectclock2 < 100){
-        if(mspassed(connectms2,5)){
-          connectclock2 += 1;
-          connectms2 = millis();
-        }
-      }else{
-        sendBack = 2;
       }
     }
     return sendBack;
@@ -576,16 +571,8 @@ void connectPucks(Puck puckA, Puck puckB){
       combineWires(puckA.connectedWires[A-1], puckB.connectedWires[B-1]);
     }
     
-    if(A == 1){
-      puckA.beginconnection1 = false;
-    }else{
-      puckA.beginconnection2 = false;
-    }
-    if(B == 1){
-      puckB.beginconnection1 = false;
-    }else{
-      puckB.beginconnection2 = false;
-    }
+    puckA.beginconnection.set(A-1,0);
+    puckB.beginconnection.set(B-1,0);
   }else{
     updated = true;
   }
@@ -593,8 +580,9 @@ void connectPucks(Puck puckA, Puck puckB){
 
 void checkAuras(ArrayList<Puck> allpucks){
   for(Puck thispuck:allpucks){
-    thispuck.beginconnection1 = false;
-    thispuck.beginconnection2 = false;
+    for(int i = 0; i < 3; i++){
+      thispuck.beginconnection.set(i,0);
+    }
   }
   updated = false;
   

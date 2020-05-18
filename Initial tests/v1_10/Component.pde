@@ -5,10 +5,11 @@ class Component{
   int dPrefix, preHi, preLo;
   int dValue, valHi, valLo;
   int dState, noStates;
+  int dType, noTypes;
   boolean valueChange;
   int terminals;
   
-  Component(int id, String name, String NGname, int terminals, char unit, int dPrefix, int preHi, int preLo, int dValue, int valHi, int valLo, boolean valueChange, int noStates){
+  Component(int id, String name, String NGname, int terminals, char unit, int dPrefix, int preHi, int preLo, int dValue, int valHi, int valLo, boolean valueChange, int noStates, int noTypes){
     this.id = id;
     this.name = name;
     this.NGname = NGname;
@@ -23,9 +24,11 @@ class Component{
     this.terminals = terminals;
     this.noStates = noStates;
     this.dState = 0;
+    this.dType = 0;
+    this.noTypes = noTypes;
   }
   
-  Component(int id, String name, String NGname, int terminals, boolean valueChange, int noStates){
+  Component(int id, String name, String NGname, int terminals, boolean valueChange, int noStates, int noTypes){
     this.id = id;
     this.name = name;
     this.NGname = NGname;
@@ -36,9 +39,11 @@ class Component{
     this.terminals = terminals;
     this.noStates = noStates;
     this.dState = 0;
+    this.dType = 0;
+    this.noTypes = noTypes;
   }
   
-  void drawComponent(float x, float y, float size, float rotation, int strokeweight, boolean customcolour, int state){
+  void drawComponent(float x, float y, float size, float rotation, int strokeweight, boolean customcolour, int state, int type){
     pushMatrix();
     translate(x,y);
     rotate(radians(rotation));
@@ -109,6 +114,39 @@ class Component{
         line(-size/2,0,-size*0.15,0);
         line(size/2,0,size*0.15,0);
         line(-size*0.15,-size*0.2,-size*0.15,size*0.2);
+      break;
+      
+      case 7: //BJT
+        switch(type){
+          case 0:
+            line(-size/2,0,-size*0.15,0);
+            line(-size*0.15,-size*0.3,-size*0.15,size*0.3);
+            line(-size*0.15,-size*0.15,size*0.15,-size*0.35);
+            line(-size*0.15,size*0.15,size*0.06,size*0.29);
+            line(size*0.15,-size*0.35,size*0.15,-size/2);
+            line(size*0.15,size*0.35,size*0.15,size/2);
+            triangle(size*0.14,size*0.34,size*0.09,size*0.25,size*0.03,size*0.33);
+            ellipse(0,0,size,size);
+          break;
+          
+          case 1:
+            line(-size/2,0,-size*0.15,0);
+            line(-size*0.15,-size*0.3,-size*0.15,size*0.3);
+            line(-size*0.15,-size*0.15,size*0.15,-size*0.35);
+            line(-size*0.06,size*0.21,size*0.15,size*0.35);
+            line(size*0.15,-size*0.35,size*0.15,-size/2);
+            line(size*0.15,size*0.35,size*0.15,size/2);
+            triangle(-size*0.15,size*0.15,-size*0.03,size*0.17,-size*0.09,size*0.25);
+            ellipse(0,0,size,size);
+          break;
+          
+          default:
+            line(-size*0.3,0,size*0.25,-size*0.25);
+            line(-size/2,0,-size*0.3,0);
+            line(size/2,0,size*0.3,0);
+          break;
+        }
+        
       break;
       
       default: //wire

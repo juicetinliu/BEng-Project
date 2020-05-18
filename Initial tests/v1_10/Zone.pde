@@ -117,9 +117,7 @@ class Runzone extends Zone{
             state = 3;
           }
           
-          if(!ThePuck.noConnections()){
-            ThePuck.removeConnections();
-          }
+          ThePuck.removeConnections();
         }else{
           reset();
         }

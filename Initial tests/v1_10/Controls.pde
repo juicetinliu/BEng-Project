@@ -4,9 +4,7 @@ void mousePressed(){
     for(Puck thispuck:pucks){
       if(pointincircle(mouseX,mouseY,thispuck.x,thispuck.y,thispuck.size)){
         if(removemode){
-          if(!thispuck.noConnections()){
-            thispuck.removeConnections();
-          }
+          thispuck.removeConnections();
           pucks.remove(thispuck);
           removemode = false;
         }else{
@@ -27,9 +25,7 @@ void mousePressed(){
         if(circuitRun){
           return;
         }
-        if(!thispuck.noConnections()){
-          thispuck.removeConnections();
-        }
+        thispuck.removeConnections();
         return;
       }
     }
