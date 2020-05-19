@@ -5,7 +5,9 @@ class Wire{
   float handlelim = 200;
   float voltage = 0;
   boolean showVoltage = false;
+  float currentDensity = 50;
   
+  FloatList currentCounter = new FloatList();
   ArrayList<Puck> connectedPucks = new ArrayList<Puck>();
   IntList sides = new IntList();
   ArrayList<PVector> lines = new ArrayList<PVector>();
@@ -107,7 +109,9 @@ class Wire{
         }else{
           current = thispuck.extraInformation[0];
         }
-        moveElectrons(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y, current, 50);
+        moveElectrons(l/2, thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y, current, currentDensity);
+        fill(255);
+        text(current,x+50 + l*25,y);
       }
     }else{
       Puck thispuck = connectedPucks.get(0);
@@ -116,14 +120,29 @@ class Wire{
       }else{
         current = thispuck.extraInformation[0];
       }
-      moveElectrons(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y, current, 50);
+      moveElectrons(0, lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y, current, currentDensity);
+      fill(255);
+      text(current,x+50,y);
     }
-    
-    
+  }
+  
+  void matchCurrentCounters(){
+    if(currentCounter.size() == connectedPucks.size()){
+      return;
+    }else{
+      while(currentCounter.size() != connectedPucks.size()){
+        if(currentCounter.size() < connectedPucks.size()){
+          currentCounter.append(0);
+        }else{
+          currentCounter.remove(0);
+        }
+      }
+    }
   }
   
   //calculate average point as average of all bezier curves???
   void update(){
+    matchCurrentCounters();
     lines.clear();
     if(connectedPucks.size() > 1){
       PVector avg = new PVector(0,0);
@@ -226,28 +245,31 @@ class Wire{
     }
   }
   
-  void moveElectrons(float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy, float speed, int density){
+  void moveElectrons(int index, float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy, float current, float density){
     float wireLength = bezierLength(ax,ay,bx,by,cx,cy,dx,dy,0.01);
     int electronNo = max(1,int(wireLength/density));
-    float percentMotion = speed * (millis()/1000.0) % 1.0;  // 0 - 1 per SECOND
+    //float percentMotion = current * (millis()/1000.0) % 1.0;  // 0 - 1 per SECOND
+    currentCounter.set(index, (currentCounter.get(index) + current) % 1000);
     fill(255,255,0);
     noStroke();
-    if(speed > 0){
+    //if(electronPosition > 0){
+    if(current > 0){
       for(int i = 0; i < electronNo; i++){
-        float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
-        
+        float percentMoved = float(i)/float(electronNo) + (currentCounter.get(index)/(float(1000*electronNo)));
+        //float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
         float x = bezierPoint(ax, bx, cx, dx, percentMoved);
         float y = bezierPoint(ay, by, cy, dy, percentMoved);
         ellipse(x,y,10,10);
-        //text(percentMoved, x, y-15);
+        //text(electronPosition, x, y-15);
       }
     }else{
       for(int i = 1; i <= electronNo; i++){
-        float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
+        float percentMoved = float(i)/float(electronNo) + (currentCounter.get(index)/(float(1000*electronNo)));
+        //float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
         float x = bezierPoint(ax, bx, cx, dx, percentMoved);
         float y = bezierPoint(ay, by, cy, dy, percentMoved);
         ellipse(x,y,10,10);
-        //text(percentMoved, x, y-15);
+        //text(electronPosition, x, y-15);
       }
     }
   }

@@ -3,6 +3,7 @@ class Puck{
   int id;
   float x, y;
   float size, aurasize, ringthickness;
+  float baserotation, zonerotation;
   float rotation, comrotation, valrotation, staterotation;
   boolean selected;
   float mouseoffx, mouseoffy;
@@ -32,6 +33,9 @@ class Puck{
     this.aurasize = size*0.2; //20
     this.ringthickness = size*0.1; //10
 
+    this.baserotation = random(360);
+    this.zonerotation = baserotation;
+    
     this.rotation = 0;
     this.comrotation = 0;
     this.valrotation = 0;
@@ -126,8 +130,27 @@ class Puck{
         }
       }
     }
-    
-    ellipse(x, y, size-ringthickness,size-ringthickness);
+    pushMatrix();
+    translate(x,y);
+    ellipse(0, 0, size-ringthickness,size-ringthickness);
+    if(showDebug){
+      rotate(radians(baserotation));
+      fill(255,0,0);
+      noStroke();
+      rectMode(CENTER);
+      rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
+    }
+    popMatrix();
+    if(showDebug){
+      pushMatrix();
+      translate(x,y);
+      rotate(radians(zonerotation));
+      fill(255,0,0,100);
+      noStroke();
+      rectMode(CENTER);
+      rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
+      popMatrix();
+    }
   }
   
   void drawAura(){
@@ -326,37 +349,33 @@ class Puck{
   }
   
   void mouseRotate(float e){
+    //baserotation = (e > 0)? baserotation + 10 : baserotation - 10;
+    baserotation = baserotation + e;
+    float rotationdelta = baserotation - zonerotation;
+    zoneRotate(rotationdelta);
+    zonerotation = baserotation;
+  }
+  
+  void zoneRotate(float delta){
     if(currZone == 0){
-      if(e > 0){
-        comrotation = limdegrees(comrotation + 10);
-      }else{
-        comrotation = limdegrees(comrotation - 10);
-      }
+      comrotation = limdegrees(comrotation + delta);
       selectComponent();
       showMenu();
     }else if(currZone == 1){
-      float mult = pow(10,min(2,int(abs(e)/4)));
-      e = e*mult;
-      if(selectComValue(int(e))){
+      float mult = pow(10,min(2,int(abs(delta)/4)));
+      delta = delta*mult;
+      if(selectComValue(int(delta))){
         valrotation = int(selectedvalue*0.36);
       }
       showMenu();
     }else if(currZone == 2){
     }else{
       if(circuitRun){
-          if(e > 0){
-            staterotation = limdegrees(staterotation + 10);
-          }else{
-            staterotation = limdegrees(staterotation - 10);
-          }
-          selectState();
-          showMenu();
+        staterotation = limdegrees(staterotation + delta);
+        selectState();
+        showMenu();
       }else{
-        if(e > 0){
-          rotation = limdegrees(rotation + 10);
-        }else{
-          rotation = limdegrees(rotation - 10);
-        }
+        rotation = limdegrees(rotation + delta);
       }
     }
   }
