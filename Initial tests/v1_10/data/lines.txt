@@ -1,22 +1,29 @@
 HEHE
-.ic v(1)=100.0 v(2)=37.83653 v(3)=76.54966
-S1 3 2S1 5 0 switch1 ON
-VST1 5 0 2
-VS1 2S1 2 0
-R2 0 2R2 1
-VR2 2R2 2 0
-L4 3 1L4 1 ic=-37.8365
-VL4 1L4 1 0
-V5 1 0V5 PULSE(100 100 0s 1fs 1fs)
-VV5 0V5 0 0
-C6 2 3C6 1 ic=-38.71313
-VC6 3C6 3 0
+.ic v(1)=-150.0 v(2)=150.0 v(3)=0.0 v(4)=0.0
+S1 3 1S1 6 0 switch1 OFF
+VST1 6 0 0
+VS1 1S1 1 0
+V2 0 1V2 PULSE(150 150 0s 1fs 1fs)
+VV2 1V2 1 0
+S3 3 2S3 8 0 switch1 OFF
+VST3 8 0 0
+VS3 2S3 2 0
+V4 2 0V4 PULSE(150 150 0s 1fs 1fs)
+VV4 0V4 0 0
+R5 4 0R5 1
+VR5 0R5 0 0
+RD6 3 3DD6 1
+D6 3DD6 4D6 diode1 ic=0.0
+VD6 4D6 4 0
+RD7 4 4DD7 1
+D7 4DD7 3D7 diode1 ic=0.0
+VD7 3D7 3 0
 .model switch1 sw vt=1
 .model diode1 D(Ron=0.1 Roff=1Meg Vfwd=0.7)
 .model QMODN NPN level=1
 .control
-tran 0.0106s 0.106s uic
+tran 0.0108s 0.108s uic
 let k = length(time) - 1
-print time[k] i(VS1)[k] i(VR2)[k] i(VL4)[k] i(VV5)[k] i(VC6)[k] v(1)[k] v(2)[k] v(3)[k]
+print time[k] i(VS1)[k] i(VV2)[k] i(VS3)[k] i(VV4)[k] i(VR5)[k] i(VD6)[k] i(VD7)[k] v(1)[k] v(2)[k] v(3)[k] v(4)[k]
 .endc
 .end

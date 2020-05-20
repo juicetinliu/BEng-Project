@@ -86,8 +86,15 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           thisline += IDcode + " "; //ADD NAME AND ID
           
           //===== ADD NODES =====
-          thisline += chkpuck.connectedWires[0].id + " "; //ADD FIRST NODE
-          
+          if(thiscomp.id == 6){ //DIODE
+            String newline = "R" + IDcode + " ";
+            newline += chkpuck.connectedWires[0].id + " " + chkpuck.connectedWires[0].id + "D" + IDcode + " 1"; //ADD SMALL RESISTOR IN SERIES WITH DIODE
+            lines.append(newline);
+            
+            thisline += chkpuck.connectedWires[0].id + "D" + IDcode + " ";
+          }else{
+            thisline += chkpuck.connectedWires[0].id + " "; //ADD FIRST NODE
+          }
           String currNode = chkpuck.connectedWires[1].id + IDcode; //CREATE SECOND NODE FOR CURRENT MEASURE
           thisline += currNode + " "; //ADD SECOND NODE
           
