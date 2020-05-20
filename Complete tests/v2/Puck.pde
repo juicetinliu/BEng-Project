@@ -29,9 +29,9 @@ class Puck{
     this.id = id;
     this.x = x;
     this.y = y;
-    this.size = size;
-    this.aurasize = size*0.2; //20
-    this.ringthickness = size*0.1; //10
+    this.size = size*1.2;
+    this.aurasize = size*0.4; //20
+    this.ringthickness = size*0.2; //10
 
     this.baserotation = random(360);
     this.zonerotation = baserotation;
@@ -66,6 +66,9 @@ class Puck{
   }
   
   void display(){
+    pushMatrix();
+    translate(x,y);
+    scale(scalex/scaley, 1);
     if(MASTERPUCK){
       drawDisc();
       noFill();
@@ -73,8 +76,8 @@ class Puck{
       strokeWeight(2);
       
       float offsetamount = (size - ringthickness)*0.20;
-      arc(x,y,offsetamount,offsetamount,-PI/2+PI/5,1.5*PI-PI/5);
-      line(x,y,x,y-offsetamount*0.5);
+      arc(0,0,offsetamount,offsetamount,-PI/2+PI/5,1.5*PI-PI/5);
+      line(0,0,0,-offsetamount*0.5);
     }else{
       if(currZone == -1 && !circuitRun){
         drawAura();
@@ -84,28 +87,29 @@ class Puck{
       if(currZone == 1){
         fill(255,100);
         textAlign(CENTER,CENTER);
-        text(valtext,x,y+size/4);
+        text(valtext,0,0+size/4);
         stroke(255,map(menualpha,0,255,255,50));
         strokeWeight(2);
         noFill();
-        selectedComponent.drawComponent(x,y,size-15,rotation,2, true, selectedstate, selectedtype);
+        selectedComponent.drawComponent(0,0,size-ringthickness*2,rotation,2, true, selectedstate, selectedtype);
       }else{
         fill(255,100);
         textAlign(CENTER,CENTER);
-        text(valtext,x,y+size/4);
-        selectedComponent.drawComponent(x,y,size-15,rotation,2, false, selectedstate, selectedtype);
+        text(valtext,0,0+size/4);
+        selectedComponent.drawComponent(0,0,size-ringthickness*2,rotation,2, false, selectedstate, selectedtype);
       }
       drawMenu();
       
       if(showDebug){
         fill(255);
         text("ID: " + id, x, y - 75);
-        text("I: " + extraInformation[0], x + 100, y);
+        text("I: " + extraInformation[0], 100, 0);
         if(selectedComponent.id == 2 || selectedComponent.id == 6){
-          text("V: " + extraInformation[1], x + 100, y-15);
+          text("V: " + extraInformation[1], 100, -15);
         }
       }
     }
+    popMatrix();
   }
   
   void drawDisc(){
@@ -131,7 +135,6 @@ class Puck{
       }
     }
     pushMatrix();
-    translate(x,y);
     ellipse(0, 0, size-ringthickness,size-ringthickness);
     if(showDebug){
       rotate(radians(baserotation));
@@ -143,7 +146,6 @@ class Puck{
     popMatrix();
     if(showDebug){
       pushMatrix();
-      translate(x,y);
       rotate(radians(zonerotation));
       fill(255,0,0,100);
       noStroke();
@@ -158,9 +160,8 @@ class Puck{
     float rotrad = radians(rotation);
     fill(255,128);
     noStroke();
-    ellipse(x, y, totsize, totsize);
+    ellipse(0, 0, totsize, totsize);
     pushMatrix();
-    translate(x,y);
     rotate(rotrad);
     int terminals = selectedComponent.terminals;
     if(terminals == 3){
@@ -188,7 +189,6 @@ class Puck{
     fill(255,menualpha);
     noStroke();
     pushMatrix();
-    translate(x,y);
     if(currZone == 0){
       rotate(radians(comrotation));
     }else if(currZone == 1){
@@ -206,12 +206,12 @@ class Puck{
       if(currZone == 0){
         fill(menualpha,50);
         noStroke();
-        ellipse(x,y,menuBackrad,menuBackrad);
+        ellipse(0,0,menuBackrad,menuBackrad);
       }else if(currZone == -1){
         if(circuitRun && selectedComponent.noStates > 1){
           fill(menualpha,50);
           noStroke();
-          ellipse(x,y,menuBackrad,menuBackrad);
+          ellipse(0,0,menuBackrad,menuBackrad);
         }
       }
     }
@@ -245,7 +245,6 @@ class Puck{
       }
       
       pushMatrix();
-      translate(x,y);
       int totstates = selectedComponent.noStates;
       for(int i = 0; i < totstates; i++){
         float frac = 1/float(totstates);
@@ -279,7 +278,6 @@ class Puck{
       }
       
       pushMatrix();
-      translate(x,y);
       for(int i = 0; i < comno; i++){
         float frac = 1/float(comno);
         rotate(frac*PI);
@@ -296,7 +294,7 @@ class Puck{
       }
       popMatrix();
       fill(255,menualpha);
-      text(selectedComponent.name, x, y - size);
+      text(selectedComponent.name, 0, 0 - size);
     }else{
       menushow = false;
     }
@@ -313,9 +311,9 @@ class Puck{
       
       strokeWeight(aurasize/2);
       stroke(intCodetoColour(selectedprefix-1,menualpha));
-      ellipse(x,y,size+aurasize*1.5,size+aurasize*1.5); //base ring color
+      ellipse(0,0,size+aurasize*1.5,size+aurasize*1.5); //base ring color
       stroke(lerpColor(intCodetoColour(selectedprefix-1,menualpha),intCodetoColour(selectedprefix,menualpha),float(selectedvalue)/1000), menualpha); //val ring color
-      arc(x,y,size+aurasize*1.5,size+aurasize*1.5, 0-PI/2, radians(valrotation)-PI/2);
+      arc(0,0,size+aurasize*1.5,size+aurasize*1.5, 0-PI/2, radians(valrotation)-PI/2);
       
       stroke(255,menualpha);
       strokeWeight(1);
@@ -323,7 +321,6 @@ class Puck{
       ellipse(x,y,size+aurasize*2,size+aurasize*2);
       
       pushMatrix();
-      translate(x,y);
       rotate(radians(valrotation));
       fill(255, menualpha);
       noStroke();
@@ -331,7 +328,6 @@ class Puck{
       popMatrix();
       
       pushMatrix();
-      translate(x,y);
       stroke(255, menualpha);
       strokeWeight(1);
       for(int i = 0; i < 10; i++){
@@ -346,7 +342,7 @@ class Puck{
       
       fill(255, menualpha);
       textAlign(CENTER,CENTER);
-      text(valtext,x,y+size/4);
+      text(valtext,0,size/4);
     }else{
       menushow = false;
     }
@@ -356,6 +352,15 @@ class Puck{
     selected = true;
     mouseoffx = mouseX - x;
     mouseoffy = mouseY - y;
+  }
+  
+  void CHTRotate(float Ringrotation){
+    baserotation = Ringrotation;
+    float rotationdelta = baserotation - zonerotation;
+    if(rotationdelta != 0){
+      zoneRotate(rotationdelta);
+      zonerotation = baserotation;
+    }
   }
   
   void mouseRotate(float e){
@@ -395,6 +400,12 @@ class Puck{
   void mouseMove(){
     x = mouseX - mouseoffx;
     y = mouseY - mouseoffy;
+    updated = true;
+  }
+  
+  void CHTMove(float x, float y){
+    this.x = x;
+    this.y = y;
     updated = true;
   }
   

@@ -1,3 +1,7 @@
+import gab.opencv.*;
+import processing.video.*;
+Capture cam;
+
 ArrayList<Puck> pucks = new ArrayList<Puck>();
 ArrayList<Wire> wires = new ArrayList<Wire>();
 ArrayList<Component> components = new ArrayList<Component>();
@@ -21,8 +25,11 @@ Icon chipIC = new Icon("chip");
 
 
 void setup(){
-  size(1200,800);
+  //size(1200,800);
+  fullScreen();
+  //houghSetup();
   surface.setTitle("CircuitSim");
+  
   //size(900,600);
   //smooth();
   //pixelDensity(displayDensity());
@@ -32,13 +39,15 @@ void setup(){
   buttons.add(new Button("RemovePucks", height*2/80,height*7/80,height*3/80));
   createComponents();
   createZones();
-  addPucks(5);
+  addPucks(3);
   
   PFont font = loadFont("HelveticaNeue-20.vlw");
   textFont(font, 12);
   //textFont(font, 9);
+  
 }
 void draw(){
+  //houghDraw();
   if(circuitRun){
     background(50);
   }else if(removemode){
