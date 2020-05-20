@@ -3,8 +3,9 @@ class Zone{
   String label;
   int type; //square - 0;circle - 1
   float x, y, w, h;
+  Icon zoneicon;
   
-  Zone(int id, String label, int type, float x, float y, float w, float h){
+  Zone(int id, String label, int type, float x, float y, float w, float h, Icon zoneicon){
     this.id = id;
     this.type = type;
     this.label = label;
@@ -12,7 +13,7 @@ class Zone{
     this.y = y;
     this.w = w;
     this.h = h;
-    
+    this.zoneicon = zoneicon;
   }
   
   void display(color fcolor, boolean fok, color scolor, boolean sok){
@@ -30,6 +31,9 @@ class Zone{
     if(type == 0){
       rectMode(CENTER);
       rect(x, y, w, h);
+      if(zoneicon != null){
+        zoneicon.display(x,y,min(w,h)/3,true,color(255),color(128),5);
+      }
     }else if(type == 1){
       ellipse(x,y,w,h);
     }    
@@ -56,8 +60,8 @@ class Runzone extends Zone{
   float circuitSimStep = 0.1; //s
   
   
-  Runzone(int id, String label, int type, float x, float y, float w, float h){
-    super(id, label, type, x, y, w, h);
+  Runzone(int id, String label, int type, float x, float y, float w, float h, Icon zoneicon){
+    super(id, label, type, x, y, w, h, zoneicon);
     this.zoneanims = millis();
     this.zoneclock = 0;
     this.zonebanims = millis();

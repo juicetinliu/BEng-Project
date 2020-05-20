@@ -16,6 +16,9 @@ boolean showDebug = false;
 //int puckSize = 100;
 int puckSize;
 
+Icon knobIC = new Icon("knob");
+Icon chipIC = new Icon("chip");
+
 
 void setup(){
   size(1200,800);
@@ -100,8 +103,8 @@ void createComponents(){
 }
 
 void createZones(){
-  zones.add(new Zone(0, "Component Selection", 0, width/4,height*0.9,width/2,height*0.2));
-  zones.add(new Zone(1, "Component Value Change", 0, width*3/4,height*0.9,width/2,height*0.2));
-  zones.add(new Runzone(2, "Start Simulation", 1, width - puckSize*0.7 , puckSize*0.7 ,puckSize*1.1,puckSize*1.1));
+  zones.add(new Zone(0, "Component Selection", 0, width/4,height*0.9,width/2,height*0.2, chipIC));
+  zones.add(new Zone(1, "Component Value Change", 0, width*3/4,height*0.9,width/2,height*0.2, knobIC));
+  zones.add(new Runzone(2, "Start Simulation", 1, width - puckSize*0.7 , puckSize*0.7 ,puckSize*1.1,puckSize*1.1, null));
   runzone = (Runzone) zones.get(2);
 }
