@@ -60,7 +60,7 @@ class Ring{
       //strokeWeight(10);
       //stroke(255);
       //ellipse(x,y,circlerad + plusrad,circlerad + plusrad);
-      text(houghVote,x,y);
+      //text(houghVote,x,y);
       popMatrix();
     }
     

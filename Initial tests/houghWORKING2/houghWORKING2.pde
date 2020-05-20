@@ -48,7 +48,7 @@ void setup() {
     println("Available cameras:");
     printArray(cameras);
     //960/540
-    cam = new Capture(this, swidth, sheight, cameras[1]);
+    cam = new Capture(this, swidth, sheight, cameras[2]);
     print(cam.width + " x " + cam.height);
     cam.start();
   }
