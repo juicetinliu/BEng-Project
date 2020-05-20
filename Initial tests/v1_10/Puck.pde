@@ -19,7 +19,9 @@ class Puck{
   IntList connectms = new IntList();
     
   Wire[] connectedWires;
-  float[] extraInformation = new float[2]; //ALL: 0 - currents, 1 - capacitor-voltage || BJT: 0 - VBE, 1 - VCE
+  //float[] extraInformation = new float[2]; //ALL: 0 - currents, 1 - capacitor-voltage || BJT: 0 - VBE, 1 - VCE
+  float[] voltages = new float[3]; //ALL: 0 - voltage || BJT: 0 - VBE, 1 - VCE
+  float[] currents = new float[3]; //ALL: 0 - current || BJT: 0 - iC, 1 - iB, 2 - iE
   
   String valtext;
   int menuclock = 0, menums = millis(), menualpha;
@@ -60,8 +62,9 @@ class Puck{
     for(int w = 0; w < connectedWires.length; w++){
       connectedWires[w] = null;
     }
-    for(int e = 0; e < extraInformation.length; e++){
-      extraInformation[e] = 0;
+    for(int e = 0; e < voltages.length; e++){
+      voltages[e] = 0;
+      currents[e] = 0;
     }
   }
   
@@ -100,9 +103,9 @@ class Puck{
       if(showDebug){
         fill(255);
         text("ID: " + id, x, y - 75);
-        text("I: " + extraInformation[0], x + 100, y);
+        text("I: " + currents[0], x + 100, y);
         if(selectedComponent.id == 2 || selectedComponent.id == 6){
-          text("V: " + extraInformation[1], x + 100, y-15);
+          text("V: " + voltages[0], x + 100, y-15);
         }
       }
     }
@@ -460,8 +463,9 @@ class Puck{
     selectedvalue = selectedComponent.dValue;
     selectedprefix = selectedComponent.dPrefix;
     selectedstate = selectedComponent.dState;
-    for(int i = 0; i < extraInformation.length; i++){
-      extraInformation[i] = 0;
+    for(int e = 0; e < voltages.length; e++){
+      voltages[e] = 0;
+      currents[e] = 0;
     }
     valrotation = int(selectedvalue*0.36);
     staterotation = 0;
@@ -642,8 +646,9 @@ void checkAuras(ArrayList<Puck> allpucks){
 
 void setPuckInformationZero(){
   for(Puck tp:pucks){
-    for(int i = 0; i < tp.extraInformation.length; i++){
-      tp.extraInformation[i] = 0;
+    for(int e = 0; e < tp.voltages.length; e++){
+      tp.voltages[e] = 0;
+      tp.currents[e] = 0;
     }
   }
 }

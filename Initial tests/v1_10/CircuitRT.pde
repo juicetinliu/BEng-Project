@@ -95,8 +95,14 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           }else{
             thisline += chkpuck.connectedWires[0].id + " "; //ADD FIRST NODE
           }
-          String currNode = chkpuck.connectedWires[1].id + IDcode; //CREATE SECOND NODE FOR CURRENT MEASURE
-          thisline += currNode + " "; //ADD SECOND NODE
+          
+          String currNode = "";
+          if(thiscomp.id == 5){ //VOLTAGE SOURCE DOESN'T NEED EXTRA CURRENT MEASURE
+            thisline += chkpuck.connectedWires[1].id + " "; //ADD SECOND NODE
+          }else{
+            currNode = chkpuck.connectedWires[1].id + IDcode; //CREATE SECOND NODE FOR CURRENT MEASURE
+            thisline += currNode + " "; //ADD SECOND NODE
+          }
           
           //===== ADD INFORMATION =====
           if(thiscomp.id == 5){ //VOLTAGE SOURCES
@@ -115,35 +121,49 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
             }
             
             if(thiscomp.id == 4){ //INDUCTOR
-              thisline += " ic=" + chkpuck.extraInformation[0]; //ADD INITIAL CURRENT
+              thisline += " ic=" + chkpuck.currents[0]; //ADD INITIAL CURRENT
             }else if(thiscomp.id == 2){ //CAPACITOR
-              thisline += " ic=" + chkpuck.extraInformation[1]; //ADD INITIAL VOLTAGE
+              thisline += " ic=" + chkpuck.voltages[0]; //ADD INITIAL VOLTAGE
             }else if(thiscomp.id == 6){ //DIODE
-              thisline += " ic=" + chkpuck.extraInformation[1]; //ADD INITIAL VOLTAGE
+              thisline += " ic=" + chkpuck.voltages[0]; //ADD INITIAL VOLTAGE
             }
           }
           
           //===== ADD CURRENT SENSING SOURCE =====
-          String nxtline = "";    //CREATE NEW LINE
-          nxtline += "V" + IDcode + " "; //VOLTAGE SOURCE
-          nxtline += currNode + " " + chkpuck.connectedWires[1].id + " 0"; //0V VOLTAGE SOURCE IN SERIES TO MEASURE CURRENT
-          
-          
+          if(thiscomp.id != 5){ //VOLTAGE SOURCE DOESN'T NEED EXTRA CURRENT MEASURE
+            String nxtline = "";    //CREATE NEW LINE
+            nxtline += "V" + IDcode + " "; //CURRENT MEASURE VOLTAGE SOURCE
+            nxtline += currNode + " " + chkpuck.connectedWires[1].id + " 0"; //0V VOLTAGE SOURCE IN SERIES TO MEASURE CURRENT
+            lines.append(nxtline);
+          }
           lines.append(thisline);
-          lines.append(nxtline);
+          
         }else if(thiscomp.terminals == 3){ //FOR THREE TERMINAL COMPONENTS
           if(thiscomp.id == 7){ //BJT
             thisline += IDcode + " "; //ADD NAME AND ID
           
             //===== ADD NODES =====
-            thisline += chkpuck.connectedWires[0].id + " "; //ADD COLLECTOR NODE
-            thisline += chkpuck.connectedWires[2].id + " "; //ADD BASE NODE
-            thisline += chkpuck.connectedWires[1].id + " "; //ADD EMITTER NODE
-            thisline += "QMODN"; //ADD BJT MODEL
-            //thisline += " ic=" + chkpuck.extraInformation[0] + ", " + chkpuck.extraInformation[1]; //ADD INITIAL VOLTAGES (VBE, VCE)
+            String colI = chkpuck.connectedWires[0].id + IDcode; //CREATING CURRENT
+            String basI = chkpuck.connectedWires[2].id + IDcode; //SENSING
+            String emiI = chkpuck.connectedWires[1].id + IDcode; //NODES
             
-
+            thisline += colI + " "; //ADD COLLECTOR NODE
+            thisline += basI + " "; //ADD BASE NODE
+            thisline += emiI + " "; //ADD EMITTER NODE
+            thisline += "QMODN"; //ADD BJT MODEL
+            thisline += " ic=" + chkpuck.voltages[0] + ", " + chkpuck.voltages[1]; //ADD INITIAL VOLTAGES (VBE, VCE)
+            
+            String colVs = "V" + IDcode + "C ";
+            String basVs = "V" + IDcode + "B ";
+            String emiVs = "V" + IDcode + "E ";
+            colVs += colI + " " + chkpuck.connectedWires[0].id + " 0";
+            basVs += basI + " " + chkpuck.connectedWires[2].id + " 0";
+            emiVs += emiI + " " + chkpuck.connectedWires[1].id + " 0";
+            
             lines.append(thisline);
+            lines.append(colVs);
+            lines.append(basVs);
+            lines.append(emiVs);
           }
           
         }
@@ -187,8 +207,17 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
   for(Puck chkpuck:pucks){
     if(!chkpuck.MASTERPUCK){
       Component thiscomp = chkpuck.selectedComponent;
-      if(thiscomp.id != 0 && thiscomp.id != 7){
-        printline += " i(V" + thiscomp.NGname + chkpuck.id + ")[k]";
+      if(thiscomp.id != 0){
+        if(thiscomp.id == 5){
+          printline += " i(V" + chkpuck.id + ")[k]";
+        }else if(thiscomp.id == 7){
+          String idcode = thiscomp.NGname + chkpuck.id;
+          printline += " i(V" + idcode + "C)[k]";
+          printline += " i(V" + idcode + "B)[k]";
+          printline += " i(V" + idcode + "E)[k]";
+        }else{
+          printline += " i(V" + thiscomp.NGname + chkpuck.id + ")[k]";
+        }
       }
     }
   }
@@ -248,15 +277,30 @@ void NGparseOutputRT(StringList output){
     if(!thispuck.MASTERPUCK){
       Component thiscomp = thispuck.selectedComponent;
       if(thiscomp.id != 0){
-        String line = output.get(lineptr);
-        String[] list = split(line, " = ");
-        thispuck.extraInformation[0] = float(list[1].trim());
-        lineptr--;
-        if(thiscomp.id == 2){ //CAPACITOR VOLTAGE
-          thispuck.extraInformation[1] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
-        }else if(thiscomp.id == 6){ //DIODE VOLTAGE
-          thispuck.extraInformation[1] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
-          //lineptr--;
+        if(thiscomp.id == 7){
+          String line = output.get(lineptr);
+          String[] list = split(line, " = ");
+          thispuck.currents[1] = float(list[1].trim());
+          lineptr--;
+          line = output.get(lineptr);
+          list = split(line, " = ");
+          thispuck.currents[2] = float(list[1].trim());
+          lineptr--;
+          line = output.get(lineptr);
+          list = split(line, " = ");
+          thispuck.currents[0] = float(list[1].trim());
+          lineptr--;
+        }else{
+          String line = output.get(lineptr);
+          String[] list = split(line, " = ");
+          thispuck.currents[0] = float(list[1].trim());
+          lineptr--;
+          if(thiscomp.id == 2){ //CAPACITOR VOLTAGE
+            thispuck.voltages[0] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
+          }else if(thiscomp.id == 6){ //DIODE VOLTAGE
+            thispuck.voltages[0] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
+            //lineptr--;
+          }
         }
       } 
     }

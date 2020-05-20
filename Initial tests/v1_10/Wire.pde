@@ -98,10 +98,20 @@ class Wire{
         PVector thisanch = lines.get(l);
         PVector thiscont = lines.get(l+1);
         
-        if(sides.get(l/2) == 1){
-          current = -thispuck.extraInformation[0];
+        if(thispuck.selectedComponent.id == 7){
+          if(sides.get(l/2) == 1){
+            current = thispuck.currents[0];
+          }else if(sides.get(l/2) == 2){
+            current = -thispuck.currents[0];
+          }else{
+            current = thispuck.currents[0];
+          }
         }else{
-          current = thispuck.extraInformation[0];
+          if(sides.get(l/2) == 1){
+            current = -thispuck.currents[0];
+          }else{
+            current = thispuck.currents[0];
+          }
         }
         moveElectrons(l/2, thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y, current, currentDensity);
         fill(255);
@@ -109,11 +119,21 @@ class Wire{
       }
     }else{
       Puck thispuck = connectedPucks.get(0);
-      if(sides.get(0) == 1){
-        current = -thispuck.extraInformation[0];
-      }else{
-        current = thispuck.extraInformation[0];
-      }
+      if(thispuck.selectedComponent.id == 7){
+          if(sides.get(0) == 1){
+            current = thispuck.currents[0];
+          }else if(sides.get(0) == 2){
+            current = -thispuck.currents[0];
+          }else{
+            current = thispuck.currents[0];
+          }
+        }else{
+          if(sides.get(0) == 1){
+            current = -thispuck.currents[0];
+          }else{
+            current = thispuck.currents[0];
+          }
+        }
       moveElectrons(0, lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y, current, currentDensity);
       fill(255);
       text(current,x+50,y);
