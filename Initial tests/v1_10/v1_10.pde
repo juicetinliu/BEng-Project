@@ -10,7 +10,7 @@ Runzone runzone;
 
 
 boolean circuitRun = false;
-boolean checked = false;
+boolean circuitChecked = false;
 boolean updated = true;
 boolean showDebug = false;
 //int puckSize = 100;
@@ -66,8 +66,8 @@ void draw(){
   }
   
   for(Puck thispuck:pucks){
-    thispuck.display();
     thispuck.run();
+    thispuck.display();
   }
 }
 

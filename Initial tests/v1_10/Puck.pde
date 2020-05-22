@@ -3,12 +3,11 @@ class Puck{
   int id;
   float x, y;
   float size, aurasize, ringthickness;
-  float baserotation, zonerotation;
+  float baserotation, prebaserotation;
   float rotation, comrotation, valrotation, staterotation;
   boolean selected;
   float mouseoffx, mouseoffy;
   int currZone;
-  
   
   Component selectedComponent;
   int selectedvalue, selectedprefix, selectedstate, selectedtype;
@@ -19,13 +18,17 @@ class Puck{
   IntList connectms = new IntList();
     
   Wire[] connectedWires;
-  //float[] extraInformation = new float[2]; //ALL: 0 - currents, 1 - capacitor-voltage || BJT: 0 - VBE, 1 - VCE
   float[] voltages = new float[3]; //ALL: 0 - voltage || BJT: 0 - VBE, 1 - VCE
   float[] currents = new float[3]; //ALL: 0 - current || BJT: 0 - iC, 1 - iB, 2 - iE
   
   String valtext;
   int menuclock = 0, menums = millis(), menualpha;
   boolean menushow;
+  
+  float[] shakedir = new float[10];
+  float shakeAngThresh = PI/2, shakeMagThresh = 10, shakex, shakey; //ADJUST SHAKE SENSITIVITY - ANG/MAG/COUNTER/SAMPPERIOD
+  int shakeCounterThresh = 3, shakeCounter = 0, shakems = millis(), shakeSampPeriod = 25;
+  boolean shakeReset = false;
   
   Puck(int id, float x, float y, float size){ //size being 100
     this.id = id;
@@ -36,7 +39,7 @@ class Puck{
     this.ringthickness = size*0.1; //10
 
     this.baserotation = random(360);
-    this.zonerotation = baserotation;
+    this.prebaserotation = baserotation;
     
     this.rotation = 0;
     this.comrotation = 0;
@@ -65,6 +68,11 @@ class Puck{
     for(int e = 0; e < voltages.length; e++){
       voltages[e] = 0;
       currents[e] = 0;
+    }
+    this.shakex = x;
+    this.shakey = y;
+    for(int s = 0; s < shakedir.length; s++){
+      shakedir[s] = -1;
     }
   }
   
@@ -116,7 +124,9 @@ class Puck{
     strokeWeight(ringthickness);
     
     if(selected){
-      fill(50);
+      //fill(50);
+      float mapshake = map(shakeCounter,0,10,50,255);
+      fill(mapshake,50,50);
     }else{
       if(pointincircle(mouseX,mouseY,x,y,size)){
         if(removemode){
@@ -144,16 +154,6 @@ class Puck{
       rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
     }
     popMatrix();
-    if(showDebug){
-      pushMatrix();
-      translate(x,y);
-      rotate(radians(zonerotation));
-      fill(255,0,0,100);
-      noStroke();
-      rectMode(CENTER);
-      rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
-      popMatrix();
-    }
   }
   
   void drawAura(){
@@ -361,13 +361,57 @@ class Puck{
     mouseoffy = mouseY - y;
   }
   
+  void resetShake(){
+    if(!shakeReset){
+      for(int s = 0; s < shakedir.length; s++){
+        shakedir[s] = -1;
+      }
+      shakeCounter = 0;
+      shakeReset = true;
+    }
+  }
+  
+  void updateShake(){
+    shakeReset = false;
+    for(int s = shakedir.length - 1; s > 0; s--){ //Push back dirs
+      shakedir[s] = shakedir[s-1];
+    }    
+    PVector diffs = new PVector(x - shakex, y - shakey);
+    if(diffs.mag() > shakeMagThresh){ //add movevector angle to shakedir whenever puck is moved
+      shakedir[0] = limradians(diffs.heading());
+      //print(degrees(shakedir[0]) + " ");
+      //print("[" + degrees(shakedir[0]) + "| " + (mouseY - mouseoffy - y) + "," + (mouseX - mouseoffx - x) + "] ");
+    }else{
+      shakedir[0] = -1;
+      //print("!! ");
+    }
+    shakex = x;
+    shakey = y;
+  }
+  
+  boolean checkShake(){ //IF TOTAL NUMBER OF [changes between consecutive movement angles is greater than a threshhold] WITHIN A TIMEFRAME IS GREATER THAN THRESHOLD -> Shake detected
+    shakeCounter = 0;
+    for(int s = 0; s < shakedir.length-1; s++){
+      if(shakedir[s] != -1 && shakedir[s+1] != -1){
+        fill(255);
+        if(minangdiff(shakedir[s],shakedir[s+1]) > shakeAngThresh){
+          shakeCounter += 1;
+          fill(255,0,0);
+        }
+        //print("[" + degrees(minangdiff(shakedir[s],shakedir[s+1])) + "| " + degrees(shakedir[s]) + "," + degrees(shakedir[s+1]) + "] ");
+        //text(minangdiff(shakedir[s],shakedir[s+1]),x + s * 50,y + 75);
+      }
+    }
+    return shakeCounter >= shakeCounterThresh;
+  }
+  
   void mouseRotate(float e){
     //baserotation = (e > 0)? baserotation + 10 : baserotation - 10;
     baserotation = baserotation + e;
-    float rotationdelta = baserotation - zonerotation;
+    float rotationdelta = baserotation - prebaserotation;
     if(rotationdelta != 0){
       zoneRotate(rotationdelta);
-      zonerotation = baserotation;
+      prebaserotation = baserotation;
     }
   }
   
@@ -396,9 +440,19 @@ class Puck{
   }
   
   void mouseMove(){
+    
     x = mouseX - mouseoffx;
     y = mouseY - mouseoffy;
     updated = true;
+    if(mspassed(shakems,shakeSampPeriod)){
+      shakems = millis();
+      updateShake();
+      if(checkShake()){
+        print("shook");
+        resetShake();
+        removeConnections();
+      }
+    }
   }
   
   void showMenu(){
@@ -497,6 +551,8 @@ class Puck{
     
     if(selected){
       mouseMove();
+    }else{
+      resetShake();
     }
     
     if(menuclock > 90){

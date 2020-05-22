@@ -1,5 +1,4 @@
 void mousePressed(){
-  //boolean oneselected = false;
   if(mouseButton == LEFT){
     for(Puck thispuck:pucks){
       if(pointincircle(mouseX,mouseY,thispuck.x,thispuck.y,thispuck.size)){
@@ -20,11 +19,9 @@ void mousePressed(){
       }
     }
   }else if(mouseButton == RIGHT){
+    if(circuitRun) return;
     for(Puck thispuck:pucks){
       if(pointincircle(mouseX,mouseY,thispuck.x,thispuck.y,thispuck.size)){
-        if(circuitRun){
-          return;
-        }
         thispuck.removeConnections();
         return;
       }

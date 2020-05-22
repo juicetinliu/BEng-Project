@@ -133,8 +133,8 @@ class Runzone extends Zone{
             state = 4;
           }
           circuitRun = false;
-          if(checked){
-            checked = false;
+          if(circuitChecked){
+            circuitChecked = false;
             for(Wire tw:wires){
               tw.hideVoltages();
             }
@@ -151,8 +151,8 @@ class Runzone extends Zone{
           if(ThePuck.x > x-sliderlength/2){
             state = 3;
           }
-          if(!checked){
-            checked = true;
+          if(!circuitChecked){
+            circuitChecked = true;
             if(checkCircuit()){
               //NGCircuitRT(0.1);
               println("yay");

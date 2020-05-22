@@ -11,7 +11,7 @@ class Icon{
     if(nf){
       noFill();
     }else{
-      //fill(fc);
+      fill(fc);
     }
     if(sw == 0){
       noStroke();

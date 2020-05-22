@@ -16,7 +16,7 @@ float bezierLength(float x1, float y1, float cx1, float cy1, float cx2, float cy
   return l;
 }
 
-float limdegrees(float indegrees){
+float limdegrees(float indegrees){ //keeps input angle between 0 - 360
   if(indegrees > 360){
     return indegrees % 360;
   }else if(indegrees < 0){
@@ -26,7 +26,7 @@ float limdegrees(float indegrees){
   }
 }
 
-float limradians(float inrads){
+float limradians(float inrads){ //keeps input angle between 0 - 2PI
   if(inrads > 2*PI){
     return inrads % (2*PI);
   }else if(inrads < 0){
@@ -36,12 +36,22 @@ float limradians(float inrads){
   }
 }
 
-boolean withinradians(float inrad, float lowrad, float hirad){
+boolean withinradians(float inrad, float lowrad, float hirad){ // returns true if inrad is within angle bounds (lowrad is the lower bound; hirad is the higher bound)
   if(lowrad > hirad){
     return (inrad > lowrad && inrad <= 2*PI) || (inrad >= 0 && inrad < hirad);
   }else{
     return inrad > lowrad && inrad < hirad;
   }
+}
+
+float maxangdiff(float radone, float radtwo){ //returns larger of the two possible difference between two vector angles
+  float diff = abs(radone - radtwo);
+  return (diff < PI) ? 2 * PI - diff : diff;
+}
+
+float minangdiff(float radone, float radtwo){ //returns smaller of the two possible difference between two vector angles
+  float diff = abs(radone - radtwo);
+  return (diff < PI) ? diff : 2 * PI - diff;
 }
 
 boolean mspassed(int starttime, int interval){
