@@ -134,11 +134,13 @@ class Puck{
     }
     ellipse(0, 0, size-ringthickness,size-ringthickness);
     if(showDebug){
+      pushMatrix();
       rotate(radians(baserotation));
       fill(255,0,0);
       noStroke();
       rectMode(CENTER);
       rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
+      popMatrix();
     }
   }
   
