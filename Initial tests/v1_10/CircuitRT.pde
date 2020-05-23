@@ -150,7 +150,11 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
             thisline += colI + " "; //ADD COLLECTOR NODE
             thisline += basI + " "; //ADD BASE NODE
             thisline += emiI + " "; //ADD EMITTER NODE
-            thisline += "QMODN"; //ADD BJT MODEL
+            if(chkpuck.selectedtype == 0){
+              thisline += "QMODN"; //ADD NPN BJT MODEL
+            }else{
+              thisline += "QMODP"; //ADD PNP BJT MODEL
+            }
             thisline += " ic=" + chkpuck.voltages[0] + ", " + chkpuck.voltages[1]; //ADD INITIAL VOLTAGES (VBE, VCE)
             
             String colVs = "V" + IDcode + "C ";
@@ -175,7 +179,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
   lines.append(".model switch1 sw vt=1");
   lines.append(".model diode1 D(Ron=0.1 Roff=1Meg Vfwd=0.7)");
   lines.append(".model QMODN NPN level=1");
-  //lines.append(".model QMODP PNP level=1");
+  lines.append(".model QMODP PNP level=1");
   
   //lines.append(".MODEL diode1 D(IS=4.352E-9 N=1.906 BV=110 IBV=0.0001 RS=0.6458 CJO=7.048E-13 VJ=0.869 M=0.03 FC=0.5 TT=3.48E-9 ");
   //lines.append(".option rshunt = 1.0e12");

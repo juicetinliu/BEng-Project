@@ -19,7 +19,7 @@ class Button{
         strokeWeight(2);
         if(pointincircle(mouseX,mouseY,x,y,size)){
           fill(255);
-          text("AdD CirCLYsToNk", x + size/1.5, y);
+          text("Add Disc", x + size/1.5, y);
           fill(255,128);
         }else{
           noFill();
@@ -37,7 +37,7 @@ class Button{
         strokeWeight(2);
         if(pointincircle(mouseX,mouseY,x,y,size)){
           fill(255);
-          text("ReMoVe ciRcLyStonK", x + size/1.5, y);
+          text("Remove Disc", x + size/1.5, y);
           fill(255,128);
         }else{
           noFill();
