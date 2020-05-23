@@ -1,0 +1,15 @@
+HEHE
+.ic v(1)=1.0
+V1 1 0 PULSE(1 1 0s 1fs 1fs)
+VR3 0R3 0 0
+R3 1 0R3 1
+.model switch1 sw vt=1
+.model diode1 D(Ron=0.1 Roff=1Meg Vfwd=0.7)
+.model QMODN NPN level=1
+.model QMODP PNP level=1
+.control
+tran 0.0103s 0.103s uic
+let k = length(time) - 1
+print time[k] i(V1)[k] i(VR3)[k] v(1)[k]
+.endc
+.end
