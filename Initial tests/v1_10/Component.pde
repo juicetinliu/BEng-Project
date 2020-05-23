@@ -43,6 +43,61 @@ class Component{
     this.noTypes = noTypes;
   }
   
+  String fullTypeName(int type){
+    switch(id){
+      case 0: //default: wire
+        return name;
+      
+      case 1: //resistor
+        return name;
+      
+      case 2: //capacitor
+        return name;
+      
+      case 3: //switch
+        return name;
+      
+      case 4: //inductor
+        return name;
+      
+      case 5: //voltage source
+        switch(type){
+          case 0: //DC
+            return "DC " + name;
+          
+          case 1: //AC - Sinusoidal
+            return "Sinusoidal " + name;
+          
+          case 2: //AC - Triangle
+            return "Triangular Wave " + name;
+          
+          case 3: //AC - Square
+            return "Square Wave " + name;
+          
+          default:
+            return name;
+        }
+      
+      case 6: //diode
+        return name;
+      
+      case 7: //BJT
+        switch(type){
+          case 0: //NPN
+            return "NPN " + name;
+          
+          case 1: //PNP
+            return "PNP " + name;
+          
+          default: //NPN
+            return "NPN " + name;
+        }
+      
+      default: //wire
+        return "Wire ";
+    }
+  }
+  
   void drawComponent(float x, float y, float size, float rotation, int strokeweight, boolean customcolour, int state, int type){
     pushMatrix();
     translate(x,y);
@@ -103,10 +158,43 @@ class Component{
       break;
       
       case 5: //voltage source
-        line(size*0.2,0,size*0.3,0);
-        line(size*0.25,size*0.05,size*0.25,-size*0.05);
-        line(-size*0.2,0,-size*0.3,0);
-        ellipse(0,0,size,size);
+        switch(type){
+          case 0: //DC
+            line(size*0.2,0,size*0.3,0);
+            line(size*0.25,size*0.05,size*0.25,-size*0.05);
+            line(-size*0.2,0,-size*0.3,0);
+            ellipse(0,0,size,size);
+          break;
+          
+          case 1: //AC - Sinusoidal
+            arc(-size*0.2,0,size*0.4,size*0.4,PI,2*PI);
+            arc(size*0.2,0,size*0.4,size*0.4,0,PI);
+            ellipse(0,0,size,size);
+          break;
+          
+          case 2: //AC - Triangle
+            line(-size*0.4,0,-size*0.2,-size*0.2);
+            line(-size*0.2,-size*0.2,size*0.2,size*0.2);
+            line(size*0.4,0,size*0.2,size*0.2);
+            ellipse(0,0,size,size);
+          break;
+          
+          case 3: //AC - Square
+            line(-size*0.4,0,-size*0.4,-size*0.2);
+            line(-size*0.4,-size*0.2,0,-size*0.2);
+            line(0,-size*0.2,0,size*0.2);
+            line(0,size*0.2,size*0.4,size*0.2);
+            line(size*0.4,size*0.2,size*0.4,0);
+            ellipse(0,0,size,size);
+          break;
+          
+          default:
+            line(size*0.2,0,size*0.3,0);
+            line(size*0.25,size*0.05,size*0.25,-size*0.05);
+            line(-size*0.2,0,-size*0.3,0);
+            ellipse(0,0,size,size);
+          break;
+        }
       break;
       
       case 6: //diode
@@ -118,7 +206,7 @@ class Component{
       
       case 7: //BJT
         switch(type){
-          case 0:
+          case 0: //NPN
             line(-size/2,0,-size*0.15,0);
             line(-size*0.15,-size*0.3,-size*0.15,size*0.3);
             line(-size*0.15,-size*0.15,size*0.15,-size*0.35);
@@ -129,7 +217,7 @@ class Component{
             ellipse(0,0,size,size);
           break;
           
-          case 1:
+          case 1: //PNP
             line(-size/2,0,-size*0.15,0);
             line(-size*0.15,-size*0.3,-size*0.15,size*0.3);
             line(-size*0.15,-size*0.15,size*0.15,-size*0.35);
@@ -140,10 +228,15 @@ class Component{
             ellipse(0,0,size,size);
           break;
           
-          default:
-            line(-size*0.3,0,size*0.25,-size*0.25);
-            line(-size/2,0,-size*0.3,0);
-            line(size/2,0,size*0.3,0);
+          default: //NPN
+            line(-size/2,0,-size*0.15,0);
+            line(-size*0.15,-size*0.3,-size*0.15,size*0.3);
+            line(-size*0.15,-size*0.15,size*0.15,-size*0.35);
+            line(-size*0.15,size*0.15,size*0.06,size*0.29);
+            line(size*0.15,-size*0.35,size*0.15,-size/2);
+            line(size*0.15,size*0.35,size*0.15,size/2);
+            triangle(size*0.14,size*0.34,size*0.09,size*0.25,size*0.03,size*0.33);
+            ellipse(0,0,size,size);
           break;
         }
         
