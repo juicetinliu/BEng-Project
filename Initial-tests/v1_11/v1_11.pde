@@ -1,5 +1,6 @@
 ArrayList<Puck> pucks = new ArrayList<Puck>();
 ArrayList<Wire> wires = new ArrayList<Wire>();
+ArrayList<Graph> graphs = new ArrayList<Graph>();
 ArrayList<Component> components = new ArrayList<Component>();
 ArrayList<Zone> zones = new ArrayList<Zone>();
 
@@ -45,6 +46,8 @@ void draw(){
     background(50);
   }else if(removemode){
     background(100,0,0);
+  }else if(graphmode){
+    background(0,0,100);
   }else{
     background(0);
   }
@@ -52,10 +55,16 @@ void draw(){
   fill(255);
   textAlign(LEFT);
   text(frameRate,10,10);
+  //text(graphs.size(),50,10);
   
   drawZones();
   for(Button thisbutton:buttons){
     thisbutton.display();
+  }
+  
+  for(Graph thisgraph:graphs){
+    thisgraph.run();
+    thisgraph.show();
   }
   
   for(Wire thiswire:wires){

@@ -54,7 +54,7 @@ class Button{
         strokeWeight(2);
         if(pointincircle(mouseX,mouseY,x,y,size)){
           fill(255);
-          text("Attach Graph", x + size/1.5, y);
+          text("Toggle Graph", x + size/1.5, y);
           fill(255,128);
         }else{
           noFill();
@@ -65,6 +65,7 @@ class Button{
         
         line(size/4,0,-size/4,0);
         line(-size/4,size/4,-size/4,-size/4);
+        stroke(255,128);
         arc(size/8,0,size/4,size/2,0,PI);
         arc(-size/8,0,size/4,size/2,PI,2*PI);
         popMatrix();
@@ -87,10 +88,12 @@ class Button{
       break;
       
       case "RemovePucks":
+        graphmode = false;
         removemode = !removemode;
       break;
       
       case "AddGraph":
+        removemode = false;
         graphmode = !graphmode;
       break;
       

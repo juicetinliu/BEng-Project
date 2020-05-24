@@ -260,10 +260,6 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
   }
   
   NGparseOutputRT(output);
-  
-  for(Wire tw:wires){
-    tw.showVoltages();
-  }
 }
 
 void NGparseOutputRT(StringList output){

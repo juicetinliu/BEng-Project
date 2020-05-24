@@ -30,7 +30,7 @@ class Puck{
   int shakeCounterThresh = 3, shakeCounter = 0, shakems = millis(), shakeSampPeriod = 25;
   boolean shakeReset = false;
   
-  
+  Graph puckGraph;
   
   Puck(int id, float x, float y, float size){ //size being 100
     this.id = id;
@@ -76,6 +76,7 @@ class Puck{
     for(int s = 0; s < shakedir.length; s++){
       shakedir[s] = -1;
     }
+    this.puckGraph = null;
   }
   
   //=======================================================
@@ -108,6 +109,9 @@ class Puck{
       }
     }
     popMatrix();
+    if(puckGraph != null){
+      puckGraph.setAnchor(x,y);
+    }
   }
   
   void drawDisc(){
@@ -123,6 +127,9 @@ class Puck{
         if(removemode){
           stroke(128,0,0);
           fill(128,0,0);
+        }else if(graphmode){
+          stroke(0,0,128);
+          fill(0,0,128);
         }else{
           fill(128);
         }
@@ -612,6 +619,10 @@ class Puck{
     staterotation = 0;
     typerotation = 0;
     valtext = selectedComponent.generateComponentText(selectedvalue, selectedprefix);
+    if(puckGraph != null){
+      graphs.remove(puckGraph);
+      puckGraph = null;
+    }
   }
   
   int checkZone(){
@@ -756,6 +767,12 @@ class Puck{
     return sendBack;
   }
   
+  void addGraph(Graph newgraph){
+    if(puckGraph == null){
+      puckGraph = newgraph;
+    }
+  }
+  
 }
 
 void connectPucks(Puck puckA, Puck puckB){
@@ -803,11 +820,28 @@ void checkAuras(ArrayList<Puck> allpucks){
   }
 }
 
-void setPuckInformationZero(){
+void setAllPuckInformationZero(){
   for(Puck tp:pucks){
     for(int e = 0; e < tp.voltages.length; e++){
       tp.voltages[e] = 0;
       tp.currents[e] = 0;
     }
   }
+}
+
+void resetAllPuckGraphs(){
+  for(Puck tp:pucks){
+    if(tp.puckGraph != null){
+      tp.puckGraph.resetValues();
+    }
+  }
+}
+
+void updateAllPuckGraphs(int timeelapsed){
+  for(Puck tp:pucks){
+    if(tp.puckGraph != null){
+      tp.puckGraph.addValue(tp.currents[0]);
+    }
+  }
+  
 }

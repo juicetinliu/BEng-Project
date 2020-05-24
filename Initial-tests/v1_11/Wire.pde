@@ -1,6 +1,6 @@
 class Wire{
   int id;
-  float x, y;
+  float x, y, size;
   float handlelength;
   float handlelim = 200;
   float voltage = 0;
@@ -12,12 +12,16 @@ class Wire{
   IntList sides = new IntList();
   ArrayList<PVector> lines = new ArrayList<PVector>();
   
+  Graph wireGraph;
+  
   Wire(int id){
     this.id = id;
+    this.size = 10;
     lines.add(new PVector(0,0));
     lines.add(new PVector(0,0));
     lines.add(new PVector(0,0));
     lines.add(new PVector(0,0));
+    this.wireGraph = null;
   }
   
   void updateVoltage(float voltage){
@@ -44,9 +48,6 @@ class Wire{
         //stroke(255,102,0,128);
         //line(thisanch.x, thisanch.y, thiscont.x, thiscont.y);
       }
-      noStroke();
-      fill(255);
-      ellipse(x,y,10,10);
       
     }else{
       stroke(255);
@@ -57,33 +58,42 @@ class Wire{
       //line(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y);
       //line(lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
     }
-    float tx = x;
-    float ty = y;
-    if(connectedPucks.size() <= 2){
-      tx = bezierPoint(lines.get(0).x, lines.get(1).x, lines.get(3).x, lines.get(2).x, 0.5);
-      ty = bezierPoint(lines.get(0).y, lines.get(1).y, lines.get(3).y, lines.get(2).y, 0.5);
+    //float tx = x;
+    //float ty = y;
+    //if(connectedPucks.size() <= 2){
+    //  tx = bezierPoint(lines.get(0).x, lines.get(1).x, lines.get(3).x, lines.get(2).x, 0.5);
+    //  ty = bezierPoint(lines.get(0).y, lines.get(1).y, lines.get(3).y, lines.get(2).y, 0.5);
+    //}
+    noStroke();
+    fill(255);
+    if(pointincircle(mouseX,mouseY,x,y,size)){
+      ellipse(x,y,size*1.5,size*1.5);
+    }else{
+      ellipse(x,y,size,size);
     }
     
-    //fill(255);
-    //
    
     if(showDebug){
       fill(255);
-      text("ID: " + id,tx,ty+15);
-      text("V: " + voltage,tx,ty-15);
+      text("ID: " + id,x,y+15);
+      text("V: " + voltage,x,y-15);
     }
     
     if(circuitRun){
-      drawCurrents(tx, ty);
+      drawCurrents(x, y);
     }
     
     if(id == 0){
       strokeWeight(2);
       stroke(255);
-      line(tx,ty,tx,ty+puckSize*0.2);
-      line(tx-puckSize*0.15,ty+puckSize*0.2,tx+puckSize*0.15,ty+puckSize*0.2);
-      line(tx-puckSize*0.1,ty+puckSize*0.25,tx+puckSize*0.1,ty+puckSize*0.25);
-      line(tx-puckSize*0.05,ty+puckSize*0.30,tx+puckSize*0.05,ty+puckSize*0.30);
+      line(x,y,x,y+puckSize*0.2);
+      line(x-puckSize*0.15,y+puckSize*0.2,x+puckSize*0.15,y+puckSize*0.2);
+      line(x-puckSize*0.1,y+puckSize*0.25,x+puckSize*0.1,y+puckSize*0.25);
+      line(x-puckSize*0.05,y+puckSize*0.30,x+puckSize*0.05,y+puckSize*0.30);
+    }
+    
+    if(wireGraph != null){
+      wireGraph.setAnchor(x,y);
     }
   }
   
@@ -235,6 +245,10 @@ class Wire{
         lul.sub(anch).setMag(handlelength);
         lulavg.add(lul);
       }
+      if(connectedPucks.size() <= 2){
+        x = bezierPoint(lines.get(0).x, lines.get(1).x, lines.get(3).x, lines.get(2).x, 0.5);
+        y = bezierPoint(lines.get(0).y, lines.get(1).y, lines.get(3).y, lines.get(2).y, 0.5);
+      }
     }
   }
   
@@ -255,6 +269,10 @@ class Wire{
         Puck thispuck = connectedPucks.get(p);
         thispuck.connectedWires[sides.get(p)-1] = null;
       }
+      if(wireGraph != null){
+        graphs.remove(wireGraph);
+        wireGraph = null;
+      }
       wires.remove(this);
     }
   }
@@ -263,11 +281,13 @@ class Wire{
     float wireLength = bezierLength(ax,ay,bx,by,cx,cy,dx,dy,0.01);
     int electronNo = max(1,int(wireLength/density));
     //float percentMotion = current * (millis()/1000.0) % 1.0;  // 0 - 1 per SECOND
-    currentCounter.set(index, (currentCounter.get(index) + current) % 1000);
+    float newcurramount = currentCounter.get(index) + current;
+    newcurramount = (newcurramount < 0) ? newcurramount + 1000 : newcurramount;
+    currentCounter.set(index, newcurramount % 1000);
     fill(255,255,0);
     noStroke();
     //if(electronPosition > 0){
-    if(current > 0){
+    //if(current > 0){
       for(int i = 0; i < electronNo; i++){
         float percentMoved = float(i)/float(electronNo) + (currentCounter.get(index)/(float(1000*electronNo)));
         //float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
@@ -276,15 +296,21 @@ class Wire{
         ellipse(x,y,10,10);
         //text(electronPosition, x, y-15);
       }
-    }else{
-      for(int i = 1; i <= electronNo; i++){
-        float percentMoved = float(i)/float(electronNo) + (currentCounter.get(index)/(float(1000*electronNo)));
-        //float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
-        float x = bezierPoint(ax, bx, cx, dx, percentMoved);
-        float y = bezierPoint(ay, by, cy, dy, percentMoved);
-        ellipse(x,y,10,10);
-        //text(electronPosition, x, y-15);
-      }
+    //}else{
+    //  for(int i = 1; i <= electronNo; i++){
+    //    float percentMoved = float(i)/float(electronNo) + (currentCounter.get(index)/(float(1000*electronNo)));
+    //    //float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
+    //    float x = bezierPoint(ax, bx, cx, dx, percentMoved);
+    //    float y = bezierPoint(ay, by, cy, dy, percentMoved);
+    //    ellipse(x,y,10,10);
+    //    //text(electronPosition, x, y-15);
+    //  }
+    //}
+  }
+  
+  void addGraph(Graph newgraph){
+    if(wireGraph == null){
+      wireGraph = newgraph;
     }
   }
 }
@@ -293,7 +319,10 @@ void addToWire(Puck puckA, int A, Wire thiswire){
   thiswire.connectedPucks.add(puckA);
   thiswire.sides.append(A);
   thiswire.update();
-  //wires.add(thiswire);
+  if(thiswire.wireGraph != null){
+    graphs.remove(thiswire.wireGraph);
+    thiswire.wireGraph = null;
+  }
   puckA.connectedWires[A-1] = thiswire;
   println("added " + puckA.id + ":" + A + " to wire " + thiswire.id);
 }
@@ -307,6 +336,10 @@ void combineWires(Wire wireA, Wire wireB){
       thispuck.connectedWires[wireB.sides.get(p)-1] = wireA;
     }
     wireA.update();
+    if(wireA.wireGraph != null){
+      graphs.remove(wireA.wireGraph);
+      wireA.wireGraph = null;
+    }
     wires.remove(wireB);
     println("combined wire " + wireA.id + " with wire " + wireB.id);
   }else{
@@ -321,14 +354,47 @@ void createWire(Puck puckA, int A, Puck puckB, int B){
   thiswire.sides.append(A);
   thiswire.sides.append(B);
   thiswire.update();
+  if(thiswire.wireGraph != null){
+    graphs.remove(thiswire.wireGraph);
+    thiswire.wireGraph = null;
+  }
   wires.add(thiswire);
   puckA.connectedWires[A-1] = thiswire;
   puckB.connectedWires[B-1] = thiswire;
   println("created wire " + thiswire.id + " between " + puckA.id + ":" + A + " & " + puckB.id + ":" + B);
 }
 
+void hideWireVoltages(){
+  for(Wire tw:wires){
+    tw.hideVoltages();
+  }
+}
+
+void showWireVoltages(){
+  for(Wire tw:wires){
+    tw.showVoltages();
+  }
+}
+
 void setWireVoltagesZero(){
   for(Wire tw:wires){
     tw.voltage = 0;
   }
+}
+
+void resetAllWireGraphs(){
+  for(Wire tw:wires){
+    if(tw.wireGraph != null){
+      tw.wireGraph.resetValues();
+    }
+  }
+}
+
+void updateAllWireGraphs(int timeelapsed){
+  for(Wire tw:wires){
+    if(tw.wireGraph != null){
+      tw.wireGraph.addValue(tw.voltage);
+    }
+  }
+  
 }

@@ -22,29 +22,29 @@ boolean circleincircle(float cx, float cy, float cr, float ox, float oy, float o
   }
 }
 
-//boolean circleinrect(float cx, float cy, float cr, float rx, float ry, float rw, float rh){
-//  float testX = cx;
-//  float testY = cy;
+boolean circleinrect(float cx, float cy, float cr, float rx, float ry, float rw, float rh){
+  float testX = cx;
+  float testY = cy;
 
-//  // which edge is closest?
-//  if (cx < rx-rw/2){
-//    testX = rx-rw/2;            // test left edge
-//  }else if (cx > rx+rw/2){
-//    testX = rx+rw/2;   // right edge
-//  }
-//  if (cy < ry-rh/2){
-//    testY = ry-rh/2;            // top edge
-//  }else if (cy > ry+rh/2){
-//    testY = ry+rh/2;   // bottom edge
-//  }
-//  // get distance from closest edges
-//  float distX = cx-testX;
-//  float distY = cy-testY;
-//  float distance = sqrt((distX*distX) + (distY*distY));
+  // which edge is closest?
+  if (cx < rx-rw/2){
+    testX = rx-rw/2;            // test left edge
+  }else if (cx > rx+rw/2){
+    testX = rx+rw/2;   // right edge
+  }
+  if (cy < ry-rh/2){
+    testY = ry-rh/2;            // top edge
+  }else if (cy > ry+rh/2){
+    testY = ry+rh/2;   // bottom edge
+  }
+  // get distance from closest edges
+  float distX = cx-testX;
+  float distY = cy-testY;
+  float distance = sqrt((distX*distX) + (distY*distY));
 
-//  // if the distance is less than the radius, collision!
-//  if (distance <= cr/2) {
-//    return true;
-//  }
-//  return false;
-//}
+  // if the distance is less than the radius, collision!
+  if (distance <= cr/2) {
+    return true;
+  }
+  return false;
+}

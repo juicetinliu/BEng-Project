@@ -57,7 +57,7 @@ class Runzone extends Zone{
   float sliderlength;
   Puck ThePuck = null;
   int circuitSimTimer;
-  float circuitSimStep = 0.1; //s
+  float circuitSimStep = 0.1; //seconds
   
   
   Runzone(int id, String label, int type, float x, float y, float w, float h, Icon zoneicon){
@@ -135,9 +135,7 @@ class Runzone extends Zone{
           circuitRun = false;
           if(circuitChecked){
             circuitChecked = false;
-            for(Wire tw:wires){
-              tw.hideVoltages();
-            }
+            hideWireVoltages();
           }
         }else{
           reset();
@@ -169,6 +167,9 @@ class Runzone extends Zone{
           if(circuitRun){  //RUN THE SIMULATION
             if(mspassed(circuitSimTimer,int(circuitSimStep*1000))){
               NGCircuitRT(float(millis() - circuitSimTimer)/1000, false);
+              showWireVoltages();
+              updateAllPuckGraphs(circuitSimTimer);
+              updateAllWireGraphs(circuitSimTimer);
               circuitSimTimer = millis();
             }
           //}else{
