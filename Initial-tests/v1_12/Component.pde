@@ -228,10 +228,16 @@ class Component{ //CATEGORY
       break;
       
       case 8: //Oscilloscope
-        line(0, -size*0.07, 0, size*0.07);
-        line(0, -size*0.07, -size*0.25, size*0.07);
-        line(0, size*0.07, size*0.25, -size*0.07);
+        //line(0, -size*0.07, 0, size*0.07);
+        //line(0, -size*0.07, -size*0.25, size*0.07);
+        //line(0, size*0.07, size*0.25, -size*0.07);
         
+        line(-size*0.5,-size*0.07,-size*0.2,-size*0.07);
+        line(-size*0.5,size*0.07,-size*0.2,size*0.07);
+        line(-size*0.2,-size*0.07,size*0.45,-size*0.02);
+        line(-size*0.2,size*0.07,size*0.45,size*0.02);
+        line(size*0.45,-size*0.02,size*0.45,size*0.02);
+        rect(-size*0.2,0,size*0.04,size*0.4);
         ellipse(0,0,size,size);
         
         //line(size*0.2,0,size*0.3,0);
@@ -239,19 +245,21 @@ class Component{ //CATEGORY
         //line(-size*0.2,0,-size*0.3,0);
       break;
       
-      case 9:
+      case 9: //VOLTMETER
         line(-size*0.05,-size*0.07,0,size*0.07);
         line(size*0.05,-size*0.07,0,size*0.07);
+        
         ellipse(0,0,size,size);
         line(size*0.2,0,size*0.3,0);
         line(size*0.25,size*0.05,size*0.25,-size*0.05);
         line(-size*0.2,0,-size*0.3,0);
       break;
       
-      case 10:
+      case 10: //AMMETER
         line(-size*0.05,size*0.07,0,-size*0.07);
         line(size*0.025,size*0.02,-size*0.025,size*0.02);
         line(size*0.05,size*0.07,0,-size*0.07);
+        
         ellipse(0,0,size,size);
         line(size*0.2,0,size*0.3,0);
         line(size*0.25,size*0.05,size*0.25,-size*0.05);
@@ -273,4 +281,13 @@ class Component{ //CATEGORY
     }
   }
   
+}
+
+void drawOscilloscope(float size, float rotation){
+  pushMatrix();
+  rotate(radians(rotation));
+  line(0, -size*0.07, 0, size*0.07);
+  line(0, -size*0.07, -size*0.25, size*0.07);
+  line(0, size*0.07, size*0.25, -size*0.07); 
+  popMatrix();
 }

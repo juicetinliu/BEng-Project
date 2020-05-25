@@ -32,7 +32,7 @@ class Puck{
   boolean shakeReset = false;
   
   Graph puckGraph;
-  int scopenodep = -1, scopenoden = -1;
+  float voltageAcross; //FOR OSCILLOSCOPE AND VOLTMETER
   
   Puck(int id, float x, float y, float size, float shakeSen, float scrollSen){ //size being 100
     this.id = id;
@@ -79,6 +79,7 @@ class Puck{
     setShakeSettings(shakeSen);
     setScrollSettings(scrollSen);
     this.puckGraph = null;
+    this.voltageAcross = 0;
   }
   
   //=======================================================
@@ -175,8 +176,15 @@ class Puck{
       if(circuitRun){
         fill(255);
         textAlign(CENTER,CENTER);
-        if(selectedComponent.id == 9){ //VOLTMETER
-          float voltageAcross = connectedWires[0].voltage - connectedWires[1].voltage;
+        if(selectedComponent.id == 8){ //OSCILLOSCOPE
+          if(puckGraph != null){
+            stroke(puckGraph.graphColor);
+          }else{
+            stroke(255);
+          }
+          strokeWeight(3);
+          drawOscilloscope(size, rotation);
+        }else if(selectedComponent.id == 9){ //VOLTMETER
           text(voltageAcross + "V",0,0);
         }else if(selectedComponent.id == 10){ //AMMETER
           float currentThrough = 0;
@@ -654,10 +662,7 @@ class Puck{
     staterotation = 0;
     typerotation = 0;
     valtext = selectedComponent.generateComponentText(selectedvalue, selectedprefix);
-    if(puckGraph != null){
-      graphs.remove(puckGraph);
-      puckGraph = null;
-    }
+    removeGraph();
   }
   
   int checkZone(){
@@ -689,11 +694,22 @@ class Puck{
         if(checkShake()){
           print("shook");
           resetShake();
-          removeConnections();
+          if(!removeConnections()){
+            resetComponent();
+          }
         }
       }
     }else{
       resetShake();
+    }
+    
+    if(selectedComponent.id == 9 || selectedComponent.id == 8){ //VOLTMETER
+      if(connectedWires[0] != null && connectedWires[1] != null){ 
+        voltageAcross = connectedWires[0].voltage - connectedWires[1].voltage;
+      }
+    }
+    if(selectedComponent.id == 8){ //OSCILLOSCOPE - ADD GRAPH
+      addGraph(new Graph(oscX,oscY,100,100,1,true));
     }
     
     if(menuclock > 90){
@@ -740,7 +756,7 @@ class Puck{
     return true;
   }
   
-  void removeConnections(){
+  boolean removeConnections(){ //return false if nothing is removed
     if(!this.noConnections()){
       for(int w = 0; w < connectedWires.length; w++){
         Wire thiswire = connectedWires[w];
@@ -754,7 +770,9 @@ class Puck{
         }
       }
       println("removed connections from " + id);
+      return true;
     }
+    return false;
   }
   
   int readyConnectTo(Puck otherPuck){
@@ -798,10 +816,22 @@ class Puck{
     return sendBack;
   }
   
-  void addGraph(Graph newgraph){
+  boolean addGraph(Graph newgraph){
     if(puckGraph == null){
       puckGraph = newgraph;
+      graphs.add(newgraph);
+      return true;
     }
+    return false;
+  }
+  
+  boolean removeGraph(){
+    if(puckGraph != null){
+      graphs.remove(puckGraph);
+      puckGraph = null;
+      return true;
+    }
+    return false;
   }
   
   void setShakeSettings(float shakeval){ //0 - SHAKE ALOT (UNSENSITIVE); 1 - SHAKE A LITTLE (SENSITIVE)
@@ -882,7 +912,20 @@ void resetAllPuckGraphs(){
 void updateAllPuckGraphs(int timeelapsed){
   for(Puck tp:pucks){
     if(tp.puckGraph != null){
-      tp.puckGraph.addValue(tp.currents[0]);
+      if(tp.puckGraph.OSCILLOSCOPE){
+        tp.puckGraph.addValue(tp.voltageAcross);
+      }else{
+        tp.puckGraph.addValue(tp.currents[0]);
+      }
     }
   }
 }
+
+//void updateAllOscGraphs(int timeelapsed){
+//  for(Puck tp:pucks){
+//    if(
+//    if(tp.puckGraph != null){
+//      tp.puckGraph.addValue(tp.currents[0]);
+//    }
+//  }
+//}

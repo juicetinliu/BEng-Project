@@ -9,15 +9,16 @@ class Graph{
   float minval, maxval;
   int interval; //MILLISECONDS0
   int type; //0 - VOLTAGE; 1 - CURRENT
+  boolean OSCILLOSCOPE;
   boolean selected;
   
-  Graph(float x, float y, int novalues, int interval, int type){
+  Graph(float x, float y, int novalues, int interval, int type, boolean osc){
     this.x = x;
     this.y = y;
     this.anchorx = x;
     this.anchory = y;
-    this.w = 300;
-    this.h = 200;
+    this.w = width/4;
+    this.h = height/4;
     colorMode(HSB, 360, 100, 100);
     this.graphColor = color(random(360),50,100);
     colorMode(RGB, 255, 255, 255);
@@ -29,19 +30,15 @@ class Graph{
     this.interval = interval;
     this.type = type;
     this.selected = false;
+    this.OSCILLOSCOPE = osc;
     resetValues();
   }
   
   void show(){
-    rectMode(CENTER);
-    stroke(graphColor,128);
-    strokeWeight(2);
-    float mapyanch = map(values[0],minval,maxval,h*0.45,-h*0.45);
-    line(x+w*0.45,y+mapyanch,anchorx,anchory);
+    drawAnchor();
     pushMatrix();
     translate(x,y);
-    
-    if(pointinrect(mouseX,mouseY,x,y,w,h)){
+    if(!OSCILLOSCOPE && pointinrect(mouseX,mouseY,x,y,w,h)){
       fill(255,128);
     }else{
       noFill();
@@ -49,19 +46,36 @@ class Graph{
     stroke(255);
     strokeWeight(2);
     rect(0,0,w,h);
-    drawGraph();
     
     popMatrix();
+    
+    drawAxes();
+    drawGraph();
   }
   
-  void drawGraph(){
+  void drawAnchor(){
+    rectMode(CENTER);
+    stroke(graphColor,128);
+    strokeWeight(2);
+    float mapyanch = map(values[0],minval,maxval,h*0.45,-h*0.45);
+    line(x+w*0.45,y+mapyanch,anchorx,anchory);
+  }
+  
+  void drawAxes(){
+    pushMatrix();
+    translate(x,y);
     noFill();
     stroke(255);
     strokeWeight(2);
     float mapzeroy = map(0,minval,maxval,h*0.45,-h*0.45);
     line(-w*0.45,mapzeroy,w*0.45,mapzeroy);
     line(-w*0.45,h*0.45,-w*0.45,-h*0.45);
-    
+    popMatrix();
+  }
+  
+  void drawGraph(){
+    pushMatrix();
+    translate(x,y);
     //if(type == 0){
     //  stroke(0,200,255);
     //}else{
@@ -72,9 +86,10 @@ class Graph{
     for(int i = 0; i < values.length; i++){
       float mapxval = map(i,0,values.length-1,w*0.45,-w*0.45);
       float mapyval = map(values[i],minval,maxval,h*0.45,-h*0.45);
-      curveVertex(mapxval,mapyval);
+      vertex(mapxval,mapyval);
     }
     endShape();
+    popMatrix();
   }
   
   void move(float x, float y){
@@ -104,10 +119,13 @@ class Graph{
       values[i] = values[i-1];
     }
     values[0] = val;
-    if(val > maxval){
-      maxval = val;
-    }else if(val < minval){
-      minval = val;
+    
+    if(!OSCILLOSCOPE){
+      if(val > maxval){
+        maxval = val;
+      }else if(val < minval){
+        minval = val;
+      }
     }
   }
   
@@ -126,8 +144,34 @@ class Graph{
   }
   
   void run(){
-    if(selected){
+    if(selected && !OSCILLOSCOPE){
       mouseMove();
+    }
+  }
+}
+
+void showGraphs(){
+  int osccounter = 0;
+  for(Graph thisgraph:graphs){
+    thisgraph.run();
+    if(thisgraph.OSCILLOSCOPE){
+      if(osccounter == 0){
+        thisgraph.show();
+      }else{
+        thisgraph.drawAnchor();
+        thisgraph.drawGraph();
+      }
+      osccounter++;
+    }else{
+      thisgraph.show();
+    }
+  }
+}
+
+void updateOSCgraphpos(float x, float y){
+  for(Graph thisgraph:graphs){
+    if(thisgraph.OSCILLOSCOPE){
+      thisgraph.move(x,y);
     }
   }
 }

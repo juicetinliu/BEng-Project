@@ -27,6 +27,7 @@ Icon chipIC = new Icon("chip");
 Icon wrenIC = new Icon("wrench");
 Icon gearIC = new Icon("gear");
 
+float oscX, oscY;
 
 void setup(){
   size(1200,800);
@@ -52,6 +53,8 @@ void setup(){
   sliders.add(new Slider("Shakesen", width*0.6, height*0.3, width*0.5, height*2/80));
   //sliders.add(new Slider("DiscSize", width*0.6, height*0.4, width*0.5, height*2/80));
   //sliders.add(new Slider("DiscRotType", width*0.6, height*0.5, width*0.5, height*2/80));
+  oscX = width*0.13;
+  oscY = height*0.67;
 }
 void draw(){
   drawBackground();
@@ -66,11 +69,8 @@ void draw(){
     thisbutton.display();
   }
   
-  for(Graph thisgraph:graphs){
-    thisgraph.run();
-    thisgraph.show();
-  }
-  
+  showGraphs();
+    
   for(Wire thiswire:wires){
     thiswire.display();
     thiswire.run();
@@ -84,7 +84,6 @@ void draw(){
     thispuck.run();
     thispuck.display();
   }
-  
   
   if(settingsOpen){
     showSettingsPanel();

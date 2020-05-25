@@ -135,6 +135,8 @@ class Runzone extends Zone{
           circuitRun = false;
           if(circuitChecked){
             circuitChecked = false;
+            oscY = height*0.67;
+            updateOSCgraphpos(oscX,oscY);
             hideWireVoltages();
           }
         }else{
@@ -155,6 +157,8 @@ class Runzone extends Zone{
               //NGCircuitRT(0.1);
               println("yay");
               circuitRun = true;
+              oscY = height*0.87;
+              updateOSCgraphpos(oscX,oscY);
               setWireVoltagesZero();
               //setPuckInformationZero();
               circuitSimTimer = millis();

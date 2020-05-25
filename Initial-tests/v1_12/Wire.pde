@@ -282,14 +282,25 @@ class Wire{
       float x = bezierPoint(ax, bx, cx, dx, percentMoved);
       float y = bezierPoint(ay, by, cy, dy, percentMoved);
       ellipse(x,y,10,10);
-      text(current,x+10,y);
     }
   }
   
-  void addGraph(Graph newgraph){
+  boolean addGraph(Graph newgraph){
     if(wireGraph == null){
       wireGraph = newgraph;
+      graphs.add(newgraph);
+      return true;
     }
+    return false;
+  }
+  
+  boolean removeGraph(){
+    if(wireGraph != null){
+      graphs.remove(wireGraph);
+      wireGraph = null;
+      return true;
+    }
+    return false;
   }
 }
 

@@ -19,22 +19,17 @@ void mousePressed(){
         if(pointincircle(mouseX,mouseY,thispuck.x,thispuck.y,thispuck.size)){
           if(removemode){
             thispuck.removeConnections();
-            if(thispuck.puckGraph != null){
-              graphs.remove(thispuck.puckGraph);
-              thispuck.puckGraph = null;
-            }
+            thispuck.removeGraph();
             pucks.remove(thispuck);
             removemode = false;
           }else if(graphmode){
-            if(thispuck.puckGraph == null){
-              Graph newGraph = new Graph(thispuck.x,thispuck.y,100,100,1);
-              thispuck.addGraph(newGraph);
-              graphs.add(newGraph);
-            }else{
-              graphs.remove(thispuck.puckGraph);
-              thispuck.puckGraph = null;
+            if(thispuck.selectedComponent.id != 8){ //IF IT ISN'T AN OSCILLOSCOPE
+              Graph newGraph = new Graph(thispuck.x,thispuck.y,100,100,1, false);
+              if(!thispuck.addGraph(newGraph)){ //if addgraph fails(already contains graph) then remove graph
+                thispuck.removeGraph();
+              }
+              graphmode = false;
             }
-            graphmode = false;
           }else{
             thispuck.select();
           }
@@ -44,13 +39,9 @@ void mousePressed(){
       for(Wire thiswire:wires){
         if(pointincircle(mouseX,mouseY,thiswire.x,thiswire.y,thiswire.size)){
           if(graphmode){
-            if(thiswire.wireGraph == null){
-              Graph newGraph = new Graph(thiswire.x,thiswire.y,100,100,0);
-              thiswire.addGraph(newGraph);
-              graphs.add(newGraph);
-            }else{
-              graphs.remove(thiswire.wireGraph);
-              thiswire.wireGraph = null;
+            Graph newGraph = new Graph(thiswire.x,thiswire.y,100,100,0, false);
+            if(!thiswire.addGraph(newGraph)){ //if addgraph fails(already contains graph) then remove graph
+              thiswire.removeGraph();
             }
             graphmode = false;
           }
@@ -58,9 +49,11 @@ void mousePressed(){
         }
       }
       for(Graph thisgraph:graphs){
-        if(pointinrect(mouseX,mouseY,thisgraph.x,thisgraph.y,thisgraph.w,thisgraph.h)){
-          thisgraph.select();
-          return;
+        if(!thisgraph.OSCILLOSCOPE){
+          if(pointinrect(mouseX,mouseY,thisgraph.x,thisgraph.y,thisgraph.w,thisgraph.h)){
+            thisgraph.select();
+            return;
+          }
         }
       }
       for(Button thisbutton:buttons){
