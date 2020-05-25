@@ -71,6 +71,24 @@ class Button{
         popMatrix();
       break;
       
+      case "Settings":
+        stroke(255);
+        strokeWeight(2);
+        if(pointincircle(mouseX,mouseY,x,y,size)){
+          fill(255);
+          text("Settings", x + size/1.5, y);
+          fill(255,128);
+        }else{
+          noFill();
+        }
+        pushMatrix();
+        translate(x,y);
+        ellipse(0,0,size,size);
+        
+        gearIC.display(0,0,size/3,true,color(0),color(255),2);
+        popMatrix();
+      break;
+      
       default:
       break;
     }
@@ -84,7 +102,7 @@ class Button{
   void doAction(){
     switch(purpose){
       case "AddPucks":
-        pucks.add(new Puck(pucks.size()+1, x, y,puckSize));
+        pucks.add(new Puck(pucks.size()+1, x, y,puckSize, shakeSettings, scrollSettings));
       break;
       
       case "RemovePucks":
@@ -95,6 +113,10 @@ class Button{
       case "AddGraph":
         removemode = false;
         graphmode = !graphmode;
+      break;
+      
+      case "Settings":
+        settingsOpen = !settingsOpen;
       break;
       
       default:

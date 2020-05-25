@@ -5,6 +5,7 @@ class Puck{
   float size, aurasize, ringthickness;
   float baserotation, prebaserotation;
   float rotation, comrotation, valrotation, staterotation, typerotation;
+  float scrollmult;
   boolean selected;
   float mouseoffx, mouseoffy;
   int currZone;
@@ -25,14 +26,14 @@ class Puck{
   int menuclock = 0, menums = millis(), menualpha;
   boolean menushow;
   
-  float[] shakedir = new float[10];
+  float shakedir;
   float shakeAngThresh = PI/2, shakeMagThresh = 10, shakex, shakey; //ADJUST SHAKE SENSITIVITY - ANG/MAG/COUNTER/SAMPPERIOD
-  int shakeCounterThresh = 3, shakeCounter = 0, shakems = millis(), shakeSampPeriod = 25;
+  int shakeCounterThresh = 3, shakeCounter = 0, shakems = millis(), shakeDecayPeriod = 1000;
   boolean shakeReset = false;
   
   Graph puckGraph;
   
-  Puck(int id, float x, float y, float size){ //size being 100
+  Puck(int id, float x, float y, float size, float shakeSen, float scrollSen){ //size being 100
     this.id = id;
     this.x = x;
     this.y = y;
@@ -73,9 +74,9 @@ class Puck{
     }
     this.shakex = x;
     this.shakey = y;
-    for(int s = 0; s < shakedir.length; s++){
-      shakedir[s] = -1;
-    }
+    this.shakedir = -1;
+    setShakeSettings(shakeSen);
+    setScrollSettings(scrollSen);
     this.puckGraph = null;
   }
   
@@ -120,7 +121,7 @@ class Puck{
     
     if(selected){
       //fill(50);
-      float mapshake = map(shakeCounter,0,10,50,255);
+      float mapshake = map(shakeCounter,0,shakeCounterThresh,50,150);
       fill(mapshake,50,50);
     }else{
       if(pointincircle(mouseX,mouseY,x,y,size)){
@@ -447,45 +448,35 @@ class Puck{
   
   void resetShake(){
     if(!shakeReset){
-      for(int s = 0; s < shakedir.length; s++){
-        shakedir[s] = -1;
-      }
+      shakedir = -1;
       shakeCounter = 0;
+      shakems = millis();
       shakeReset = true;
     }
   }
   
-  void updateShake(){
-    shakeReset = false;
-    for(int s = shakedir.length - 1; s > 0; s--){ //Push back dirs
-      shakedir[s] = shakedir[s-1];
-    }    
+  boolean checkShake(){ //IF TOTAL NUMBER OF [changes between consecutive movement angles is greater than a threshhold] WITHIN A TIMEFRAME IS GREATER THAN THRESHOLD -> Shake detected
+    shakeReset = false;    
     PVector diffs = new PVector(x - shakex, y - shakey);
     if(diffs.mag() > shakeMagThresh){ //add movevector angle to shakedir whenever puck is moved
-      shakedir[0] = limradians(diffs.heading());
-      //print(degrees(shakedir[0]) + " ");
-      //print("[" + degrees(shakedir[0]) + "| " + (mouseY - mouseoffy - y) + "," + (mouseX - mouseoffx - x) + "] ");
+      float currshakedir = limradians(diffs.heading());
+      if(shakedir != -1){
+        if(minangdiff(shakedir,currshakedir) > shakeAngThresh){
+          shakeCounter += 1;
+          shakems = millis() + shakeDecayPeriod;
+          print(shakems + " ");
+        }
+      }
+      shakedir = currshakedir;
     }else{
-      shakedir[0] = -1;
-      //print("!! ");
+      shakedir = -1;
+      if(mspassed(shakems,shakeDecayPeriod)){
+        resetShake();
+        print("reset ");
+      }
     }
     shakex = x;
     shakey = y;
-  }
-  
-  boolean checkShake(){ //IF TOTAL NUMBER OF [changes between consecutive movement angles is greater than a threshhold] WITHIN A TIMEFRAME IS GREATER THAN THRESHOLD -> Shake detected
-    shakeCounter = 0;
-    for(int s = 0; s < shakedir.length-1; s++){
-      if(shakedir[s] != -1 && shakedir[s+1] != -1){
-        fill(255);
-        if(minangdiff(shakedir[s],shakedir[s+1]) > shakeAngThresh){
-          shakeCounter += 1;
-          fill(255,0,0);
-        }
-        //print("[" + degrees(minangdiff(shakedir[s],shakedir[s+1])) + "| " + degrees(shakedir[s]) + "," + degrees(shakedir[s+1]) + "] ");
-        //text(minangdiff(shakedir[s],shakedir[s+1]),x + s * 50,y + 75);
-      }
-    }
     return shakeCounter >= shakeCounterThresh;
   }
   
@@ -651,14 +642,10 @@ class Puck{
     if(selected){
       mouseMove();
       if(!circuitRun){
-        if(mspassed(shakems,shakeSampPeriod)){
-          shakems = millis();
-          updateShake();
-          if(checkShake()){
-            print("shook");
-            resetShake();
-            removeConnections();
-          }
+        if(checkShake()){
+          print("shook");
+          resetShake();
+          removeConnections();
         }
       }
     }else{
@@ -771,6 +758,17 @@ class Puck{
     if(puckGraph == null){
       puckGraph = newgraph;
     }
+  }
+  
+  void setShakeSettings(float shakeval){ //0 - SHAKE ALOT (UNSENSITIVE); 1 - SHAKE A LITTLE (SENSITIVE)
+    shakeAngThresh = map(shakeval,0,1,PI-1,PI/4);
+    shakeCounterThresh = int(map(shakeval,0,1,5,3));
+    shakeMagThresh = map(shakeval,0,1,10,1);
+    shakeDecayPeriod = int(map(shakeval,0,1,500,1500));
+  }
+  
+  void setScrollSettings(float scrollval){ //0 - SCROLL ALOT (UNSENSITIVE); 1 - SCROLL A LITTLE FOR MASSIVE ROTATION (SENSITIVE)
+    scrollmult = 1;
   }
   
 }
