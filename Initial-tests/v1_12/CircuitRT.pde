@@ -80,7 +80,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
         lines.append(thisline);
         lines.append(swvline);
         lines.append(nxtline);
-      }else if(thiscomp.id != 0){
+      }else if(thiscomp.NGusable){
         if(thiscomp.terminals == 2){ //FOR TWO TERMINAL COMPONENTS
           String val = chkpuck.selectedvalue + intCodetoNGCode(chkpuck.selectedprefix); //VALUE OF PUCK COMPONENT
           thisline += IDcode + " "; //ADD NAME AND ID
@@ -211,7 +211,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
   for(Puck chkpuck:pucks){
     if(!chkpuck.MASTERPUCK){
       Component thiscomp = chkpuck.selectedComponent;
-      if(thiscomp.id != 0){
+      if(thiscomp.NGusable){
         if(thiscomp.id == 5){
           printline += " i(V" + chkpuck.id + ")[k]";
         }else if(thiscomp.id == 7){
@@ -276,15 +276,15 @@ void NGparseOutputRT(StringList output){
     Puck thispuck = pucks.get(p);
     if(!thispuck.MASTERPUCK){
       Component thiscomp = thispuck.selectedComponent;
-      if(thiscomp.id != 0){
+      if(thiscomp.NGusable){
         if(thiscomp.id == 7){
           String line = output.get(lineptr);
           String[] list = split(line, " = ");
-          thispuck.currents[1] = float(list[1].trim());
+          thispuck.currents[2] = float(list[1].trim());
           lineptr--;
           line = output.get(lineptr);
           list = split(line, " = ");
-          thispuck.currents[2] = float(list[1].trim());
+          thispuck.currents[1] = float(list[1].trim());
           lineptr--;
           line = output.get(lineptr);
           list = split(line, " = ");

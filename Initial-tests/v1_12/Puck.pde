@@ -32,6 +32,7 @@ class Puck{
   boolean shakeReset = false;
   
   Graph puckGraph;
+  int scopenodep = -1, scopenoden = -1;
   
   Puck(int id, float x, float y, float size, float shakeSen, float scrollSen){ //size being 100
     this.id = id;
@@ -103,7 +104,14 @@ class Puck{
       if(showDebug){
         fill(255);
         text("ID: " + id, 0, -75);
-        text("I: " + currents[0], 100, 0);
+        
+        if(selectedComponent.id == 7){
+          text("IC: " + currents[0], 100, -15);
+          text("IB: " + currents[1], 100, 0);
+          text("IE: " + currents[2], 100, 15);
+        }else{
+          text("I: " + currents[0], 100, 0);
+        }
         if(selectedComponent.id == 2 || selectedComponent.id == 6){
           text("V: " + voltages[0], 100, -15);
         }
@@ -164,27 +172,65 @@ class Puck{
       arc(0,0,offsetamount,offsetamount,-PI/2+PI/5,1.5*PI-PI/5);
       line(0,0,0,-offsetamount*0.5);
     }else{
-      if(currZone == 1){ 
-        fill(255,100);
+      if(circuitRun){
+        fill(255);
         textAlign(CENTER,CENTER);
-        text(valtext,0,size/4);
-        stroke(255,map(menualpha,0,255,255,50));
-        strokeWeight(2);
-        noFill();
-        selectedComponent.drawComponent(0,0,size-15,rotation,2, true, selectedstate, selectedtype);
-      }else if(currZone == 3 && selectedComponent.noTypes <= 1){
-        fill(255,100);
-        textAlign(CENTER,CENTER);
-        text(valtext,0,size/4);
-        stroke(255,map(menualpha,0,255,255,50));
-        strokeWeight(2);
-        noFill();
-        selectedComponent.drawComponent(0,0,size-15,rotation,2, true, selectedstate, selectedtype);
+        if(selectedComponent.id == 9){ //VOLTMETER
+          float voltageAcross = connectedWires[0].voltage - connectedWires[1].voltage;
+          text(voltageAcross + "V",0,0);
+        }else if(selectedComponent.id == 10){ //AMMETER
+          float currentThrough = 0;
+          //Wire tw = connectedWires[0];
+          //for(int w = 0; w < tw.connectedPucks.size(); w++){
+          //  Puck op = tw.connectedPucks.get(0);
+          //  if(op.selectedComponent.NGusable){
+          //    if(op.selectedComponent.id == 7){
+          //      if(tw.sides.get(w) == 1){
+          //        currentThrough += op.currents[0];
+          //      }else if(tw.sides.get(w) == 2){
+          //        currentThrough += op.currents[2];
+          //      }else{
+          //        currentThrough += op.currents[1];
+          //      }
+          //    }else{
+          //      if(tw.sides.get(w) == 1){
+          //        currentThrough += -op.currents[0];
+          //      }else{
+          //        currentThrough += op.currents[0];
+          //      }
+          //    }
+          //  }
+          //}
+          text(currentThrough + "A",0,0);
+        }else{
+          fill(255,100);
+          textAlign(CENTER,CENTER);
+          text(valtext,0,size/4);
+          selectedComponent.drawComponent(0,0,size-15,rotation,2, false, selectedstate, selectedtype);
+        }
       }else{
-        fill(255,100);
-        textAlign(CENTER,CENTER);
-        text(valtext,0,size/4);
-        selectedComponent.drawComponent(0,0,size-15,rotation,2, false, selectedstate, selectedtype);
+        if(currZone == 1){ 
+          fill(255,100);
+          textAlign(CENTER,CENTER);
+          text(valtext,0,size/4);
+          stroke(255,map(menualpha,0,255,255,50));
+          strokeWeight(2);
+          noFill();
+          selectedComponent.drawComponent(0,0,size-15,rotation,2, true, selectedstate, selectedtype);
+        }else if(currZone == 3 && selectedComponent.noTypes <= 1){
+          fill(255,100);
+          textAlign(CENTER,CENTER);
+          text(valtext,0,size/4);
+          stroke(255,map(menualpha,0,255,255,50));
+          strokeWeight(2);
+          noFill();
+          selectedComponent.drawComponent(0,0,size-15,rotation,2, true, selectedstate, selectedtype);
+        }else{
+          fill(255,100);
+          textAlign(CENTER,CENTER);
+          text(valtext,0,size/4);
+          selectedComponent.drawComponent(0,0,size-15,rotation,2, false, selectedstate, selectedtype);
+        }
       }
     }
   }
@@ -839,5 +885,4 @@ void updateAllPuckGraphs(int timeelapsed){
       tp.puckGraph.addValue(tp.currents[0]);
     }
   }
-  
 }

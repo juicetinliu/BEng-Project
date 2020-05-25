@@ -47,6 +47,7 @@ class Wire{
         bezier(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y);
         //stroke(255,102,0,128);
         //line(thisanch.x, thisanch.y, thiscont.x, thiscont.y);
+        text(sides.get(l/2),x,y);
       }
       
     }else{
@@ -58,12 +59,6 @@ class Wire{
       //line(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y);
       //line(lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
     }
-    //float tx = x;
-    //float ty = y;
-    //if(connectedPucks.size() <= 2){
-    //  tx = bezierPoint(lines.get(0).x, lines.get(1).x, lines.get(3).x, lines.get(2).x, 0.5);
-    //  ty = bezierPoint(lines.get(0).y, lines.get(1).y, lines.get(3).y, lines.get(2).y, 0.5);
-    //}
     noStroke();
     fill(255);
     if(pointincircle(mouseX,mouseY,x,y,size)){
@@ -112,9 +107,9 @@ class Wire{
           if(sides.get(l/2) == 1){
             current = thispuck.currents[0];
           }else if(sides.get(l/2) == 2){
-            current = -thispuck.currents[0];
+            current = thispuck.currents[2];
           }else{
-            current = thispuck.currents[0];
+            current = thispuck.currents[1];
           }
         }else{
           if(sides.get(l/2) == 1){
@@ -124,8 +119,6 @@ class Wire{
           }
         }
         moveElectrons(l/2, thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y, current, currentDensity);
-        fill(255);
-        text(current,x+50 + l*25,y);
       }
     }else{
       Puck thispuck = connectedPucks.get(0);
@@ -133,9 +126,9 @@ class Wire{
           if(sides.get(0) == 1){
             current = thispuck.currents[0];
           }else if(sides.get(0) == 2){
-            current = -thispuck.currents[0];
+            current = thispuck.currents[2];
           }else{
-            current = thispuck.currents[0];
+            current = thispuck.currents[1];
           }
         }else{
           if(sides.get(0) == 1){
@@ -145,8 +138,6 @@ class Wire{
           }
         }
       moveElectrons(0, lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y, current, currentDensity);
-      fill(255);
-      text(current,x+50,y);
     }
   }
   
@@ -280,32 +271,19 @@ class Wire{
   void moveElectrons(int index, float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy, float current, float density){
     float wireLength = bezierLength(ax,ay,bx,by,cx,cy,dx,dy,0.01);
     int electronNo = max(1,int(wireLength/density));
-    //float percentMotion = current * (millis()/1000.0) % 1.0;  // 0 - 1 per SECOND
     float newcurramount = currentCounter.get(index) + current;
     newcurramount = (newcurramount < 0) ? newcurramount + 1000 : newcurramount;
     currentCounter.set(index, newcurramount % 1000);
     fill(255,255,0);
     noStroke();
-    //if(electronPosition > 0){
-    //if(current > 0){
-      for(int i = 0; i < electronNo; i++){
-        float percentMoved = float(i)/float(electronNo) + (currentCounter.get(index)/(float(1000*electronNo)));
-        //float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
-        float x = bezierPoint(ax, bx, cx, dx, percentMoved);
-        float y = bezierPoint(ay, by, cy, dy, percentMoved);
-        ellipse(x,y,10,10);
-        //text(electronPosition, x, y-15);
-      }
-    //}else{
-    //  for(int i = 1; i <= electronNo; i++){
-    //    float percentMoved = float(i)/float(electronNo) + (currentCounter.get(index)/(float(1000*electronNo)));
-    //    //float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
-    //    float x = bezierPoint(ax, bx, cx, dx, percentMoved);
-    //    float y = bezierPoint(ay, by, cy, dy, percentMoved);
-    //    ellipse(x,y,10,10);
-    //    //text(electronPosition, x, y-15);
-    //  }
-    //}
+    for(int i = 0; i < electronNo; i++){
+      float percentMoved = float(i)/float(electronNo) + (currentCounter.get(index)/(float(1000*electronNo)));
+      //float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
+      float x = bezierPoint(ax, bx, cx, dx, percentMoved);
+      float y = bezierPoint(ay, by, cy, dy, percentMoved);
+      ellipse(x,y,10,10);
+      text(current,x+10,y);
+    }
   }
   
   void addGraph(Graph newgraph){
