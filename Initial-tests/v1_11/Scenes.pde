@@ -11,20 +11,24 @@ void showSettingsPanel(){
   textAlign(CENTER);
   text("Settings", width/2, height*0.15);
   
-  textAlign(LEFT);
-  text("Mouse Scroll Sensitivity", width*0.15,height*0.2);
-  
+  textSize(16);
+  textAlign(LEFT, CENTER);
+  text("Scroll Sensitivity", width*0.15,height*0.2);
   
   text("Shake Sensitivity", width*0.15,height*0.3);
   
-  text("Disc Size", width*0.15,height*0.4);
+  //text("Disc Size", width*0.15,height*0.4);
   
-  text("Disc Rotation", width*0.15, height*0.5); //segmented, natural 
+  //text("Disc Rotation", width*0.15, height*0.5); //segmented, natural 
   
   
   
   textAlign(CENTER);
   text("Save", width/2, height*0.85);
+  
+  for(Slider thisslider:sliders){
+    thisslider.display();
+  }
   
   textSize(12);
 }

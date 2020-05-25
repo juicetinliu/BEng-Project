@@ -1,6 +1,12 @@
 void mousePressed(){
   if(settingsOpen){
     if(mouseButton == LEFT){
+      for(Slider thisslider:sliders){
+        if(thisslider.clicked()){
+          thisslider.select();
+          return;
+        }
+      }
       Button settingsbutton = buttons.get(0);
       if(settingsbutton.clicked()){
         settingsbutton.doAction();
@@ -76,6 +82,9 @@ void mousePressed(){
 }
 
 void mouseReleased(){
+  for(Slider thisslider:sliders){
+    thisslider.selected = false;
+  }
   for(Puck thispuck:pucks){
     thispuck.selected = false;
   }

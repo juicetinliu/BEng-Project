@@ -482,7 +482,7 @@ class Puck{
   
   void mouseRotate(float e){
     //baserotation = (e > 0)? baserotation + 10 : baserotation - 10;
-    baserotation = baserotation + e;
+    baserotation = baserotation + e*scrollmult;
     float rotationdelta = baserotation - prebaserotation;
     if(rotationdelta != 0){
       zoneRotate(rotationdelta);
@@ -768,7 +768,7 @@ class Puck{
   }
   
   void setScrollSettings(float scrollval){ //0 - SCROLL ALOT (UNSENSITIVE); 1 - SCROLL A LITTLE FOR MASSIVE ROTATION (SENSITIVE)
-    scrollmult = 1;
+    scrollmult = (scrollval < 0.5) ? map(scrollval, 0, 0.5, 0.01, 1) : map(scrollval, 0.5, 1, 1, 100);
   }
   
 }

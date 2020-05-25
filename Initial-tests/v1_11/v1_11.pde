@@ -5,11 +5,12 @@ ArrayList<Component> components = new ArrayList<Component>();
 ArrayList<Zone> zones = new ArrayList<Zone>();
 
 ArrayList<Button> buttons = new ArrayList<Button>();
+ArrayList<Slider> sliders = new ArrayList<Slider>();
+
 boolean removemode = false, graphmode = false;
 boolean settingsOpen = false;
 
 Runzone runzone;
-
 
 boolean circuitRun = false;
 boolean circuitChecked = false;
@@ -47,6 +48,10 @@ void setup(){
   textFont(font);
   textSize(12);
   //textFont(font, 9);
+  sliders.add(new Slider("Scrollsen", width*0.6, height*0.2, width*0.5, height*2/80));
+  sliders.add(new Slider("Shakesen", width*0.6, height*0.3, width*0.5, height*2/80));
+  //sliders.add(new Slider("DiscSize", width*0.6, height*0.4, width*0.5, height*2/80));
+  //sliders.add(new Slider("DiscRotType", width*0.6, height*0.5, width*0.5, height*2/80));
 }
 void draw(){
   if(circuitRun){
@@ -91,6 +96,9 @@ void draw(){
   
   if(settingsOpen){
     showSettingsPanel();
+    for(Slider thisslider:sliders){
+      thisslider.run();
+    }
   }
 }
 
