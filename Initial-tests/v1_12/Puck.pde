@@ -553,6 +553,21 @@ class Puck{
       if(selectComValue(int(delta))){
         valrotation = int(selectedvalue*0.36);
       }
+      if(selectedComponent.id == 8){
+        oscRange = selectedvalue * pow(1000,selectedprefix);
+        if(puckGraph != null){
+          puckGraph.setMaxMin(oscRange, valtext);
+        }
+        //updateAllOscilloscopePucks(valtext, selectedvalue, selectedprefix);
+        //for(Puck tp:pucks){
+        //  if(tp.selectedComponent.id == 8){
+        //    tp.valtext = valtext;
+        //    tp.selectedvalue = selectedvalue;
+        //    tp.selectedprefix = selectedprefix;
+        //    tp.puckGraph.setMaxMin(oscRange, valtext);
+        //  }
+        //}
+      }
       showMenu();
     }else if(currZone == 2){
     }else if(currZone == 3){
@@ -616,7 +631,7 @@ class Puck{
   }
   
   boolean selectComValue(int delta){
-    if(!selectedComponent.valueChange){ // wire or switch
+    if(!selectedComponent.valueChange){
       return false;
     }else{
       int valhi = selectedComponent.valHi, vallo = selectedComponent.valLo;

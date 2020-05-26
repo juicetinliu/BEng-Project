@@ -7,6 +7,7 @@ class Graph{
   float[] values = new float[100];
   int novalues;
   float minval, maxval;
+  String rangetext = "1V";
   int interval; //MILLISECONDS0
   int type; //0 - VOLTAGE; 1 - CURRENT
   boolean OSCILLOSCOPE;
@@ -25,8 +26,8 @@ class Graph{
     this.mouseoffx = 0;
     this.mouseoffy = 0;
     this.novalues = novalues;
-    this.minval = -1;
-    this.maxval = 1;
+    this.minval = -oscRange;
+    this.maxval = oscRange;
     this.interval = interval;
     this.type = type;
     this.selected = false;
@@ -34,10 +35,15 @@ class Graph{
     resetValues();
   }
   
-  void show(){
+  void show(int osccounter){
     drawAnchor();
     pushMatrix();
     translate(x,y);
+    if(OSCILLOSCOPE){
+      fill(graphColor);
+      textAlign(LEFT);
+      text("Src " + (osccounter + 1) + ":" + rangetext, -w*0.5 + (osccounter*w/4), -h*0.55);
+    }
     if(!OSCILLOSCOPE && pointinrect(mouseX,mouseY,x,y,w,h)){
       fill(255,128);
     }else{
@@ -50,7 +56,7 @@ class Graph{
     popMatrix();
     
     drawAxes();
-    drawGraph();
+    drawGraph(osccounter);
   }
   
   void drawAnchor(){
@@ -70,17 +76,25 @@ class Graph{
     float mapzeroy = map(0,minval,maxval,h*0.45,-h*0.45);
     line(-w*0.45,mapzeroy,w*0.45,mapzeroy);
     line(-w*0.45,h*0.45,-w*0.45,-h*0.45);
+    
     popMatrix();
   }
   
-  void drawGraph(){
+  void drawGraph(int osccounter){
     pushMatrix();
     translate(x,y);
+    if(OSCILLOSCOPE){
+      fill(graphColor);
+      textAlign(LEFT);
+      text("Src " + (osccounter + 1) + ":" + rangetext, -w*0.5 + (osccounter*w/4), -h*0.55);
+    }
     //if(type == 0){
     //  stroke(0,200,255);
     //}else{
     //  stroke(255,0,255);
     //}
+    noFill();
+    strokeWeight(2);
     stroke(graphColor);
     beginShape();
     for(int i = 0; i < values.length; i++){
@@ -135,6 +149,12 @@ class Graph{
     }
   }
   
+  void setMaxMin(float range, String rangetext){
+    this.maxval = range;
+    this.minval = -range;
+    this.rangetext = rangetext;
+  }
+  
   void updateMax(float max){
     this.maxval = max;
   }
@@ -156,14 +176,14 @@ void showGraphs(){
     thisgraph.run();
     if(thisgraph.OSCILLOSCOPE){
       if(osccounter == 0){
-        thisgraph.show();
+        thisgraph.show(osccounter);
       }else{
         thisgraph.drawAnchor();
-        thisgraph.drawGraph();
+        thisgraph.drawGraph(osccounter);
       }
       osccounter++;
     }else{
-      thisgraph.show();
+      thisgraph.show(0);
     }
   }
 }

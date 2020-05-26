@@ -1,18 +1,27 @@
 HEHE
-.ic v(1)=1.0 v(2)=1.0
-V1 1 0 PULSE(1 1 0s 1fs 1fs)
-S2 0 2S2 5 0 switch1 OFF
-VST2 5 0 0
-VS2 2S2 2 0
-VR3 1R3 1 0
-R3 2 1R3 1
+.ic v(1)=-0.847158 v(2)=1.676655 v(3)=-2.52381
+VR2 1R2 1 0
+R2 0 1R2 1
+V3 2 3 SIN(0 5 0.25 -0.632s 0)
+RD4 2 2DD4 1
+VD4 0D4 0 0
+D4 2DD4 0D4 diode1 ic=1.676655
+RD5 1 1DD5 1
+VD5 2D5 2 0
+D5 1DD5 2D5 diode1 ic=-2.523813
+RD6 3 3DD6 1
+VD6 0D6 0 0
+D6 3DD6 0D6 diode1 ic=-2.52381
+RD7 1 1DD7 1
+VD7 3D7 3 0
+D7 1DD7 3D7 diode1 ic=1.676652
 .model switch1 sw vt=1
 .model diode1 D(Ron=0.1 Roff=1Meg Vfwd=0.7)
 .model QMODN NPN level=1
 .model QMODP PNP level=1
 .control
-tran 0.0107s 0.107s uic
+tran 0.0106s 0.106s uic
 let k = length(time) - 1
-print time[k] i(V1)[k] i(VS2)[k] i(VR3)[k] v(1)[k] v(2)[k]
+print time[k] i(VR2)[k] i(V3)[k] i(VD4)[k] i(VD5)[k] i(VD6)[k] i(VD7)[k] v(1)[k] v(2)[k] v(3)[k]
 .endc
 .end

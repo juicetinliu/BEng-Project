@@ -20,6 +20,7 @@ boolean showDebug = false;
 float shakeSettings = 0.5;
 float scrollSettings = 0.5;
 int puckSize;
+float elapsedtime = 0; //Seconds
 
 
 Icon knobIC = new Icon("knob");
@@ -27,7 +28,7 @@ Icon chipIC = new Icon("chip");
 Icon wrenIC = new Icon("wrench");
 Icon gearIC = new Icon("gear");
 
-float oscX, oscY;
+float oscX, oscY, oscRange;
 
 void setup(){
   size(1200,800);
@@ -55,6 +56,7 @@ void setup(){
   //sliders.add(new Slider("DiscRotType", width*0.6, height*0.5, width*0.5, height*2/80));
   oscX = width*0.13;
   oscY = height*0.67;
+  oscRange = 1;
 }
 void draw(){
   drawBackground();
@@ -63,6 +65,7 @@ void draw(){
   textAlign(LEFT);
   text(frameRate,10,10);
   //text(graphs.size(),50,10);
+  text(elapsedtime , width/2, 10);
   
   drawZones();
   for(Button thisbutton:buttons){
@@ -122,7 +125,7 @@ void createComponents(){
   components.add(new Component(5, true, "Voltage Source", "V", 2, 'V', 0, 4, -4, 1, 999, 1, true, 1, 4));
   components.add(new Component(6, true, "Diode", "D", 2, false, 1, 1));
   components.add(new Component(7, true, "BJT", "Q", 3, false, 1, 2));
-  components.add(new Component(8, false, "Oscilloscope", "", 2, false, 1, 1));
+  components.add(new Component(8, false, "Oscilloscope", "", 2, 'V', 0, 4, -4, 1, 999, 1, true, 1, 1));
   components.add(new Component(9, false, "Voltmeter", "", 2, false, 1, 1));
   components.add(new Component(10, false, "Ammeter", "", 2, false, 1, 1));
 

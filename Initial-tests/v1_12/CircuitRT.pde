@@ -106,13 +106,17 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           
           //===== ADD INFORMATION =====
           if(thiscomp.id == 5){ //VOLTAGE SOURCES
-            if(firstiteration){
-              thisline += "PULSE(0 " + val;
-            }else{
-              thisline += "PULSE(" + val + " " + val;
+            if(chkpuck.selectedtype == 1){ //PERIODIC SOURCE SIN(0 1 1 -0.5s 0)
+              thisline += "SIN(0 " + val + " 0.25 -";
+              thisline += elapsedtime + "s 0)";
+            }else{ //DC SOURCE
+              if(firstiteration){
+                thisline += "PULSE(0 " + val;
+              }else{
+                thisline += "PULSE(" + val + " " + val;
+              }
+              thisline += " 0s 1fs 1fs)"; //ADD VALUE OF VOLTAGE SOURCE
             }
-            thisline += " 0s 1fs 1fs)"; //ADD VALUE OF VOLTAGE SOURCE
-          
           }else{
             if(thiscomp.id == 6){ //ADD DIODE MODEL
               thisline += "diode1";
@@ -185,19 +189,9 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
   //lines.append(".option rshunt = 1.0e12");
   //lines.append(".option rseries = 1.0e-4");
   
-  
-  //.control
-  //tran <step> <duration> uic
-  //let k = length(time) - 1
-  //print time[k] v(1)[k] v(2)[k]
-  //.endc
-  //.end
-  
   lines.append(".control");
   
   String tranline = "tran ";
-  
-  //float RTStepSize = 0.1;
   
   tranline += RTStepSize/10 + "s ";
   tranline += RTStepSize + "s uic";
