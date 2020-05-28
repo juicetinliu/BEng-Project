@@ -48,7 +48,7 @@ void setup() {
     println("Available cameras:");
     printArray(cameras);
     //960/540
-    cam = new Capture(this, swidth, sheight, cameras[2]);
+    cam = new Capture(this, swidth, sheight, cameras[1]);
     print(cam.width + " x " + cam.height);
     cam.start();
   }
@@ -112,6 +112,15 @@ void draw() {
   fill(0);
   textAlign(CENTER,CENTER);
   text("udlr for offset; wasd for scale; c for canny; h to hide; qe for houghThresh; space/r to save/reset; zx for checkring", width/2, height-10);
+  for(int r = 0; r < Rings.size(); r++){
+    Ring tr = Rings.get(r);
+    text((tr.found)? "found" : "not",width/2 - 50 + r * 50, 60);
+    text(tr.id, width/2 - 50 + r * 50, 10);
+    text(tr.rotation, width/2 - 50 + r * 50, 20);
+    text(tr.houghVote, width/2 - 50 + r * 50, 30);
+    text(tr.x, width/2 - 50 + r * 50, 40);
+    text(tr.y, width/2 - 50 + r * 50, 50);
+  }
   textAlign(RIGHT,CENTER);
   text(bigringno,width,height-10);
 }

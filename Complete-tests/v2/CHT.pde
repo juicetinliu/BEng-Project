@@ -1,5 +1,3 @@
-
-
 ArrayList<Ring> Rings = new ArrayList<Ring>();
 int ringcount, bigringno = 0;
 
@@ -79,9 +77,9 @@ void houghDraw() {
     matchRingPuck();
     //background(255);
     //refRing(scalex,scaley);
-    for(Ring thisring:Rings){
-      thisring.display(scalex, scaley , offx, offy, 50);
-    }
+    //for(Ring thisring:Rings){
+    //  thisring.display(scalex, scaley , offx, offy, 50);
+    //}
   }
 }
 
@@ -91,22 +89,10 @@ void matchRingPuck(){
     if(thisring.found){
       Puck thispuck = pucks.get(i);
       thispuck.CHTRotate(thisring.rotation);
-      thispuck.CHTMove(thisring.x,thisring.y);
+      thispuck.CHTMove(thisring.x*scalex + offx,thisring.y*scaley + offy);
     }
   }
 }
-//void refRing(float scalex, float scaley){
-//  pushMatrix();
-//  translate(mouseX,mouseY);
-//  scale(scalex,scaley);
-//  stroke(255,102,0,128);
-//  strokeWeight(1);
-//  noFill();
-//  ellipse(0,0,circlerad*2,circlerad*2);
-//  stroke(0,255,102,128);
-//  ellipse(0,0,(circlerad-checkring)*2,(circlerad-checkring)*2);
-//  popMatrix();
-//}
 
 void resetHough(){
   for(int y = 0; y < sheight; y++){
@@ -175,8 +161,8 @@ class Ring{
   int houghVote, rotVote;
   boolean found = false;
   
-  //ArrayList<PVector> poshist = new ArrayList<PVector>();
-  //int tolerance, histsize;
+  ArrayList<PVector> poshist = new ArrayList<PVector>();
+  int tolerance, histsize;
   
   Ring(int x, int y, int id){
     this.x = x;
@@ -184,12 +170,11 @@ class Ring{
     this.rotation = 0;
     this.id = id;
     this.houghVote = 0;
-    //this.histsize = 5;
-    //this.tolerance = 3;
+    this.histsize = 5;
+    this.tolerance = 3;
   }
   
   void display(float scalex, float scaley, int offx, int offy, int plusrad){
-    if(found){
       //strokeWeight(1);
       //stroke(255,0,0);
       //noFill();
@@ -213,13 +198,17 @@ class Ring{
       pushMatrix();
       translate(offx,offy);
       scale(scalex, scaley);
+      translate(x,y);
       strokeWeight(1);
-      stroke(0,0,255);
+      if(found){
+        stroke(0,0,255);
+      }else{
+        stroke(0,255,255);
+      }
       noFill();
-      ellipse(x,y,circlerad + plusrad,circlerad + plusrad);
+      ellipse(0,0,circlerad + plusrad,circlerad + plusrad);
       
       pushMatrix();
-      translate(x,y);
       rotate(rotation+PI/2);
       fill(0,0,255);
       noStroke();
@@ -232,7 +221,7 @@ class Ring{
       //ellipse(x,y,circlerad + plusrad,circlerad + plusrad);
       //text(houghVote,x,y);
       popMatrix();
-    }
+    //}
     
   }
   
@@ -255,13 +244,16 @@ class Ring{
 
 
 float checkRot(int x, int y){
-  int greenthresh = 80;
+  int greenthresh = 100;
   for(int th = 0; th < 360; th += 1){
     float thrad = radians(th);
     int a = x - int((circlerad-checkring) * cos(thrad));
     int b = y - int((circlerad-checkring) * sin(thrad));
     if(a >= 0 && a < swidth && b >= 0 && b < sheight){
-      if(green(cam.pixels[b*cam.width+a]) > greenthresh){
+      float gree = green(cam.pixels[b*cam.width+a]);
+      float re = red(cam.pixels[b*cam.width+a]);
+      float blu = blue(cam.pixels[b*cam.width+a]);
+      if(gree > greenthresh && gree > re && gree > blu){
         return thrad;
       }
     }
@@ -284,7 +276,10 @@ int checkID(int x, int y, float rotation){
         int a = x - int((circlerad-checkring) * cos(thrad));
         int b = y - int((circlerad-checkring) * sin(thrad));
         if(a >= 0 && a < swidth && b >= 0 && b < sheight){
-          if(red(cam.pixels[b*cam.width+a]) > redthresh){
+          float gree = green(cam.pixels[b*cam.width+a]);
+          float re = red(cam.pixels[b*cam.width+a]);
+          float blu = blue(cam.pixels[b*cam.width+a]);
+          if(re > redthresh && re > gree && re > blu){
             idout += pow(2,bt);
             foundred = true;
           }
@@ -316,7 +311,7 @@ int findRings(int expectedRings, int[][] houghar, int houghthresh, boolean showH
     int ciry = -1;
     for(int y = 0; y < sheight; y++){
       for(int x = 0; x < swidth; x++){
-        if(showHough){
+        if(showHough && noRings == 0){
           int thishough = houghar[x][y];
             if(thishough < houghthresh){
               houghFrame.pixels[y*cam.width+x] = 0;
@@ -350,24 +345,19 @@ int findRings(int expectedRings, int[][] houghar, int houghthresh, boolean showH
       }
     }
     if(cirx != -1 && ciry != -1){
-      //stroke(255,0,0);
-      //strokeWeight(1);
-      //noFill();
-      //ellipse(cirx,ciry, 50,50);
       float rrot = checkRot(cirx,ciry);
-      int rid = checkID(cirx,ciry,rrot);
-      println(cirx + "," + ciry + ":" + rrot + "," + rid);
-      if(rid != -1 || rrot != -1){
-        for(Ring thisr:Rings){
-          if(thisr.id == rid){
-            thisr.setpri(cirx,ciry, rrot, rid, maxvote);
-            thisr.found();
-            expectedRings --;
-            onefound = true;
+      if(rrot != -1){
+        int rid = checkID(cirx,ciry,rrot);
+        if(rid != -1){
+          for(Ring thisr:Rings){
+            if(thisr.id == rid){
+              thisr.found();
+              thisr.setpri(cirx,ciry, rrot, rid, maxvote);
+              expectedRings--;
+              onefound = true;
+            }
           }
         }
-      //}else{
-      //  noRings --;
       }
         
     }

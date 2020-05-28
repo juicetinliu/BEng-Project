@@ -12,7 +12,7 @@ boolean removemode = false;
 
 Runzone runzone;
 
-
+boolean darkMode = false;
 boolean circuitRun = false;
 boolean checked = false;
 boolean updated = true;
@@ -27,13 +27,13 @@ Icon chipIC = new Icon("chip");
 void setup(){
   //size(1200,800);
   fullScreen();
-  //houghSetup();
+  houghSetup();
   surface.setTitle("CircuitSim");
   
   //size(900,600);
   //smooth();
   //pixelDensity(displayDensity());
-  puckSize = height/8;
+  puckSize = int(height/7.5);
   randomSeed(7);
   buttons.add(new Button("AddPucks", height*2/80,height*3/80,height*3/80));
   buttons.add(new Button("RemovePucks", height*2/80,height*7/80,height*3/80));
@@ -47,15 +47,24 @@ void setup(){
   
 }
 void draw(){
-  //houghDraw();
-  if(circuitRun){
-    background(50);
-  }else if(removemode){
-    background(100,0,0);
+  if(darkMode){
+    if(circuitRun){
+      background(50);
+    }else if(removemode){
+      background(100,0,0);
+    }else{
+      background(0);
+    }
   }else{
-    background(0);
+    if(circuitRun){
+      background(200);
+    }else if(removemode){
+      background(255,100,100);
+    }else{
+      background(255);
+    }
   }
-  
+
   fill(255);
   textAlign(LEFT);
   text(frameRate,10,10);
@@ -73,10 +82,10 @@ void draw(){
   if(updated){
     checkAuras(pucks);
   }
-  
+  houghDraw();
   for(Puck thispuck:pucks){
-    thispuck.display();
     thispuck.run();
+    thispuck.display();
   }
 }
 
@@ -93,7 +102,7 @@ void drawZones(){
       runzone.run();
     }else{
       if(!circuitRun){
-        thisz.display(color(128,100),true,color(128),true);
+        thisz.display(color(200,128),true,color(255),true);
       }
     }
   }

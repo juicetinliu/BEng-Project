@@ -72,7 +72,11 @@ class Puck{
     if(MASTERPUCK){
       drawDisc();
       noFill();
-      stroke(255);
+      if(darkMode){
+        stroke(255);
+      }else{
+        stroke(0);
+      }
       strokeWeight(2);
       
       float offsetamount = (size - ringthickness)*0.20;
@@ -85,23 +89,42 @@ class Puck{
       drawMenuBack();
       drawDisc();
       if(currZone == 1){
-        fill(255,100);
+        if(darkMode){
+          fill(255,100);
+        }else{
+          fill(0,100);
+        }
         textAlign(CENTER,CENTER);
         text(valtext,0,0+size/4);
-        stroke(255,map(menualpha,0,255,255,50));
+        if(darkMode){
+          stroke(255,map(menualpha,0,255,255,50));
+        }else{
+          stroke(0,map(menualpha,0,255,255,50));
+        }
         strokeWeight(2);
         noFill();
-        selectedComponent.drawComponent(0,0,size-ringthickness*2,rotation,2, true, selectedstate, selectedtype);
+        selectedComponent.drawComponent(0,0,size-ringthickness*3,rotation,2, true, selectedstate, selectedtype);
       }else{
-        fill(255,100);
+        //if(darkMode){
+        //  fill(255,100);
+        //}else{
+          fill(0,100);
+        //}
         textAlign(CENTER,CENTER);
         text(valtext,0,0+size/4);
-        selectedComponent.drawComponent(0,0,size-ringthickness*2,rotation,2, false, selectedstate, selectedtype);
+        stroke(0);
+        strokeWeight(2);
+        noFill();
+        selectedComponent.drawComponent(0,0,size-ringthickness*3,rotation,2, true, selectedstate, selectedtype);
       }
       drawMenu();
       
       if(showDebug){
-        fill(255);
+        if(darkMode){
+          fill(255);
+        }else{
+          fill(0);
+        }
         text("ID: " + id, x, y - 75);
         text("I: " + extraInformation[0], 100, 0);
         if(selectedComponent.id == 2 || selectedComponent.id == 6){
@@ -116,49 +139,40 @@ class Puck{
     stroke(255);
     strokeWeight(ringthickness);
     
-    if(selected){
-      fill(50);
-    }else{
-      if(pointincircle(mouseX,mouseY,x,y,size)){
-        if(removemode){
-          stroke(128,0,0);
-          fill(128,0,0);
-        }else{
-          fill(128);
-        }
-      }else{
-        if(currZone != -1){
-          fill(150);
-        }else{
-          fill(0);
-        }
-      }
-    }
-    pushMatrix();
+    fill(255);
+    //if(selected){
+    //  fill(50);
+    //}else{
+    //  if(pointincircle(mouseX,mouseY,x,y,size)){
+    //    if(removemode){
+    //      stroke(128,0,0);
+    //      fill(128,0,0);
+    //    }else{
+    //      fill(128);
+    //    }
+    //  }else{
+    //    if(currZone != -1){
+    //      fill(150);
+    //    }else{
+    //      fill(0);
+    //    }
+    //  }
+    //}
     ellipse(0, 0, size-ringthickness,size-ringthickness);
-    if(showDebug){
-      rotate(radians(baserotation));
-      fill(255,0,0);
-      noStroke();
-      rectMode(CENTER);
-      rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
-    }
-    popMatrix();
-    if(showDebug){
-      pushMatrix();
-      rotate(radians(zonerotation));
-      fill(255,0,0,100);
-      noStroke();
-      rectMode(CENTER);
-      rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
-      popMatrix();
-    }
+    stroke(0);
+    strokeWeight(1);
+    noFill();
+    ellipse(0, 0, size,size);
   }
   
   void drawAura(){
     float totsize = size + aurasize;
     float rotrad = radians(rotation);
-    fill(255,128);
+    if(darkMode){
+      fill(255,128);
+    }else{
+      fill(0,25);
+    }
     noStroke();
     ellipse(0, 0, totsize, totsize);
     pushMatrix();
@@ -175,7 +189,11 @@ class Puck{
       line(0, 0, 0, -totsize/2);
       
       int currclock = connectclock.get(i);
-      fill(255,map(currclock,0,100,50,255));
+      if(darkMode){
+        fill(255,map(currclock,0,100,50,255));
+      }else{
+        fill(0,25);
+      }
       noStroke();
       float connectRad = map(currclock,0,100,0,aurasize);
       arc(0,0,size+connectRad,size+connectRad,-PI/2,-PI/2+connectAng);
@@ -186,7 +204,11 @@ class Puck{
   }
   
   void drawPointers(){
-    fill(255,menualpha);
+    if(darkMode){
+      fill(255,menualpha);
+    }else{
+      fill(0,menualpha);
+    }
     noStroke();
     pushMatrix();
     if(currZone == 0){
@@ -235,7 +257,11 @@ class Puck{
   
   void drawStateMenu(){
     drawPointers();
-    stroke(255,menualpha);
+    if(darkMode){
+      stroke(255,menualpha);
+    }else{
+      stroke(0,menualpha);
+    }
     strokeWeight(1);
     noFill();
     if(menuclock > 0){
@@ -268,7 +294,11 @@ class Puck{
   
   void drawComMenu(){
     drawPointers();
-    stroke(255,menualpha);
+    if(darkMode){
+      stroke(255,menualpha);
+    }else{
+      stroke(0,menualpha);
+    }
     strokeWeight(1);
     noFill();
     if(menuclock > 0){
@@ -293,7 +323,11 @@ class Puck{
         line(0,-size/2,0,-(size/2)-aurasize*2);
       }
       popMatrix();
-      fill(255,menualpha);
+      if(darkMode){
+        fill(255,menualpha);
+      }else{
+        fill(0,menualpha);
+      }
       text(selectedComponent.name, 0, 0 - size);
     }else{
       menushow = false;
@@ -315,20 +349,32 @@ class Puck{
       stroke(lerpColor(intCodetoColour(selectedprefix-1,menualpha),intCodetoColour(selectedprefix,menualpha),float(selectedvalue)/1000), menualpha); //val ring color
       arc(0,0,size+aurasize*1.5,size+aurasize*1.5, 0-PI/2, radians(valrotation)-PI/2);
       
-      stroke(255,menualpha);
+      if(darkMode){
+        stroke(255,menualpha);
+      }else{
+        stroke(0,menualpha);
+      }
       strokeWeight(1);
       ellipse(x,y,size+aurasize,size+aurasize);
       ellipse(x,y,size+aurasize*2,size+aurasize*2);
       
       pushMatrix();
       rotate(radians(valrotation));
-      fill(255, menualpha);
+      if(darkMode){
+        fill(255,menualpha);
+      }else{
+        fill(0,menualpha);
+      }
       noStroke();
       ellipse(0,-size/2-aurasize*0.75,aurasize/2,aurasize/2);
       popMatrix();
       
       pushMatrix();
-      stroke(255, menualpha);
+      if(darkMode){
+        stroke(255,menualpha);
+      }else{
+        stroke(0,menualpha);
+      }
       strokeWeight(1);
       for(int i = 0; i < 10; i++){
         for(int j = 0; j < 9; j++){
@@ -340,7 +386,11 @@ class Puck{
       }
       popMatrix();
       
-      fill(255, menualpha);
+      if(darkMode){
+        fill(255,menualpha);
+      }else{
+        fill(0,menualpha);
+      }
       textAlign(CENTER,CENTER);
       text(valtext,0,size/4);
     }else{
@@ -355,7 +405,7 @@ class Puck{
   }
   
   void CHTRotate(float Ringrotation){
-    baserotation = Ringrotation;
+    baserotation = degrees(Ringrotation);
     float rotationdelta = baserotation - zonerotation;
     if(rotationdelta != 0){
       zoneRotate(rotationdelta);
