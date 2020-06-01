@@ -6,9 +6,12 @@ Note: Latest release `v1.app` currently only works on MacOS.
 
 To run, make sure the latest version of `ngspice` is installed:
 
-WINDOWS: 
+### WINDOWS:
+  
   Installation instructions can be found at: http://ngspice.sourceforge.net/download.html
   
-MACOS: 
+### MACOS: 
+  
   Make sure `Homebrew` is installed (instructions at : https://brew.sh/)
+  
   Install `ngspice` by entering `brew install ngspice` in terminal.
