@@ -1,4 +1,4 @@
-# BEng-Project
+# BEng-Project - A Circuit Table
 This is a repo for the BEng project. 
 
 Latest working versions of the interface will be found in the `Releases` folder.
