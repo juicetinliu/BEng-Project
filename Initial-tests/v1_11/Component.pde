@@ -1,4 +1,4 @@
-class Component{
+class Component{ //CATEGORY
   int id;
   String name, NGname;
   char unit;

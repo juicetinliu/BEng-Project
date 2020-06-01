@@ -32,7 +32,7 @@ class Zone{
       rectMode(CENTER);
       rect(x, y, w, h);
       if(zoneicon != null){
-        zoneicon.display(x,y,min(w,h)/3,true,color(255),color(100),height/160);
+        zoneicon.display(x,y,min(w,h)/3,true,color(255),color(190),height/160);
       }
     }else if(type == 1){
       ellipse(x,y,w,h);

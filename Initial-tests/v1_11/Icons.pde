@@ -80,6 +80,18 @@ class Icon{
         line(0,-0.8,0,-1);
       break;
       
+      case "gear":
+        ellipse(0,0,1,1);
+        for(int i = 0; i < 8; i++){
+          arc(0,0,1.6,1.6,-PI/8,0);
+          line(0.8,0,1,0);
+          rotate(PI/8);
+          arc(0,0,2,2,-PI/8,0);
+          line(0.8,0,1,0);
+          rotate(PI/8);
+        }
+      break;
+      
       default:
       break;
     } 

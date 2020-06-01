@@ -37,7 +37,11 @@ class Wire{
       for(int l = 0; l < lines.size(); l += 2){
         PVector thisanch = lines.get(l);
         PVector thiscont = lines.get(l+1);
-        stroke(255);
+        if(darkMode){
+          stroke(255);
+        }else{
+          stroke(0);
+        }
         strokeWeight(2);
         noFill();
         bezier(thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y);
@@ -45,11 +49,19 @@ class Wire{
         //line(thisanch.x, thisanch.y, thiscont.x, thiscont.y);
       }
       noStroke();
-      fill(255);
+      if(darkMode){
+        fill(255);
+      }else{
+        fill(0);
+      }
       ellipse(x,y,10,10);
       
     }else{
-      stroke(255);
+      if(darkMode){
+        stroke(255);
+      }else{
+        stroke(0);
+      }
       strokeWeight(2);
       noFill();
       bezier(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
@@ -68,7 +80,11 @@ class Wire{
     //
    
     if(showDebug){
-      fill(255);
+      if(darkMode){
+        fill(255);
+      }else{
+        fill(0);
+      }
       text("ID: " + id,tx,ty+15);
       text("V: " + voltage,tx,ty-15);
     }
@@ -79,7 +95,11 @@ class Wire{
     
     if(id == 0){
       strokeWeight(2);
-      stroke(255);
+      if(darkMode){
+        stroke(255);
+      }else{
+        stroke(0);
+      }
       line(tx,ty,tx,ty+puckSize*0.2);
       line(tx-puckSize*0.15,ty+puckSize*0.2,tx+puckSize*0.15,ty+puckSize*0.2);
       line(tx-puckSize*0.1,ty+puckSize*0.25,tx+puckSize*0.1,ty+puckSize*0.25);
@@ -104,8 +124,8 @@ class Wire{
           current = thispuck.extraInformation[0];
         }
         moveElectrons(l/2, thisanch.x, thisanch.y, thiscont.x, thiscont.y, x, y, x, y, current, currentDensity);
-        fill(255);
-        text(current,x+50 + l*25,y);
+        //fill(255);
+        //text(current,x+50 + l*25,y);
       }
     }else{
       Puck thispuck = connectedPucks.get(0);
@@ -115,8 +135,8 @@ class Wire{
         current = thispuck.extraInformation[0];
       }
       moveElectrons(0, lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y, lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y, current, currentDensity);
-      fill(255);
-      text(current,x+50,y);
+      //fill(255);
+      //text(current,x+50,y);
     }
   }
   

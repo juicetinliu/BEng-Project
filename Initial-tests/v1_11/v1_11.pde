@@ -5,21 +5,27 @@ ArrayList<Component> components = new ArrayList<Component>();
 ArrayList<Zone> zones = new ArrayList<Zone>();
 
 ArrayList<Button> buttons = new ArrayList<Button>();
+ArrayList<Slider> sliders = new ArrayList<Slider>();
+
 boolean removemode = false, graphmode = false;
+boolean settingsOpen = false;
 
 Runzone runzone;
-
 
 boolean circuitRun = false;
 boolean circuitChecked = false;
 boolean updated = true;
 boolean showDebug = false;
 //int puckSize = 100;
+float shakeSettings = 0.5;
+float scrollSettings = 0.5;
 int puckSize;
+
 
 Icon knobIC = new Icon("knob");
 Icon chipIC = new Icon("chip");
 Icon wrenIC = new Icon("wrench");
+Icon gearIC = new Icon("gear");
 
 
 void setup(){
@@ -30,27 +36,25 @@ void setup(){
   //pixelDensity(displayDensity());
   puckSize = height/8;
   randomSeed(7);
-  buttons.add(new Button("AddPucks", height*2/80,height*3/80,height*3/80));
-  buttons.add(new Button("RemovePucks", height*2/80,height*7/80,height*3/80));
-  buttons.add(new Button("AddGraph", height*2/80,height*11/80,height*3/80));
+  buttons.add(new Button("Settings", height*2/80,height*3/80,height*3/80));
+  buttons.add(new Button("AddPucks", height*2/80,height*7/80,height*3/80));
+  buttons.add(new Button("RemovePucks", height*2/80,height*11/80,height*3/80));
+  buttons.add(new Button("AddGraph", height*2/80,height*15/80,height*3/80));
   createComponents();
   createZones();
   addPucks(5);
   
   PFont font = loadFont("HelveticaNeue-20.vlw");
-  textFont(font, 12);
+  textFont(font);
+  textSize(12);
   //textFont(font, 9);
+  sliders.add(new Slider("Scrollsen", width*0.6, height*0.2, width*0.5, height*2/80));
+  sliders.add(new Slider("Shakesen", width*0.6, height*0.3, width*0.5, height*2/80));
+  //sliders.add(new Slider("DiscSize", width*0.6, height*0.4, width*0.5, height*2/80));
+  //sliders.add(new Slider("DiscRotType", width*0.6, height*0.5, width*0.5, height*2/80));
 }
 void draw(){
-  if(circuitRun){
-    background(50);
-  }else if(removemode){
-    background(100,0,0);
-  }else if(graphmode){
-    background(0,0,100);
-  }else{
-    background(0);
-  }
+  drawBackground();
   
   fill(255);
   textAlign(LEFT);
@@ -80,11 +84,19 @@ void draw(){
     thispuck.run();
     thispuck.display();
   }
+  
+  
+  if(settingsOpen){
+    showSettingsPanel();
+    for(Slider thisslider:sliders){
+      thisslider.run();
+    }
+  }
 }
 
 void addPucks(int num){
   for(int i = 1; i <= num; i++){
-    pucks.add(new Puck(i, random(puckSize,width - puckSize),random(puckSize, height - puckSize),puckSize));
+    pucks.add(new Puck(i, random(puckSize,width - puckSize),random(puckSize, height - puckSize),puckSize, shakeSettings, scrollSettings));
   }
 }
 
@@ -106,8 +118,8 @@ void createComponents(){
   components.add(new Component(0, "Wire", "", 2, false, 1, 1));
   components.add(new Component(1, "Resistor", "R", 2, 'Ω', 0, 4, -4, 1, 999, 1, true, 1, 1));
   components.add(new Component(2, "Capacitor", "C", 2, 'F', 0, 4, -4, 1, 999, 1, true, 1, 1));
-  components.add(new Component(3, "Switch", "S", 2, false, 2, 1));
   components.add(new Component(4, "Inductor", "L", 2, 'H', 0, 4, -4, 1, 999, 1, true, 1, 1));
+  components.add(new Component(3, "Switch", "S", 2, false, 2, 1));
   components.add(new Component(5, "Voltage Source", "V", 2, 'V', 0, 4, -4, 1, 999, 1, true, 1, 4));
   components.add(new Component(6, "Diode", "D", 2, false, 1, 1));
   components.add(new Component(7, "BJT", "Q", 3, false, 1, 2));
