@@ -64,20 +64,15 @@ class Icon{
       break;
       
       case "knob":
+
         ellipse(0,0,2,2);
+        line(-1,0,-0.8,0);
+        line(1,0,0.8,0);
+        line(0,-1,0,-0.8);
+        line(0,1,0,0.8);
         ellipse(0,0,1,1);
-        rotate(-PI/2);
-        line(0,-0.8,0,-1);
-        rotate(PI/4);
-        line(0,-0.8,0,-1);
-        rotate(PI/4);
-        line(0,-0.8,0,-1);
         rotate(PI/8);
         line(0,0,0,-0.5);
-        rotate(PI/8);
-        line(0,-0.8,0,-1);
-        rotate(PI/4);
-        line(0,-0.8,0,-1);
       break;
       
       case "gear":
@@ -90,6 +85,15 @@ class Icon{
           line(0.8,0,1,0);
           rotate(PI/8);
         }
+      break;
+      
+      case "time":
+        ellipse(0,0.125,1.75,1.75);
+        line(0.25,-1,-0.25,-1);
+        line(0,-1,0,-0.75);
+        line(0,0,0,-0.5);
+        rotate(-PI/4);
+        line(0,0,0,-0.5);
       break;
       
       default:

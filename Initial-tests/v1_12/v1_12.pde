@@ -27,6 +27,7 @@ Icon knobIC = new Icon("knob");
 Icon chipIC = new Icon("chip");
 Icon wrenIC = new Icon("wrench");
 Icon gearIC = new Icon("gear");
+Icon timeIC = new Icon("time");
 
 float oscX, oscY, oscRange;
 
@@ -139,9 +140,10 @@ void createComponents(){
 void createZones(){
   //zones.add(new Zone(0, "Component Selection", 0, width/4,height*0.9,width/2,height*0.2, chipIC));
   //zones.add(new Zone(1, "Component Value Change", 0, width*3/4,height*0.9,width/2,height*0.2, knobIC));
-  zones.add(new Zone(0, "Component Selection", 0, width/2,height*0.9,width/2,height*0.2, chipIC));
+  zones.add(new Zone(0, "Component Selection", 0, width*5/16,height*0.9,width*3/8,height*0.2, chipIC));
   zones.add(new Zone(1, "Component Value Change", 0, width*7/8,height*0.9,width/4,height*0.2, knobIC));
   zones.add(new Runzone(2, "Start Simulation", 1, width - puckSize*0.7 , puckSize*0.7 ,puckSize*1.1,puckSize*1.1, null));
-  zones.add(new Zone(3, "Component Type Change", 0, width/8,height*0.9,width/4,height*0.2, wrenIC));
+  zones.add(new Zone(3, "Component Type Change", 0, width/16,height*0.9,width/8,height*0.2, wrenIC));
+  zones.add(new Zone(4, "Component Time Change", 0, width*5/8,height*0.9,width/4,height*0.2, timeIC));
   runzone = (Runzone) zones.get(2);
 }
