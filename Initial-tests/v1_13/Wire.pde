@@ -103,7 +103,7 @@ class Wire{
         PVector thisanch = lines.get(l);
         PVector thiscont = lines.get(l+1);
         
-        if(thispuck.selectedComponent.id == 7){
+        if(thispuck.selectedCategory.name.equals("Active")){
           if(sides.get(l/2) == 1){
             current = thispuck.currents[0];
           }else if(sides.get(l/2) == 2){
@@ -122,7 +122,7 @@ class Wire{
       }
     }else{
       Puck thispuck = connectedPucks.get(0);
-      if(thispuck.selectedComponent.id == 7){
+      if(thispuck.selectedCategory.name.equals("Active")){
           if(sides.get(0) == 1){
             current = thispuck.currents[0];
           }else if(sides.get(0) == 2){

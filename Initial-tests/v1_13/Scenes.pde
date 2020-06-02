@@ -31,6 +31,7 @@ void showSettingsPanel(){
   
   //text("Disc Rotation", width*0.15, height*0.5); //segmented, natural 
   
+  //stepsize -> steps of 1, 10, 100, 
   
   
   textAlign(CENTER);

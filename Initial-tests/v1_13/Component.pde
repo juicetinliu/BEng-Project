@@ -1,16 +1,46 @@
-class Component{ //CATEGORY
+class ComponentCategory{ //CATEGORY
+  int id;
+  String name;
+  ArrayList<Component> cat = new ArrayList<Component>();
+  int repCompID;
+  
+  ComponentCategory(int id, String name, int representative){
+    this.id = id;
+    this.name = name;
+    this.repCompID = representative;
+  }
+  
+  void drawCategory(float x, float y, float size, float rotation, int strokeweight, boolean customcolour, int state){
+    cat.get(repCompID).drawComponent(x, y, size, rotation, strokeweight, customcolour, state);
+  }
+  
+  void addComponent(Component newComp){
+    cat.add(newComp);
+  }
+  
+  int indComponent(Component thiscomp){
+    return cat.indexOf(thiscomp);
+  }
+}
+
+class Component{
   int id;
   boolean NGusable;
   String name, NGname;
-  char unit;
+  boolean valueChange;
+  String unit;
   int dPrefix, preHi, preLo;
   int dValue, valHi, valLo;
   int dState, noStates;
-  int dType, noTypes;
-  boolean valueChange;
   int terminals;
   
-  Component(int id, boolean NGusable, String name, String NGname, int terminals, char unit, int dPrefix, int preHi, int preLo, int dValue, int valHi, int valLo, boolean valueChange, int noStates, int noTypes){
+  boolean timeChange = false;
+  String tunit;
+  int dTPrefix, TpreHi, TpreLo;
+  int dTValue, TvalHi, TvalLo;
+  
+  
+  Component(int id, boolean NGusable, String name, String NGname, int terminals, String unit, int dPrefix, int preHi, int preLo, int dValue, int valHi, int valLo, boolean valueChange, int noStates){
     this.id = id;
     this.NGusable = NGusable;
     this.name = name;
@@ -26,64 +56,34 @@ class Component{ //CATEGORY
     this.terminals = terminals;
     this.noStates = noStates;
     this.dState = 0;
-    this.dType = 0;
-    this.noTypes = noTypes;
   }
   
-  Component(int id, boolean NGusable, String name, String NGname, int terminals, boolean valueChange, int noStates, int noTypes){
+  Component(int id, boolean NGusable, String name, String NGname, int terminals, boolean valueChange, int noStates){
     this.id = id;
     this.NGusable = NGusable;
     this.name = name;
     this.NGname = NGname;
     this.valueChange = valueChange;
-    this.unit = '\0';
-    this.dPrefix = '0';
-    this.dValue = '0';
+    this.unit = "";
+    this.dPrefix = 0;
+    this.dValue = 0;
     this.terminals = terminals;
     this.noStates = noStates;
     this.dState = 0;
-    this.dType = 0;
-    this.noTypes = noTypes;
   }
   
-  String fullTypeName(int type){
-    switch(id){
-      case 5: //voltage source
-        switch(type){
-          case 0: //DC
-            return "DC " + name;
-          
-          case 1: //AC - Sinusoidal
-            return "Sinusoidal " + name;
-          
-          case 2: //AC - Triangle
-            return "Triangular Wave " + name;
-          
-          case 3: //AC - Square
-            return "Square Wave " + name;
-          
-          default:
-            return name;
-        }
-      
-      case 7: //BJT
-        switch(type){
-          case 0: //NPN
-            return "NPN " + name;
-          
-          case 1: //PNP
-            return "PNP " + name;
-          
-          default: //NPN
-            return "NPN " + name;
-        }
-      
-      default: //wire
-        return name;
-    }
+  void setTime(String tunit, int dTPrefix, int TpreHi, int TpreLo, int dTValue, int TvalHi, int TvalLo){
+    this.tunit = tunit;
+    this.dTPrefix = dTPrefix;
+    this.dTValue = dTValue;
+    this.timeChange = true;
+    this.TpreHi = TpreHi;
+    this.TpreLo = TpreLo;
+    this.TvalHi = TvalHi; 
+    this.TvalLo = TvalLo;
   }
   
-  void drawComponent(float x, float y, float size, float rotation, int strokeweight, boolean customcolour, int state, int type){
+  void drawComponent(float x, float y, float size, float rotation, int strokeweight, boolean customcolour, int state){
     rectMode(CENTER);
     pushMatrix();
     translate(x,y);
@@ -111,7 +111,16 @@ class Component{ //CATEGORY
         line(size/2,0,size*0.1,0);
       break;
       
-      case 3: //switch
+      case 3: //inductor
+        line(-size/2,0,-size*0.4,0);
+        line(size/2,0,size*0.4,0);
+        arc(size*0.3,0,size*0.2,size*0.2,PI,2*PI);
+        arc(size*0.1,0,size*0.2,size*0.2,PI,2*PI);
+        arc(-size*0.1,0,size*0.2,size*0.2,PI,2*PI);
+        arc(-size*0.3,0,size*0.2,size*0.2,PI,2*PI);
+      break;
+      
+      case 4: //switch
         switch(state){
           case 0:
             line(-size*0.3,0,size*0.25,-size*0.25);
@@ -133,105 +142,74 @@ class Component{ //CATEGORY
         }
       break;
       
-      case 4: //inductor
-        line(-size/2,0,-size*0.4,0);
-        line(size/2,0,size*0.4,0);
-        arc(size*0.3,0,size*0.2,size*0.2,PI,2*PI);
-        arc(size*0.1,0,size*0.2,size*0.2,PI,2*PI);
-        arc(-size*0.1,0,size*0.2,size*0.2,PI,2*PI);
-        arc(-size*0.3,0,size*0.2,size*0.2,PI,2*PI);
+      case 5: //DC
+        line(size*0.2,0,size*0.3,0);
+        line(size*0.25,size*0.05,size*0.25,-size*0.05);
+        line(-size*0.2,0,-size*0.3,0);
+        ellipse(0,0,size,size);
       break;
       
-      case 5: //voltage source
-        switch(type){
-          case 0: //DC
-            line(size*0.2,0,size*0.3,0);
-            line(size*0.25,size*0.05,size*0.25,-size*0.05);
-            line(-size*0.2,0,-size*0.3,0);
-            ellipse(0,0,size,size);
-          break;
-          
-          case 1: //AC - Sinusoidal
-            arc(-size*0.2,0,size*0.4,size*0.4,PI,2*PI);
-            arc(size*0.2,0,size*0.4,size*0.4,0,PI);
-            ellipse(0,0,size,size);
-          break;
-          
-          case 2: //AC - Triangle
-            line(-size*0.4,0,-size*0.2,-size*0.2);
-            line(-size*0.2,-size*0.2,size*0.2,size*0.2);
-            line(size*0.4,0,size*0.2,size*0.2);
-            ellipse(0,0,size,size);
-          break;
-          
-          case 3: //AC - Square
-            line(-size*0.4,0,-size*0.4,-size*0.2);
-            line(-size*0.4,-size*0.2,0,-size*0.2);
-            line(0,-size*0.2,0,size*0.2);
-            line(0,size*0.2,size*0.4,size*0.2);
-            line(size*0.4,size*0.2,size*0.4,0);
-            ellipse(0,0,size,size);
-          break;
-          
-          default:
-            line(size*0.2,0,size*0.3,0);
-            line(size*0.25,size*0.05,size*0.25,-size*0.05);
-            line(-size*0.2,0,-size*0.3,0);
-            ellipse(0,0,size,size);
-          break;
-        }
+      case 6: //AC - Sinusoidal
+        arc(-size*0.2,0,size*0.4,size*0.4,PI,2*PI);
+        arc(size*0.2,0,size*0.4,size*0.4,0,PI);
+        ellipse(0,0,size,size);
+        stroke(255,50);
+        line(-size*0.5,0,size*0.5,0);
+        stroke(255);
       break;
       
-      case 6: //diode
+      case 7: //AC - Triangle
+        line(-size*0.4,0,-size*0.2,-size*0.2);
+        line(-size*0.2,-size*0.2,size*0.2,size*0.2);
+        line(size*0.4,0,size*0.2,size*0.2);
+        ellipse(0,0,size,size);
+        stroke(255,50);
+        line(-size*0.5,0,size*0.5,0);
+        stroke(255);
+      break;
+      
+      case 8: //AC - Square
+        line(-size*0.4,0,-size*0.4,-size*0.2);
+        line(-size*0.4,-size*0.2,0,-size*0.2);
+        line(0,-size*0.2,0,size*0.2);
+        line(0,size*0.2,size*0.4,size*0.2);
+        line(size*0.4,size*0.2,size*0.4,0);
+        ellipse(0,0,size,size);
+        stroke(255,50);
+        line(-size*0.5,0,size*0.5,0);
+        stroke(255);
+      break;
+      
+      case 9: //diode
         triangle(size*0.15,-size*0.2,size*0.15,size*0.2,-size*0.15,0);
         line(-size/2,0,-size*0.15,0);
         line(size/2,0,size*0.15,0);
         line(-size*0.15,-size*0.2,-size*0.15,size*0.2);
       break;
       
-      case 7: //BJT
-        switch(type){
-          case 0: //NPN
-            line(-size/2,0,-size*0.15,0);
-            line(-size*0.15,-size*0.3,-size*0.15,size*0.3);
-            line(-size*0.15,-size*0.15,size*0.15,-size*0.35);
-            line(-size*0.15,size*0.15,size*0.06,size*0.29);
-            line(size*0.15,-size*0.35,size*0.15,-size/2);
-            line(size*0.15,size*0.35,size*0.15,size/2);
-            triangle(size*0.14,size*0.34,size*0.09,size*0.25,size*0.03,size*0.33);
-            ellipse(0,0,size,size);
-          break;
-          
-          case 1: //PNP
-            line(-size/2,0,-size*0.15,0);
-            line(-size*0.15,-size*0.3,-size*0.15,size*0.3);
-            line(-size*0.15,-size*0.15,size*0.15,-size*0.35);
-            line(-size*0.06,size*0.21,size*0.15,size*0.35);
-            line(size*0.15,-size*0.35,size*0.15,-size/2);
-            line(size*0.15,size*0.35,size*0.15,size/2);
-            triangle(-size*0.15,size*0.15,-size*0.03,size*0.17,-size*0.09,size*0.25);
-            ellipse(0,0,size,size);
-          break;
-          
-          default: //NPN
-            line(-size/2,0,-size*0.15,0);
-            line(-size*0.15,-size*0.3,-size*0.15,size*0.3);
-            line(-size*0.15,-size*0.15,size*0.15,-size*0.35);
-            line(-size*0.15,size*0.15,size*0.06,size*0.29);
-            line(size*0.15,-size*0.35,size*0.15,-size/2);
-            line(size*0.15,size*0.35,size*0.15,size/2);
-            triangle(size*0.14,size*0.34,size*0.09,size*0.25,size*0.03,size*0.33);
-            ellipse(0,0,size,size);
-          break;
-        }
-        
+      case 10: //NPN
+        line(-size/2,0,-size*0.15,0);
+        line(-size*0.15,-size*0.3,-size*0.15,size*0.3);
+        line(-size*0.15,-size*0.15,size*0.15,-size*0.35);
+        line(-size*0.15,size*0.15,size*0.06,size*0.29);
+        line(size*0.15,-size*0.35,size*0.15,-size/2);
+        line(size*0.15,size*0.35,size*0.15,size/2);
+        triangle(size*0.14,size*0.34,size*0.09,size*0.25,size*0.03,size*0.33);
+        ellipse(0,0,size,size);
       break;
       
-      case 8: //Oscilloscope
-        //line(0, -size*0.07, 0, size*0.07);
-        //line(0, -size*0.07, -size*0.25, size*0.07);
-        //line(0, size*0.07, size*0.25, -size*0.07);
-        
+      case 11: //PNP
+        line(-size/2,0,-size*0.15,0);
+        line(-size*0.15,-size*0.3,-size*0.15,size*0.3);
+        line(-size*0.15,-size*0.15,size*0.15,-size*0.35);
+        line(-size*0.06,size*0.21,size*0.15,size*0.35);
+        line(size*0.15,-size*0.35,size*0.15,-size/2);
+        line(size*0.15,size*0.35,size*0.15,size/2);
+        triangle(-size*0.15,size*0.15,-size*0.03,size*0.17,-size*0.09,size*0.25);
+        ellipse(0,0,size,size);
+      break;
+      
+      case 12: //Oscilloscope
         line(-size*0.5,-size*0.07,-size*0.2,-size*0.07);
         line(-size*0.5,size*0.07,-size*0.2,size*0.07);
         line(-size*0.2,-size*0.07,size*0.45,-size*0.02);
@@ -239,13 +217,9 @@ class Component{ //CATEGORY
         line(size*0.45,-size*0.02,size*0.45,size*0.02);
         rect(-size*0.2,0,size*0.04,size*0.4);
         ellipse(0,0,size,size);
-        
-        //line(size*0.2,0,size*0.3,0);
-        //line(size*0.25,size*0.05,size*0.25,-size*0.05);
-        //line(-size*0.2,0,-size*0.3,0);
       break;
       
-      case 9: //VOLTMETER
+      case 13: //VOLTMETER
         line(-size*0.05,-size*0.07,0,size*0.07);
         line(size*0.05,-size*0.07,0,size*0.07);
         
@@ -255,7 +229,7 @@ class Component{ //CATEGORY
         line(-size*0.2,0,-size*0.3,0);
       break;
       
-      case 10: //AMMETER
+      case 14: //AMMETER
         line(-size*0.05,size*0.07,0,-size*0.07);
         line(size*0.025,size*0.02,-size*0.025,size*0.02);
         line(size*0.05,size*0.07,0,-size*0.07);
@@ -277,7 +251,15 @@ class Component{ //CATEGORY
     if(!valueChange){
       return "";
     }else{
-      return str(value) + str(intCodetoPrefix(prefixCode)) + str(unit);
+      return str(value) + str(intCodetoPrefix(prefixCode)) + unit;
+    }
+  }
+  
+  String generateComponentTimeText(int value, int prefixCode){
+    if(!timeChange){
+      return "";
+    }else{
+      return str(value) + str(intCodetoPrefix(prefixCode)) + tunit;
     }
   }
   

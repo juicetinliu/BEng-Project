@@ -24,7 +24,7 @@ boolean checkCircuit(){
           return false;
         }
       }
-      if(thiscomp.id == 0){ //no pucks can be wires
+      if(thiscomp.name.equals("Wire")){ //no pucks can be wires
         return false;
       }
     }   
@@ -49,9 +49,10 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
       String thisline = "";
       
       Component thiscomp = chkpuck.selectedComponent;
+      ComponentCategory thiscat = chkpuck.selectedCategory;
       String IDcode = thiscomp.NGname + chkpuck.id; //NAME AND ID
       
-      if(thiscomp.id == 3){ //switch
+      if(thiscomp.name.equals("Switch")){ //switch
         thisline += IDcode + " ";
         thisline += chkpuck.connectedWires[0].id + " "; //ADD FIRST NODE
         String currNode = chkpuck.connectedWires[1].id + IDcode; //CREATE SECOND NODE FOR CURRENT MEASURE
@@ -83,10 +84,11 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
       }else if(thiscomp.NGusable){
         if(thiscomp.terminals == 2){ //FOR TWO TERMINAL COMPONENTS
           String val = chkpuck.selectedvalue + intCodetoNGCode(chkpuck.selectedprefix); //VALUE OF PUCK COMPONENT
+          String timeval = chkpuck.selectedTvalue + intCodetoNGCode(chkpuck.selectedTprefix);
           thisline += IDcode + " "; //ADD NAME AND ID
           
           //===== ADD NODES =====
-          if(thiscomp.id == 6){ //DIODE
+          if(thiscomp.name.equals("Diode")){ //DIODE
             String newline = "R" + IDcode + " ";
             newline += chkpuck.connectedWires[0].id + " " + chkpuck.connectedWires[0].id + "D" + IDcode + " 1"; //ADD SMALL RESISTOR IN SERIES WITH DIODE
             lines.append(newline);
@@ -97,7 +99,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           }
           
           String currNode = "";
-          if(thiscomp.id == 5){ //VOLTAGE SOURCE DOESN'T NEED EXTRA CURRENT MEASURE
+          if(thiscat.name.equals("Power")){ //VOLTAGE SOURCES DON'T NEED EXTRA CURRENT MEASURE
             thisline += chkpuck.connectedWires[1].id + " "; //ADD SECOND NODE
           }else{
             currNode = chkpuck.connectedWires[1].id + IDcode; //CREATE SECOND NODE FOR CURRENT MEASURE
@@ -105,10 +107,14 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           }
           
           //===== ADD INFORMATION =====
-          if(thiscomp.id == 5){ //VOLTAGE SOURCES
-            if(chkpuck.selectedtype == 1){ //PERIODIC SOURCE SIN(0 1 1 -0.5s 0)
-              thisline += "SIN(0 " + val + " 0.25 -";
+          if(thiscat.name.equals("Power")){ //VOLTAGE SOURCES
+            if(thiscat.indComponent(thiscomp) == 1){ //PERIODIC SOURCE SIN(0 1 hZ -time 0)
+              thisline += "SIN(0 " + val + " " + timeval + " -";
               thisline += elapsedtime + "s 0)";
+            //}else if(thiscat.indComponent(thiscomp) == 3){ //PERIODIC SOURCE PWL(T1 V1 <T2 V2 T3 V3 T4 V4 ...>) <r=value> <td=value>
+            //  String htimeval = chkpuck.selectedTvalue/2 + intCodetoNGCode(chkpuck.selectedTprefix);
+            //  thisline += "PULSE(0 " + val + " " + htimeval + " " + val + ;
+            //  thisline += elapsedtime + "s 1fs 1fs" + htimeval + "s " + timeval + "s ";
             }else{ //DC SOURCE
               if(firstiteration){
                 thisline += "PULSE(0 " + val;
@@ -118,23 +124,23 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
               thisline += " 0s 1fs 1fs)"; //ADD VALUE OF VOLTAGE SOURCE
             }
           }else{
-            if(thiscomp.id == 6){ //ADD DIODE MODEL
+            if(thiscomp.name.equals("Diode")){ //ADD DIODE MODEL
               thisline += "diode1";
             }else{
               thisline += val; //ADD VALUE OF COMPONENT
             }
             
-            if(thiscomp.id == 4){ //INDUCTOR
+            if(thiscomp.name.equals("Inductor")){ //INDUCTOR
               thisline += " ic=" + chkpuck.currents[0]; //ADD INITIAL CURRENT
-            }else if(thiscomp.id == 2){ //CAPACITOR
+            }else if(thiscomp.name.equals("Capacitor")){ //CAPACITOR
               thisline += " ic=" + chkpuck.voltages[0]; //ADD INITIAL VOLTAGE
-            }else if(thiscomp.id == 6){ //DIODE
+            }else if(thiscomp.name.equals("Diode")){ //DIODE
               thisline += " ic=" + chkpuck.voltages[0]; //ADD INITIAL VOLTAGE
             }
           }
           
           //===== ADD CURRENT SENSING SOURCE =====
-          if(thiscomp.id != 5){ //VOLTAGE SOURCE DOESN'T NEED EXTRA CURRENT MEASURE
+          if(!thiscat.name.equals("Power")){ //VOLTAGE SOURCES DON'T NEED EXTRA CURRENT MEASURE
             String nxtline = "";    //CREATE NEW LINE
             nxtline += "V" + IDcode + " "; //CURRENT MEASURE VOLTAGE SOURCE
             nxtline += currNode + " " + chkpuck.connectedWires[1].id + " 0"; //0V VOLTAGE SOURCE IN SERIES TO MEASURE CURRENT
@@ -143,7 +149,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           lines.append(thisline);
           
         }else if(thiscomp.terminals == 3){ //FOR THREE TERMINAL COMPONENTS
-          if(thiscomp.id == 7){ //BJT
+          if(thiscat.name.equals("Active")){ //BJT
             thisline += IDcode + " "; //ADD NAME AND ID
           
             //===== ADD NODES =====
@@ -154,7 +160,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
             thisline += colI + " "; //ADD COLLECTOR NODE
             thisline += basI + " "; //ADD BASE NODE
             thisline += emiI + " "; //ADD EMITTER NODE
-            if(chkpuck.selectedtype == 0){
+            if(thiscat.indComponent(thiscomp) == 0){
               thisline += "QMODN"; //ADD NPN BJT MODEL
             }else{
               thisline += "QMODP"; //ADD PNP BJT MODEL
@@ -205,10 +211,11 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
   for(Puck chkpuck:pucks){
     if(!chkpuck.MASTERPUCK){
       Component thiscomp = chkpuck.selectedComponent;
+      ComponentCategory thiscat = chkpuck.selectedCategory;
       if(thiscomp.NGusable){
-        if(thiscomp.id == 5){
+        if(thiscat.name.equals("Power")){
           printline += " i(V" + chkpuck.id + ")[k]";
-        }else if(thiscomp.id == 7){
+        }else if(thiscat.name.equals("Active")){
           String idcode = thiscomp.NGname + chkpuck.id;
           printline += " i(V" + idcode + "C)[k]";
           printline += " i(V" + idcode + "B)[k]";
@@ -270,8 +277,9 @@ void NGparseOutputRT(StringList output){
     Puck thispuck = pucks.get(p);
     if(!thispuck.MASTERPUCK){
       Component thiscomp = thispuck.selectedComponent;
+      ComponentCategory thiscat = thispuck.selectedCategory;
       if(thiscomp.NGusable){
-        if(thiscomp.id == 7){
+        if(thiscat.name.equals("Active")){
           String line = output.get(lineptr);
           String[] list = split(line, " = ");
           thispuck.currents[2] = float(list[1].trim());
@@ -289,9 +297,9 @@ void NGparseOutputRT(StringList output){
           String[] list = split(line, " = ");
           thispuck.currents[0] = float(list[1].trim());
           lineptr--;
-          if(thiscomp.id == 2){ //CAPACITOR VOLTAGE
+          if(thiscomp.name.equals("Capacitor")){ //CAPACITOR VOLTAGE
             thispuck.voltages[0] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
-          }else if(thiscomp.id == 6){ //DIODE VOLTAGE
+          }else if(thiscomp.name.equals("Diode")){ //DIODE VOLTAGE
             thispuck.voltages[0] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
             //lineptr--;
           }

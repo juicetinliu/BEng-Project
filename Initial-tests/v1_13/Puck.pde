@@ -4,14 +4,16 @@ class Puck{
   float x, y;
   float size, aurasize, ringthickness;
   float baserotation, prebaserotation;
-  float rotation, comrotation, valrotation, staterotation, typerotation;
+  float rotation, catrotation, valrotation, timerotation, staterotation, comrotation;
   float scrollmult;
   boolean selected;
   float mouseoffx, mouseoffy;
   int currZone;
   
+  ComponentCategory selectedCategory;
   Component selectedComponent;
-  int selectedvalue, selectedprefix, selectedstate, selectedtype;
+  int selectedvalue, selectedprefix, selectedstate, selectedTvalue, selectedTprefix;
+  int catno = categories.size();
   int comno = components.size();
   
   IntList beginconnection = new IntList();
@@ -22,7 +24,7 @@ class Puck{
   float[] voltages = new float[3]; //ALL: 0 - voltage || BJT: 0 - VBE, 1 - VCE
   float[] currents = new float[3]; //ALL: 0 - current || BJT: 0 - iC, 1 - iB, 2 - iE
   
-  String valtext;
+  String valtext, timetext;
   int menuclock = 0, menums = millis(), menualpha;
   boolean menushow;
   
@@ -46,18 +48,19 @@ class Puck{
     this.prebaserotation = baserotation;
     
     this.rotation = 0;
-    this.comrotation = 0;
+    this.catrotation = 0;
     this.valrotation = 0;
+    this.timerotation = 0;
     this.staterotation = 0;
-    this.typerotation = 0;
+    this.comrotation = 0;
     
     this.selected = false; 
     this.mouseoffx = 0;
     this.mouseoffy = 0;
     this.currZone = checkZone();
     
-    this.selectedComponent = components.get(0);
-    resetComponent();
+    this.selectedCategory = categories.get(0);
+    resetCategory();
     
     for(int i = 0; i < 3; i++){
       beginconnection.append(0);
@@ -106,14 +109,14 @@ class Puck{
         fill(255);
         text("ID: " + id, 0, -75);
         
-        if(selectedComponent.id == 7){
+        if(selectedCategory.name.equals("Active")){
           text("IC: " + currents[0], 100, -15);
           text("IB: " + currents[1], 100, 0);
           text("IE: " + currents[2], 100, 15);
         }else{
           text("I: " + currents[0], 100, 0);
         }
-        if(selectedComponent.id == 2 || selectedComponent.id == 6){
+        if(selectedComponent.name.equals("Capacitor") || selectedComponent.name.equals("Diode")){
           text("V: " + voltages[0], 100, -15);
         }
       }
@@ -176,7 +179,7 @@ class Puck{
       if(circuitRun){
         fill(255);
         textAlign(CENTER,CENTER);
-        if(selectedComponent.id == 8){ //OSCILLOSCOPE
+        if(selectedComponent.name.equals("Oscilloscope")){ //OSCILLOSCOPE
           if(puckGraph != null){
             stroke(puckGraph.graphColor);
           }else{
@@ -184,38 +187,42 @@ class Puck{
           }
           strokeWeight(3);
           drawOscilloscope(size, rotation);
-        }else if(selectedComponent.id == 9){ //VOLTMETER
+        }else if(selectedComponent.name.equals("Voltmeter")){ //VOLTMETER
           text(voltageAcross + "V",0,0);
-        }else if(selectedComponent.id == 10){ //AMMETER
+        }else if(selectedComponent.name.equals("Ammeter")){ //AMMETER
           text(currentThrough + "A",0,0);
         }else{
           fill(255,100);
           textAlign(CENTER,CENTER);
+          text(timetext,0,-size/4);
           text(valtext,0,size/4);
-          selectedComponent.drawComponent(0,0,size-15,rotation,2, false, selectedstate, selectedtype);
+          selectedComponent.drawComponent(0,0,size-15,rotation,2, false, selectedstate);
         }
       }else{
-        if(currZone == 1){ 
+        if(currZone == 1 || currZone == 4){ 
           fill(255,100);
           textAlign(CENTER,CENTER);
+          text(timetext,0,-size/4);
           text(valtext,0,size/4);
           stroke(255,map(menualpha,0,255,255,50));
           strokeWeight(2);
           noFill();
-          selectedComponent.drawComponent(0,0,size-15,rotation,2, true, selectedstate, selectedtype);
-        }else if(currZone == 3 && selectedComponent.noTypes <= 1){
+          selectedComponent.drawComponent(0,0,size-15,rotation,2, true, selectedstate);
+        }else if(currZone == 3 && selectedCategory.cat.size() <= 1){
           fill(255,100);
           textAlign(CENTER,CENTER);
+          text(timetext,0,-size/4);
           text(valtext,0,size/4);
           stroke(255,map(menualpha,0,255,255,50));
           strokeWeight(2);
           noFill();
-          selectedComponent.drawComponent(0,0,size-15,rotation,2, true, selectedstate, selectedtype);
+          selectedComponent.drawComponent(0,0,size-15,rotation,2, true, selectedstate);
         }else{
           fill(255,100);
           textAlign(CENTER,CENTER);
+          text(timetext,0,-size/4);
           text(valtext,0,size/4);
-          selectedComponent.drawComponent(0,0,size-15,rotation,2, false, selectedstate, selectedtype);
+          selectedComponent.drawComponent(0,0,size-15,rotation,2, false, selectedstate);
         }
       }
     }
@@ -258,11 +265,13 @@ class Puck{
     noStroke();
     pushMatrix();
     if(currZone == 0){
-      rotate(radians(comrotation));
+      rotate(radians(catrotation));
     }else if(currZone == 1){
       rotate(radians(valrotation));
     }else if(currZone == 3){
-      rotate(radians(typerotation));
+      rotate(radians(comrotation));
+    }else if(currZone == 4){
+      rotate(radians(timerotation));
     }else if(currZone == -1 && circuitRun){
       rotate(radians(staterotation));
     }
@@ -278,7 +287,7 @@ class Puck{
         noStroke();
         ellipse(0,0,menuBackrad,menuBackrad);
       }else if(currZone == 3){
-        if(selectedComponent.noTypes > 1){
+        if(selectedCategory.cat.size() > 1){
           fill(menualpha,50);
           noStroke();
           ellipse(0,0,menuBackrad,menuBackrad);
@@ -296,17 +305,29 @@ class Puck{
   void drawMenu(){
     if(menushow){
       if(currZone == 0){
-        drawComMenu();
+        drawCategoryMenu();
       }else if(currZone == 1){
         if(selectedComponent.valueChange){
-          drawValMenu();
+          drawValMenu(selectedprefix, selectedvalue, valrotation);
+          fill(255, menualpha);
+          textAlign(CENTER,CENTER);
+          text(valtext,0,size/4);
         }else{
           hideMenu();
         }
       }else if(currZone == 2){
       }else if(currZone == 3){
-        if(selectedComponent.noTypes > 1){
-          drawTypeMenu();
+        if(selectedCategory.cat.size() > 1){
+          drawComponentMenu();
+        }else{
+          hideMenu();
+        }
+      }else if(currZone == 4){
+        if(selectedComponent.timeChange){
+          drawValMenu(selectedTprefix, selectedTvalue, timerotation); 
+          fill(255, menualpha);
+          textAlign(CENTER,CENTER);
+          text(timetext,0,-size/4);
         }else{
           hideMenu();
         }
@@ -318,7 +339,7 @@ class Puck{
     }
   }
   
-  void drawTypeMenu(){
+  void drawComponentMenu(){
     drawPointers();
     stroke(255,menualpha);
     strokeWeight(1);
@@ -330,16 +351,17 @@ class Puck{
       }
       
       pushMatrix();
-      int tottypes = selectedComponent.noTypes;
-      for(int i = 0; i < tottypes; i++){
-        float frac = 1/float(tottypes);
+      int totcomponents = selectedCategory.cat.size();
+      float frac = 1/float(totcomponents);
+      for(int i = 0; i < totcomponents; i++){
+        Component catComponent = selectedCategory.cat.get(i);
         rotate(frac*PI);
-        if(selectedtype == i){
+        if(selectedComponent.equals(catComponent)){
           strokeWeight(3);
-          selectedComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, selectedstate, i);
+          catComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, selectedstate);
           strokeWeight(1);
         }else{
-          selectedComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, selectedstate, i);
+          catComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, selectedstate);
           strokeWeight(1);
         }
         rotate(frac*PI);
@@ -347,7 +369,7 @@ class Puck{
       }
       popMatrix();
       fill(255,menualpha);
-      text(selectedComponent.fullTypeName(selectedtype), 0, -size);
+      text(selectedComponent.name, 0, -size);
     }else{
       menushow = false;
     }
@@ -366,15 +388,15 @@ class Puck{
       
       pushMatrix();
       int totstates = selectedComponent.noStates;
+      float frac = 1/float(totstates);
       for(int i = 0; i < totstates; i++){
-        float frac = 1/float(totstates);
         rotate(frac*PI);
         if(selectedstate == i){
           strokeWeight(3);
-          selectedComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, i, selectedtype);
+          selectedComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, i);
           strokeWeight(1);
         }else{
-          selectedComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, i, selectedtype);
+          selectedComponent.drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, i);
           strokeWeight(1);
         }
         rotate(frac*PI);
@@ -386,7 +408,7 @@ class Puck{
     }
   }
   
-  void drawComMenu(){
+  void drawCategoryMenu(){
     drawPointers();
     stroke(255,menualpha);
     strokeWeight(1);
@@ -398,15 +420,15 @@ class Puck{
       }
       
       pushMatrix();
-      for(int i = 0; i < comno; i++){
-        float frac = 1/float(comno);
+      float frac = 1/float(catno);
+      for(int i = 0; i < catno; i++){
         rotate(frac*PI);
-        if(selectedComponent.equals(components.get(i))){
+        if(selectedCategory.equals(categories.get(i))){
           strokeWeight(3);
-          components.get(i).drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, 0, 0);
+          categories.get(i).drawCategory(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, 0);
           strokeWeight(1);
         }else{
-          components.get(i).drawComponent(0,-size/2-aurasize,size/4,frac*PI+PI/2,1, true, 0, 0);
+          categories.get(i).drawCategory(0,-size/2-aurasize,size/4,frac*PI+PI/2,2, true, 0);
           strokeWeight(1);
         }
         rotate(frac*PI);
@@ -414,13 +436,13 @@ class Puck{
       }
       popMatrix();
       fill(255,menualpha);
-      text(selectedComponent.name, 0, -size);
+      text(selectedCategory.name, 0, -size);
     }else{
       menushow = false;
     }
   }
   
-  void drawValMenu(){
+  void drawValMenu(int prefix, int value, float valrot){
     drawPointers();
     noFill();
     if(menuclock > 0){
@@ -430,10 +452,10 @@ class Puck{
       }
       
       strokeWeight(aurasize/2);
-      stroke(intCodetoColour(selectedprefix-1,menualpha));
+      stroke(intCodetoColour(prefix-1,menualpha));
       ellipse(0,0,size+aurasize*1.5,size+aurasize*1.5); //base ring color
-      stroke(lerpColor(intCodetoColour(selectedprefix-1,menualpha),intCodetoColour(selectedprefix,menualpha),float(selectedvalue)/1000), menualpha); //val ring color
-      arc(0,0,size+aurasize*1.5,size+aurasize*1.5, 0-PI/2, radians(valrotation)-PI/2);
+      stroke(lerpColor(intCodetoColour(prefix-1,menualpha),intCodetoColour(prefix,menualpha),float(value)/1000), menualpha); //val ring color
+      arc(0,0,size+aurasize*1.5,size+aurasize*1.5, 0-PI/2, radians(valrot)-PI/2);
       
       stroke(255,menualpha);
       strokeWeight(1);
@@ -441,7 +463,7 @@ class Puck{
       ellipse(0,0,size+aurasize*2,size+aurasize*2);
       
       pushMatrix();
-      rotate(radians(valrotation));
+      rotate(radians(valrot));
       fill(255, menualpha);
       noStroke();
       ellipse(0,-size/2-aurasize*0.75,aurasize/2,aurasize/2);
@@ -459,10 +481,6 @@ class Puck{
         line(0,-size/2-aurasize,0,-size/2-aurasize*1.5);
       }
       popMatrix();
-      
-      fill(255, menualpha);
-      textAlign(CENTER,CENTER);
-      text(valtext,0,size/4);
     }else{
       menushow = false;
     }
@@ -522,8 +540,8 @@ class Puck{
   
   void zoneRotate(float delta){
     if(currZone == 0){
-      comrotation = limdegrees(comrotation + delta);
-      selectComponent();
+      catrotation = limdegrees(catrotation + delta);
+      selectCategory();
       showMenu();
     }else if(currZone == 1){
       float mult = pow(10,min(2,int(abs(delta)/4)));
@@ -531,7 +549,7 @@ class Puck{
       if(selectComValue(int(delta))){
         valrotation = int(selectedvalue*0.36);
       }
-      if(selectedComponent.id == 8){
+      if(selectedComponent.name.equals("Oscilloscope")){
         oscRange = selectedvalue * pow(1000,selectedprefix);
         if(puckGraph != null){
           puckGraph.setMaxMin(oscRange, valtext);
@@ -549,8 +567,15 @@ class Puck{
       showMenu();
     }else if(currZone == 2){
     }else if(currZone == 3){
-      typerotation = limdegrees(typerotation + delta);
-      selectType();
+      comrotation = limdegrees(comrotation + delta);
+      selectCategoryComponent();
+      showMenu();
+    }else if(currZone == 4){
+      float mult = pow(10,min(2,int(abs(delta)/4)));
+      delta = delta*mult;
+      if(selectComTimeValue(int(delta))){
+        timerotation = int(selectedTvalue*0.36);
+      }
       showMenu();
     }else{
       if(circuitRun){
@@ -593,18 +618,26 @@ class Puck{
     selectedstate = min(selectedComponent.noStates-1,int(map(staterotation,0,360,0,selectedComponent.noStates)));
   }
   
-  void selectType(){
-    selectedtype = min(selectedComponent.noTypes-1,int(map(typerotation,0,360,0,selectedComponent.noTypes)));
-  }
-  
-  void selectComponent(){
-    Component prev = selectedComponent;
-    selectedComponent = components.get(min(comno-1,int(map(comrotation,0,360,0,comno))));
-    if(!prev.equals(selectedComponent)){
+  void selectCategoryComponent(){
+    Component prevCom = selectedComponent;
+    selectedComponent = selectedCategory.cat.get( min(selectedCategory.cat.size()-1,int(map(comrotation,0,360,0,selectedCategory.cat.size()))) );
+    if(!prevCom.equals(selectedComponent)){
       resetComponent();
-      if(prev.terminals != selectedComponent.terminals){
+      if(prevCom.terminals != selectedComponent.terminals){
         removeConnections();
       }
+    }
+  }
+  
+  void selectCategory(){
+    Component prevCom = selectedComponent;
+    ComponentCategory prevCat = selectedCategory;
+    selectedCategory = categories.get(min(catno-1,int(map(catrotation,0,360,0,catno))));
+    if(!prevCat.equals(selectedCategory)){
+      resetCategory();
+    }
+    if(prevCom.terminals != selectedComponent.terminals){
+      removeConnections();
     }
   }
   
@@ -642,20 +675,65 @@ class Puck{
     }
   }
   
+  boolean selectComTimeValue(int delta){
+    if(!selectedComponent.timeChange){
+      return false;
+    }else{
+      int valhi = selectedComponent.TvalHi, vallo = selectedComponent.TvalLo;
+      int prehi = selectedComponent.TpreHi, prelo = selectedComponent.TpreLo;
+      if(delta > 0){
+        if(selectedTvalue + delta > valhi){
+          if(selectedTprefix < prehi){
+            selectedTvalue = selectedTvalue + delta - valhi;
+            selectedTprefix += 1;
+          }else{
+            selectedTvalue = valhi;
+          }
+        }else{
+          selectedTvalue += delta;
+        }
+      }else{
+        if(selectedTvalue + delta < vallo){
+          if(selectedTprefix > prelo){
+            selectedTvalue = selectedTvalue + delta + valhi;
+            selectedTprefix -= 1;
+          }else{
+            selectedTvalue = vallo;
+          }
+        }else{
+          selectedTvalue += delta;
+        }
+      }
+      timetext = selectedComponent.generateComponentTimeText(selectedTvalue, selectedTprefix);
+      return true;
+    }
+  }
+  
   void resetComponent(){
     selectedvalue = selectedComponent.dValue;
     selectedprefix = selectedComponent.dPrefix;
+    
+    selectedTvalue = selectedComponent.dTValue;
+    selectedTprefix = selectedComponent.dTPrefix;
+    
     selectedstate = selectedComponent.dState;
-    selectedtype = selectedComponent.dType;
     for(int e = 0; e < voltages.length; e++){
       voltages[e] = 0;
       currents[e] = 0;
     }
     valrotation = int(selectedvalue*0.36);
+    timerotation = int(selectedTvalue*0.36);
+    
     staterotation = 0;
-    typerotation = 0;
     valtext = selectedComponent.generateComponentText(selectedvalue, selectedprefix);
+    timetext = selectedComponent.generateComponentTimeText(selectedTvalue, selectedTprefix);
     removeGraph();
+  }
+  
+  void resetCategory(){
+    selectedComponent = selectedCategory.cat.get(0);
+    comrotation = 0;
+    resetComponent();
   }
   
   int checkZone(){
@@ -696,7 +774,7 @@ class Puck{
       resetShake();
     }
     
-    if(selectedComponent.id == 10){
+    if(selectedComponent.name.equals("Ammeter")){
       if(connectedWires[0] != null && connectedWires[1] != null){
         
       }
@@ -723,12 +801,12 @@ class Puck{
           //}
     
     }
-    if(selectedComponent.id == 9 || selectedComponent.id == 8){ //VOLTMETER
+    if(selectedComponent.name.equals("Voltmeter") || selectedComponent.name.equals("Oscilloscope")){ //VOLTMETER
       if(connectedWires[0] != null && connectedWires[1] != null){ 
         voltageAcross = connectedWires[0].voltage - connectedWires[1].voltage;
       }
     }
-    if(selectedComponent.id == 8){ //OSCILLOSCOPE - ADD GRAPH
+    if(selectedComponent.name.equals("Oscilloscope")){ //OSCILLOSCOPE - ADD GRAPH
       addGraph(new Graph(oscX,oscY,100,100,1,true));
     }
     

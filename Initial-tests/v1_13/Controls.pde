@@ -23,7 +23,7 @@ void mousePressed(){
             pucks.remove(thispuck);
             removemode = false;
           }else if(graphmode){
-            if(thispuck.selectedComponent.id != 8){ //IF IT ISN'T AN OSCILLOSCOPE
+            if(!thispuck.selectedComponent.name.equals("Oscilloscope")){ //IF IT ISN'T AN OSCILLOSCOPE
               Graph newGraph = new Graph(thispuck.x,thispuck.y,100,100,1, false);
               if(!thispuck.addGraph(newGraph)){ //if addgraph fails(already contains graph) then remove graph
                 thispuck.removeGraph();
