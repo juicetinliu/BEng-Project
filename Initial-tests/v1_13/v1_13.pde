@@ -151,6 +151,8 @@ void createComponents(){
   
   components.add(new Component(13, false, "Voltmeter", "", 2, false, 1));
   components.add(new Component(14, false, "Ammeter", "", 2, false, 1));
+  
+  components.add(new Component(15, true, "LED", "D", 2, false, 1));
 }
 
 void createCategories(){
@@ -163,15 +165,16 @@ void createCategories(){
   categories.add(new ComponentCategory(1, "Switch",0));
   categories.get(1).addComponent(components.get(4));
   
-  categories.add(new ComponentCategory(2, "Power",0));
+  categories.add(new ComponentCategory(2, "Power Sources",0));
   categories.get(2).addComponent(components.get(5));
   categories.get(2).addComponent(components.get(6));
   categories.get(2).addComponent(components.get(7));
   categories.get(2).addComponent(components.get(8));
   
-  categories.add(new ComponentCategory(3, "Diode",0));  
+  categories.add(new ComponentCategory(3, "Diodes",0));  
   categories.get(3).addComponent(components.get(9));
-  
+  categories.get(3).addComponent(components.get(15));
+
   categories.add(new ComponentCategory(4, "Active Components",0));
   categories.get(4).addComponent(components.get(10));
   categories.get(4).addComponent(components.get(11));

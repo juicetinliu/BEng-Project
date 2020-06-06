@@ -108,7 +108,8 @@ class Puck{
       if(showDebug){
         fill(255);
         text("ID: " + id, 0, -75);
-        
+        text(selectedComponent.name,0,-115);
+        text(selectedCategory.name,0,-100);
         if(selectedCategory.name.equals("Active")){
           text("IC: " + currents[0], 100, -15);
           text("IB: " + currents[1], 100, 0);
@@ -116,7 +117,7 @@ class Puck{
         }else{
           text("I: " + currents[0], 100, 0);
         }
-        if(selectedComponent.name.equals("Capacitor") || selectedComponent.name.equals("Diode")){
+        if(selectedComponent.name.equals("Capacitor") || selectedComponent.name.equals("Diode") || selectedComponent.name.equals("LED")){
           text("V: " + voltages[0], 100, -15);
         }
       }
@@ -176,7 +177,7 @@ class Puck{
       arc(0,0,offsetamount,offsetamount,-PI/2+PI/5,1.5*PI-PI/5);
       line(0,0,0,-offsetamount*0.5);
     }else{
-      if(circuitRun){
+      if(circuitRun){   //SPECIAL DRAWS FOR COMPONENTS IN CIRCUIT RUN MODE
         fill(255);
         textAlign(CENTER,CENTER);
         if(selectedComponent.name.equals("Oscilloscope")){ //OSCILLOSCOPE
@@ -191,6 +192,12 @@ class Puck{
           text(voltageAcross + "V",0,0);
         }else if(selectedComponent.name.equals("Ammeter")){ //AMMETER
           text(currentThrough + "A",0,0);
+        }else if(selectedComponent.name.equals("LED")){ //LED
+          text(currents[0],0,0);
+          float brightness = min(100,map(currents[0],0,0.05,0,100));
+          noStroke();
+          fill(255,0,0,brightness);
+          ellipse(0,0,500,500);
         }else{
           fill(255,100);
           textAlign(CENTER,CENTER);

@@ -240,6 +240,18 @@ class Component{
         line(-size*0.2,0,-size*0.3,0);
       break;
       
+      case 15: //LED
+        triangle(size*0.15,-size*0.2,size*0.15,size*0.2,-size*0.15,0);
+        line(-size/2,0,-size*0.15,0);
+        line(size/2,0,size*0.15,0);
+        line(-size*0.15,-size*0.2,-size*0.15,size*0.2);
+        line(size*0.1,size*0.25,0,size*0.35);
+        triangle(-size*0.05,size*0.4,-size*0.02,size*0.33,size*0.02,size*0.37);
+                
+        line(0,size*0.2,-size*0.1,size*0.3);
+        triangle(-size*0.15,size*0.35,-size*0.12,size*0.28,-size*0.08,size*0.32);
+      break;
+      
       default: //wire
         line(-size/2,0,size/2,0);
       break;
