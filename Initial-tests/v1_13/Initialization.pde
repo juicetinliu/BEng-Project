@@ -1,5 +1,5 @@
 void addPucksRandom(int num){
-  for(int i = 1; i <= num; i++){
+  for(int i = 0; i < num; i++){
     pucks.add(new Puck(i, random(puckSize,width - puckSize),random(puckSize, height - puckSize),puckSize, shakeSettings, scrollSettings));
   }
 }

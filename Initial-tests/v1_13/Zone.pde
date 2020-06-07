@@ -137,8 +137,9 @@ class Runzone extends Zone{
             circuitChecked = false;
             oscY = height*0.67;
             updateOSCgraphpos(oscX,oscY);
-            elapsedtime = 0;
+            elapsedTime = 0;
             hideWireVoltages();
+            hidePuckErrors();
           }
         }else{
           reset();
@@ -155,8 +156,6 @@ class Runzone extends Zone{
           if(!circuitChecked){
             circuitChecked = true;
             if(checkCircuit()){
-              //NGCircuitRT(0.1);
-              println("yay");
               circuitRun = true;
               oscY = height*0.87;
               updateOSCgraphpos(oscX,oscY);
@@ -164,27 +163,21 @@ class Runzone extends Zone{
               //setPuckInformationZero();
               circuitSimTimer = millis();
               NGCircuitRT(circuitSimStep, true);//first iteration
-              elapsedtime += circuitSimStep;
+              elapsedTime += circuitSimStep;
             }else{
-              println("fail");
               circuitRun = false;
             }
           }
           if(circuitRun){  //RUN THE SIMULATION
             if(mspassed(circuitSimTimer,int(circuitSimStep*1000))){
               float addTime = float(millis() - circuitSimTimer)/1000;
-              elapsedtime += addTime;
+              elapsedTime += addTime;
               NGCircuitRT(addTime, false);
               showWireVoltages();
               updateAllPuckGraphs(circuitSimTimer);
               updateAllWireGraphs(circuitSimTimer);
               circuitSimTimer = millis();
             }
-          //}else{
-            //background(100,0,0,255);
-            
-            //fill(255);
-            //text("FAILED", width/2, height/2);
           }
           
         }else{

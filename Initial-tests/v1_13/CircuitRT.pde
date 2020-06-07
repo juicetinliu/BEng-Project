@@ -14,22 +14,25 @@
 //6, "Diode"
 //7, "BJT"
 
-boolean checkCircuit(){ 
+boolean checkCircuit(){
+  boolean hasError = true;
   for(int p = 0; p < pucks.size(); p++){
     Puck checkpuck = pucks.get(p);
     if(!checkpuck.MASTERPUCK){
       Component thiscomp = checkpuck.selectedComponent;
       for(int ck = 0; ck < thiscomp.terminals; ck++){ 
         if(checkpuck.connectedWires[ck] == null){ //all pucks must have connections to nodes
-          return false;
+          checkpuck.addError(ck);
+          hasError = false;
         }
       }
       if(thiscomp.name.equals("Wire")){ //no pucks can be wires
-        return false;
+        checkpuck.addError(404);
+        hasError = false;
       }
     }   
   }
-  return true;
+  return hasError;
 }
 
 void NGCircuitRT(float RTStepSize, boolean firstiteration){
@@ -110,7 +113,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           if(thiscat.name.equals("Power Sources")){ //VOLTAGE SOURCES
             if(thiscomp.name.equals("Sinusoidal Voltage Source")){ //PERIODIC SOURCE SIN(0 1 hZ -time 0)
               thisline += "SIN(0 " + val + " " + timeval + " -";
-              thisline += elapsedtime + "s 0)";
+              thisline += elapsedTime + "s 0)";
             //}else if(thiscat.indComponent(thiscomp) == 3){ //PERIODIC SOURCE PWL(T1 V1 <T2 V2 T3 V3 T4 V4 ...>) <r=value> <td=value>
             //  String htimeval = chkpuck.selectedTvalue/2 + intCodetoNGCode(chkpuck.selectedTprefix);
             //  thisline += "PULSE(0 " + val + " " + htimeval + " " + val + ;

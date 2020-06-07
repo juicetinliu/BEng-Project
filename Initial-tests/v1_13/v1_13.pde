@@ -17,11 +17,10 @@ boolean circuitRun = false;
 boolean circuitChecked = false;
 boolean updated = true;
 boolean showDebug = false;
-//int puckSize = 100;
 float shakeSettings = 0.5;
 float scrollSettings = 0.5;
 float puckSize;
-float elapsedtime = 0; //Seconds
+float elapsedTime = 0; //Seconds
 
 
 Icon knobIC = new Icon("knob");
@@ -73,7 +72,7 @@ void draw(){
   textAlign(LEFT);
   text(frameRate,10,10);
   //text(graphs.size(),50,10);
-  text(elapsedtime , width/2, 10);
+  text(elapsedTime , width/2, 10);
   
   drawZones();
   for(Button thisbutton:buttons){
@@ -218,7 +217,6 @@ void loadPucks(){
     tp.selectedstate = int(puckdata[17]);
     tp.selectedTvalue = int(puckdata[18]);
     tp.selectedTprefix = int(puckdata[19]);
-    
     for(int w = 0; w < tp.connectedWires.length; w++){
       if(!puckdata[20+w].equals("n")){
         tp.connectedWires[w] = wires.get(int(puckdata[20+w]));
@@ -240,7 +238,7 @@ void loadPucks(){
     
     tw.id = int(wiredata[0]);
     for(int p = 0; p < int(wiredata[1]); p++){
-      tw.connectedPucks.add(pucks.get(int(wiredata[2+p*2])-1));;
+      tw.connectedPucks.add(pucks.get(int(wiredata[2+p*2])));;
       tw.sides.append(int(wiredata[3+p*2]));
     }
     tw.update();

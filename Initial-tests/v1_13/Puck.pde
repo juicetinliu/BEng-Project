@@ -36,6 +36,8 @@ class Puck{
   Graph puckGraph;
   float voltageAcross, currentThrough; //FOR OSCILLOSCOPE AND VOLTMETER, AMMETER
   
+  IntList errors = new IntList();
+  
   Puck(int id, float x, float y, float size, float shakeSen, float scrollSen){ //size being 100
     this.id = id;
     this.x = x;
@@ -156,7 +158,7 @@ class Puck{
       }
     }
     ellipse(0, 0, size-ringthickness,size-ringthickness);
-    //if(showDebug){
+    if(showDebug){
       pushMatrix();
       rotate(radians(baserotation));
       fill(255,0,0);
@@ -164,7 +166,7 @@ class Puck{
       rectMode(CENTER);
       rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
       popMatrix();
-    //}
+    }
   }
   
   void drawComponent(){
@@ -206,7 +208,7 @@ class Puck{
           selectedComponent.drawComponent(0,0,size-15,rotation,2, false, selectedstate);
         }
       }else{
-        if(currZone == 1 || currZone == 4){ 
+        if(currZone == 1 || currZone == 4){ //DRAW FOR VALUE OR TIME SELECTION
           fill(255,100);
           textAlign(CENTER,CENTER);
           text(timetext,0,-size/4);
@@ -215,7 +217,7 @@ class Puck{
           strokeWeight(2);
           noFill();
           selectedComponent.drawComponent(0,0,size-15,rotation,2, true, selectedstate);
-        }else if(currZone == 3 && selectedCategory.cat.size() <= 1){
+        }else if(currZone == 3 && selectedCategory.cat.size() <= 1){ //DRAW DIMMER FOR COMPONENTS WITHOUT CATEGORY
           fill(255,100);
           textAlign(CENTER,CENTER);
           text(timetext,0,-size/4);
@@ -224,27 +226,52 @@ class Puck{
           strokeWeight(2);
           noFill();
           selectedComponent.drawComponent(0,0,size-15,rotation,2, true, selectedstate);
-        }else{
+        }else{ // ============= NOMRAL DRAW =============
           fill(255,100);
           textAlign(CENTER,CENTER);
           text(timetext,0,-size/4);
           text(valtext,0,size/4);
-          selectedComponent.drawComponent(0,0,size-15,rotation,2, false, selectedstate);
+          if(errors.hasValue(404)){
+            stroke(255,0,0);
+            strokeWeight(2);
+            noFill();
+            selectedComponent.drawComponent(0,0,size-15,rotation,2, true, selectedstate);
+          }else{
+            selectedComponent.drawComponent(0,0,size-15,rotation,2, false, selectedstate);
+            
+          }
+          
         }
       }
     }
   }
   
   void drawAura(){
-    if(currZone == -1 && !circuitRun){
-      float totsize = size + aurasize;
-      float rotrad = radians(rotation);
+    float totsize = size + aurasize;
+    float rotrad = radians(rotation);
+    int terminals = selectedComponent.terminals;
+    if(errors.size() > 0){ //DRAW ERRORS FOR UNCONNECTED TERMINALS
+      pushMatrix();
+      rotate(rotrad);
+      if(terminals == 3){
+        rotate(-2*PI/12);
+      }
+      for(int i = 0; i < terminals; i++){
+        float connectAng = 2*PI/terminals;
+        if(errors.hasValue(i)){
+          fill(255,0,0);
+          noStroke();
+          arc(0,0,totsize,totsize,-PI/2,-PI/2+connectAng);
+        }
+        rotate(connectAng);
+      }
+      popMatrix();
+    }else if(currZone == -1 && !circuitRun){ //DRAW NORMAL AURAS
       fill(255,128);
       noStroke();
       ellipse(0, 0, totsize, totsize);
       pushMatrix();
       rotate(rotrad);
-      int terminals = selectedComponent.terminals;
       if(terminals == 3){
         rotate(-2*PI/12);
       }
@@ -768,7 +795,7 @@ class Puck{
   }
   
   void setid(){
-    id = pucks.indexOf(this) + 1;
+    id = pucks.indexOf(this);
   }
   
   void run(){
@@ -789,33 +816,6 @@ class Puck{
       resetShake();
     }
     
-    if(selectedComponent.name.equals("Ammeter")){
-      if(connectedWires[0] != null && connectedWires[1] != null){
-        
-      }
-          //Wire tw = connectedWires[0];
-          //for(int w = 0; w < tw.connectedPucks.size(); w++){
-          //  Puck op = tw.connectedPucks.get(0);
-          //  if(op.selectedComponent.NGusable){
-          //    if(op.selectedComponent.id == 7){
-          //      if(tw.sides.get(w) == 1){
-          //        currentThrough += op.currents[0];
-          //      }else if(tw.sides.get(w) == 2){
-          //        currentThrough += op.currents[2];
-          //      }else{
-          //        currentThrough += op.currents[1];
-          //      }
-          //    }else{
-          //      if(tw.sides.get(w) == 1){
-          //        currentThrough += -op.currents[0];
-          //      }else{
-          //        currentThrough += op.currents[0];
-          //      }
-          //    }
-          //  }
-          //}
-    
-    }
     if(selectedComponent.name.equals("Voltmeter") || selectedComponent.name.equals("Oscilloscope")){ //VOLTMETER
       if(connectedWires[0] != null && connectedWires[1] != null){ 
         voltageAcross = connectedWires[0].voltage - connectedWires[1].voltage;
@@ -962,6 +962,14 @@ class Puck{
     this.size = (sizeval < 0.5) ? map(sizeval, 0, 0.5, height/16, height/8) : map(sizeval, 0.5, 1, height/8, height/4);
   }
   
+  void addError(int type){
+    errors.append(type);
+  }
+  
+  void hideError(){
+    errors.clear();
+  }
+  
 }
 
 void connectPucks(Puck puckA, Puck puckB){
@@ -1038,11 +1046,8 @@ void updateAllPuckGraphs(int timeelapsed){
   }
 }
 
-//void updateAllOscGraphs(int timeelapsed){
-//  for(Puck tp:pucks){
-//    if(
-//    if(tp.puckGraph != null){
-//      tp.puckGraph.addValue(tp.currents[0]);
-//    }
-//  }
-//}
+void hidePuckErrors(){
+  for(Puck tp:pucks){
+    tp.hideError();
+  }
+}
