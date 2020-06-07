@@ -27,7 +27,7 @@ void showSettingsPanel(){
   
   text("Shake Sensitivity", width*0.15,height*0.3);
   
-  //text("Disc Size", width*0.15,height*0.4);
+  text("Disc Size", width*0.15,height*0.4);
   
   //text("Disc Rotation", width*0.15, height*0.5); //segmented, natural 
   

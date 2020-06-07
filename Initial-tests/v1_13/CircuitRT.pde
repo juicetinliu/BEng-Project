@@ -151,7 +151,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           lines.append(thisline);
           
         }else if(thiscomp.terminals == 3){ //FOR THREE TERMINAL COMPONENTS
-          if(thiscat.name.equals("Active")){ //BJT
+          if(thiscat.name.equals("Active Components")){ //BJT
             thisline += IDcode + " "; //ADD NAME AND ID
           
             //===== ADD NODES =====
@@ -218,7 +218,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
       if(thiscomp.NGusable){
         if(thiscat.name.equals("Power Sources")){
           printline += " i(V" + chkpuck.id + ")[k]";
-        }else if(thiscat.name.equals("Active")){
+        }else if(thiscat.name.equals("Active Components")){
           String idcode = thiscomp.NGname + chkpuck.id;
           printline += " i(V" + idcode + "C)[k]";
           printline += " i(V" + idcode + "B)[k]";
@@ -282,7 +282,7 @@ void NGparseOutputRT(StringList output){
       Component thiscomp = thispuck.selectedComponent;
       ComponentCategory thiscat = thispuck.selectedCategory;
       if(thiscomp.NGusable){
-        if(thiscat.name.equals("Active")){
+        if(thiscat.name.equals("Active Components")){
           String line = output.get(lineptr);
           String[] list = split(line, " = ");
           thispuck.currents[2] = float(list[1].trim());

@@ -196,6 +196,31 @@ class Slider{
         popMatrix();
       break;
       
+      case "DiscSize":
+        stroke(255);
+        strokeWeight(2);
+        pushMatrix();
+        translate(x,y);
+        line(-size/2,-ballsize/2,-size/2,ballsize/2);
+        line(size/2,-ballsize/2,size/2,ballsize/2);
+        line(0,-ballsize/2,0,ballsize/2);
+        line(-size/2,0,size/2,0);
+        if(pointincircle(mouseX,mouseY,x+ballx,y,ballsize) || selected){
+          fill(128);
+        }else{
+          fill(0);
+        }
+        ellipse(ballx,0,ballsize,ballsize);
+        
+        if(selected){
+          fill(255);
+          textAlign(CENTER);
+          text("More Sensitive", size/2, -ballsize);
+          text("Less Sensitive", -size/2, -ballsize);
+        }
+        popMatrix();
+      break;
+      
       default:
       break;
     }
@@ -227,6 +252,9 @@ class Slider{
       break;
       
       case "DiscSize":
+        for(Puck tp:pucks){
+          tp.setPuckSize(ballval);
+        }
       break;
       
       case "DiscRotType":

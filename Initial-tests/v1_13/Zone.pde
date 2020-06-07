@@ -286,9 +286,19 @@ class Runzone extends Zone{
     }
     //super.display(fcolor, fok, scolor, sok);
   }
-  
-  void setPuck(){
-    
+}
+
+
+void drawZones(){
+  for(Zone thisz:zones){
+    if(thisz.id == 2){
+      runzone.display(color(128),true,color(255),true);
+      runzone.run();
+    }else{
+      if(!circuitRun){
+        thisz.display(color(128,100),true,color(128),true);
+      }
+    }
   }
   
 }

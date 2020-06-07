@@ -99,5 +99,9 @@ void keyPressed(){
   //print(keyCode);
   if(keyCode == 88){ //X
     showDebug = !showDebug;
+  }else if(keyCode == 83){
+    savePucks();
+  }else if(keyCode == 76){
+    loadPucks();
   }
 }

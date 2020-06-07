@@ -677,9 +677,13 @@ class Puck{
           selectedvalue += delta;
         }
       }
-      valtext = selectedComponent.generateComponentText(selectedvalue, selectedprefix);
+      updateValtext();
       return true;
     }
+  }
+  
+  void updateValtext(){
+    valtext = selectedComponent.generateComponentText(selectedvalue, selectedprefix);
   }
   
   boolean selectComTimeValue(int delta){
@@ -711,9 +715,13 @@ class Puck{
           selectedTvalue += delta;
         }
       }
-      timetext = selectedComponent.generateComponentTimeText(selectedTvalue, selectedTprefix);
+      updateTimetext();
       return true;
     }
+  }
+  
+  void updateTimetext(){
+    timetext = selectedComponent.generateComponentTimeText(selectedTvalue, selectedTprefix);
   }
   
   void resetComponent(){
@@ -948,6 +956,10 @@ class Puck{
   
   void setScrollSettings(float scrollval){ //0 - SCROLL ALOT (UNSENSITIVE); 1 - SCROLL A LITTLE FOR MASSIVE ROTATION (SENSITIVE)
     scrollmult = (scrollval < 0.5) ? map(scrollval, 0, 0.5, 0.01, 1) : map(scrollval, 0.5, 1, 1, 100);
+  }
+  
+  void setPuckSize(float sizeval){ //0 - SCROLL ALOT (UNSENSITIVE); 1 - SCROLL A LITTLE FOR MASSIVE ROTATION (SENSITIVE)
+    this.size = (sizeval < 0.5) ? map(sizeval, 0, 0.5, height/16, height/8) : map(sizeval, 0.5, 1, height/8, height/4);
   }
   
 }
