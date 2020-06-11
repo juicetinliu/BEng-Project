@@ -106,6 +106,15 @@ class Puck{
       drawComponent();
       //===== DRAW THE MENUS ABOVE THE DISC =====
       drawMenu();
+      //if(showDebug){
+        pushMatrix();
+        rotate(radians(baserotation));
+        fill(255,0,0);
+        noStroke();
+        rectMode(CENTER);
+        rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
+        popMatrix();
+      //}
       
       if(showDebug){
         fill(255);
@@ -158,15 +167,6 @@ class Puck{
       }
     }
     ellipse(0, 0, size-ringthickness,size-ringthickness);
-    if(showDebug){
-      pushMatrix();
-      rotate(radians(baserotation));
-      fill(255,0,0);
-      noStroke();
-      rectMode(CENTER);
-      rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
-      popMatrix();
-    }
   }
   
   void drawComponent(){
@@ -193,13 +193,13 @@ class Puck{
         }else if(selectedComponent.name.equals("Voltmeter")){ //VOLTMETER
           text(voltageAcross + "V",0,0);
         }else if(selectedComponent.name.equals("Ammeter")){ //AMMETER
-          text(currentThrough + "A",0,0);
-        }else if(selectedComponent.name.equals("LED")){ //LED
-          text(currents[0],0,0);
-          float brightness = min(100,map(currents[0],0,0.05,0,100));
-          noStroke();
-          fill(255,0,0,brightness);
-          ellipse(0,0,500,500);
+          text(-currents[0] + "A",0,0);
+        //}else if(selectedComponent.name.equals("LED")){ //LED
+        //  text(currents[0],0,0);
+        //  float brightness = min(100,map(currents[0],0,0.05,0,100));
+        //  noStroke();
+        //  fill(255,0,0,brightness);
+        //  ellipse(0,0,500,500);
         }else{
           fill(255,100);
           textAlign(CENTER,CENTER);
@@ -250,23 +250,7 @@ class Puck{
     float totsize = size + aurasize;
     float rotrad = radians(rotation);
     int terminals = selectedComponent.terminals;
-    if(errors.size() > 0){ //DRAW ERRORS FOR UNCONNECTED TERMINALS
-      pushMatrix();
-      rotate(rotrad);
-      if(terminals == 3){
-        rotate(-2*PI/12);
-      }
-      for(int i = 0; i < terminals; i++){
-        float connectAng = 2*PI/terminals;
-        if(errors.hasValue(i)){
-          fill(255,0,0);
-          noStroke();
-          arc(0,0,totsize,totsize,-PI/2,-PI/2+connectAng);
-        }
-        rotate(connectAng);
-      }
-      popMatrix();
-    }else if(currZone == -1 && !circuitRun){ //DRAW NORMAL AURAS
+    if(currZone == -1 && !circuitRun){ //DRAW NORMAL AURAS
       fill(255,128);
       noStroke();
       ellipse(0, 0, totsize, totsize);
@@ -287,10 +271,21 @@ class Puck{
         noStroke();
         float connectRad = map(currclock,0,100,0,aurasize);
         arc(0,0,size+connectRad,size+connectRad,-PI/2,-PI/2+connectAng);
-        
+        if(errors.hasValue(i)){ //DRAW RED AURA FOR ERRORS
+          fill(255,0,0);
+          noStroke();
+          arc(0,0,totsize,totsize,-PI/2,-PI/2+connectAng);
+        }
         rotate(connectAng);
       }
       popMatrix();
+    }else if(circuitRun){
+      if(selectedComponent.name.equals("LED")){ //LED
+        float brightness = min(100,map(currents[0],0,0.03,0,100));
+        noStroke();
+        fill(255,0,0,brightness);
+        ellipse(0,0,500,500);
+      }
     }
   }
   
@@ -821,6 +816,7 @@ class Puck{
         voltageAcross = connectedWires[0].voltage - connectedWires[1].voltage;
       }
     }
+    
     if(selectedComponent.name.equals("Oscilloscope")){ //OSCILLOSCOPE - ADD GRAPH
       addGraph(new Graph(oscX,oscY,100,100,1,true));
     }

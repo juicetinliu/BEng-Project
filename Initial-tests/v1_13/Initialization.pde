@@ -42,13 +42,13 @@ void createComponents(){
   //components.get(12).setTime("s", 0, 4, -4, 1, 999, 1);
   
   components.add(new Component(13, false, "Voltmeter", "", 2, false, 1));
-  components.add(new Component(14, false, "Ammeter", "", 2, false, 1));
+  components.add(new Component(14, true, "Ammeter", "A", 2, false, 1));
   
   components.add(new Component(15, true, "LED", "D", 2, false, 1));
 }
 
 void createCategories(){
-  categories.add(new ComponentCategory(0, "Passive Components",1));
+  categories.add(new ComponentCategory(0, "Passive Components",0));
   categories.get(0).addComponent(components.get(0));
   categories.get(0).addComponent(components.get(1));
   categories.get(0).addComponent(components.get(2));
@@ -80,10 +80,10 @@ void createCategories(){
 void createZones(){
   //zones.add(new Zone(0, "Component Selection", 0, width/4,height*0.9,width/2,height*0.2, chipIC));
   //zones.add(new Zone(1, "Component Value Change", 0, width*3/4,height*0.9,width/2,height*0.2, knobIC));
-  zones.add(new Zone(0, "Component Category Selection", 0, width*5/16,height*0.9,width*3/8,height*0.2, chipIC));
+  zones.add(new Zone(0, "Component Category Selection", 0, width*7/16,height*0.9,width*3/8,height*0.2, chipIC));
   zones.add(new Zone(1, "Component Value Change", 0, width*7/8,height*0.9,width/4,height*0.2, knobIC));
   zones.add(new Runzone(2, "Start Simulation", 1, width - puckSize*0.7 , puckSize*0.7 ,puckSize*1.1,puckSize*1.1, null));
-  zones.add(new Zone(3, "Category Component Change", 0, width/16,height*0.9,width/8,height*0.2, wrenIC));
-  zones.add(new Zone(4, "Component Time Change", 0, width*5/8,height*0.9,width/4,height*0.2, timeIC));
+  zones.add(new Zone(3, "Category Component Change", 0, width/8,height*0.9,width/4,height*0.2, wrenIC));
+  zones.add(new Zone(4, "Component Time Change", 0, width*11/16,height*0.9,width/8,height*0.2, timeIC));
   runzone = (Runzone) zones.get(2);
 }

@@ -36,7 +36,8 @@ class Zone{
       }
     }else if(type == 1){
       ellipse(x,y,w,h);
-    }    
+    }
+    
   }
   
   boolean puckWithin(float px, float py){

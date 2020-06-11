@@ -1,11 +1,11 @@
 HEHE
-.ic v(1)=5.0 v(2)=4.989449E-12 v(3)=0.01054963
-V0 1 0 PULSE(5 5 0s 1fs 1fs)
+.ic v(1)=2.463937 v(2)=0.06704755 v(3)=2.39689
+V0 1 0 SIN(0 5 2 -8.044005s 0)
 RD1 3 3DD1 1
 VD1 2D1 2 0
-D1 3DD1 2D1 led ic=0.01054963
-S2 3 1S2 6 0 switch1 OFF
-VST2 6 0 0
+D1 3DD1 2D1 led ic=2.3298423
+S2 3 1S2 6 0 switch1 ON
+VST2 6 0 2
 VS2 1S2 1 0
 VR4 0R4 0 0
 R4 2 0R4 1
@@ -15,7 +15,7 @@ R4 2 0R4 1
 .model QMODN NPN level=1
 .model QMODP PNP level=1
 .control
-tran 0.0105s 0.105s uic
+tran 0.0028000001s 0.028s uic
 let k = length(time) - 1
 print time[k] i(V0)[k] i(VD1)[k] i(VS2)[k] i(VR4)[k] v(1)[k] v(2)[k] v(3)[k]
 .endc

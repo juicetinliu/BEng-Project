@@ -84,6 +84,10 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
         lines.append(thisline);
         lines.append(swvline);
         lines.append(nxtline);
+      }else if(thiscomp.name.equals("Ammeter")){ //AMMETER --> MAKE IT A VOLTAGE SOURCE 0V
+        thisline += "V" + IDcode + " ";
+        thisline += chkpuck.connectedWires[0].id + " " + chkpuck.connectedWires[1].id + " 0"; //ADD NODES
+        lines.append(thisline);
       }else if(thiscomp.NGusable){
         if(thiscomp.terminals == 2){ //FOR TWO TERMINAL COMPONENTS
           String val = chkpuck.selectedvalue + intCodetoNGCode(chkpuck.selectedprefix); //VALUE OF PUCK COMPONENT
