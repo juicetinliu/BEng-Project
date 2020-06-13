@@ -57,7 +57,7 @@ class Runzone extends Zone{
   int state; //0 - idle, 1 - setting MASTERPUCK, 2 - ready with MASTERPUCK, 3 - turning with MASTERPUCK
   float sliderlength;
   Puck ThePuck = null;
-  int circuitSimTimer;
+  int circuitSimTimer, circuitSimTimePeriod = 100;
   float circuitSimStep = 0.1; //seconds
   
   
@@ -123,6 +123,7 @@ class Runzone extends Zone{
           }
           
           ThePuck.removeConnections();
+          //ThePuck.removeGraph();
         }else{
           reset();
         }
@@ -162,6 +163,7 @@ class Runzone extends Zone{
               updateOSCgraphpos(oscX,oscY);
               setWireVoltagesZero();
               //setPuckInformationZero();
+              resetAllPuckGraphs();
               circuitSimTimer = millis();
               NGCircuitRT(circuitSimStep, true);//first iteration
               elapsedTime += circuitSimStep;
@@ -170,13 +172,13 @@ class Runzone extends Zone{
             }
           }
           if(circuitRun){  //RUN THE SIMULATION
-            if(mspassed(circuitSimTimer,int(circuitSimStep*1000))){
-              float addTime = float(millis() - circuitSimTimer)/1000;
-              elapsedTime += addTime;
-              NGCircuitRT(addTime, false);
+            if(mspassed(circuitSimTimer,circuitSimTimePeriod)){
+              NGCircuitRT(circuitSimStep, false);
+              elapsedTime += circuitSimStep;
               showWireVoltages();
               updateAllPuckGraphs(circuitSimTimer);
               updateAllWireGraphs(circuitSimTimer);
+              circuitSimTimePeriod = 100 - ((millis() - circuitSimTimer) - circuitSimTimePeriod); //DIFFERENCE IN TIME --> CORRECT NEXT ITERATION
               circuitSimTimer = millis();
             }
           }
@@ -204,14 +206,23 @@ class Runzone extends Zone{
   
   void reset(){
     circuitRun = false;
-    ThePuck.MASTERPUCK = false;
-    ThePuck = null;
+    if(ThePuck != null){
+      ThePuck.MASTERrotation = 270;
+      ThePuck.selectedMASTER = 0;
+      ThePuck.MASTERPUCK = false;
+      ThePuck = null;
+    }
+    hidePuckErrors();
+    oscY = height*0.67;
+    updateOSCgraphpos(oscX,oscY);
+    circuitSimMultiplier = 1;
+    circuitSimStep = 0.1;
+    circuitSimTimePeriod = 100;
     state = 0;
     type = 1;
   }
   
   void display(color fcolor, boolean fok, color scolor, boolean sok){
-    
     if(state == 0){
       if(zonebarclock > 0){
         float anix = map(zonebarclock, 0, zonebanidur, 0, sliderlength);
@@ -279,7 +290,37 @@ class Runzone extends Zone{
       arc(x-sliderlength,y,w+5,w+5,PI/2,3*PI/2);
     }
     //super.display(fcolor, fok, scolor, sok);
+    
   }
+  
+  void displayBar(float menualpha, float rad, int chosenvalue){
+    stroke(menualpha);
+    strokeWeight(5);
+    noFill();
+    pushMatrix();
+    translate(x-sliderlength,y);
+    arc(0,0,w+rad,w+rad,PI*7/8,PI*9/8);
+    arc(0,0,w+rad*4,w+rad*4,PI*7/8,PI*9/8);
+    pushMatrix();
+    rotate(-PI/8);
+    arc(-w/2-rad*5/4,0,rad*3/2,rad*3/2,0,PI);
+    rotate(PI*2/8);
+    arc(-w/2-rad*5/4,0,rad*3/2,rad*3/2,PI,2*PI);
+    popMatrix();
+    float addangle = chosenvalue * PI/16;
+    rotate(addangle);
+    fill(menualpha);
+    noStroke();
+    ellipse(-w/2-rad*5/4,0,rad*3/2,rad*3/2);
+    
+    popMatrix();
+  }
+  
+  void setmultiplier(int chosenvalue){
+    circuitSimStep = 0.1*pow(2,chosenvalue);
+    circuitSimMultiplier = pow(2,chosenvalue);
+  }
+  
 }
 
 

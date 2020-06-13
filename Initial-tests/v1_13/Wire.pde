@@ -49,7 +49,9 @@ class Wire{
         //line(thisanch.x, thisanch.y, thiscont.x, thiscont.y);
         //text(sides.get(l/2),x,y);
       }
-      
+      noStroke();
+      fill(255);
+      ellipse(x,y,size,size);
     }else{
       stroke(255);
       strokeWeight(2);
@@ -59,13 +61,13 @@ class Wire{
       //line(lines.get(0).x, lines.get(0).y, lines.get(1).x, lines.get(1).y);
       //line(lines.get(3).x, lines.get(3).y, lines.get(2).x, lines.get(2).y);
     }
-    noStroke();
-    fill(255);
-    if(pointincircle(mouseX,mouseY,x,y,size)){
-      ellipse(x,y,size*1.5,size*1.5);
-    }else{
-      ellipse(x,y,size,size);
-    }
+    //noStroke();
+    //fill(255);
+    //if(pointincircle(mouseX,mouseY,x,y,size)){
+    //  ellipse(x,y,size*1.5,size*1.5);
+    //}else{
+    //  ellipse(x,y,size,size);
+    //}
     
    
     if(showDebug){
@@ -271,14 +273,14 @@ class Wire{
   void moveElectrons(int index, float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy, float current, float density){
     float wireLength = bezierLength(ax,ay,bx,by,cx,cy,dx,dy,0.01);
     int electronNo = max(1,int(wireLength/density));
-    float newcurramount = currentCounter.get(index) + current*10;
+    float newcurramount = currentCounter.get(index) + current*10*circuitSimMultiplier;
     newcurramount = (newcurramount < 0) ? newcurramount + 1000 : newcurramount;
     currentCounter.set(index, newcurramount % 1000);
     fill(255,255,0);
     noStroke();
     for(int i = 0; i < electronNo; i++){
       float percentMoved = float(i)/float(electronNo) + (currentCounter.get(index)/(float(1000*electronNo)));
-      //float percentMoved = float(i)/float(electronNo) + (percentMotion/float(electronNo));
+
       float x = bezierPoint(ax, bx, cx, dx, percentMoved);
       float y = bezierPoint(ay, by, cy, dy, percentMoved);
       ellipse(x,y,10,10);

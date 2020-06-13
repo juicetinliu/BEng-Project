@@ -1,5 +1,7 @@
 class Puck{
-  boolean MASTERPUCK;
+  boolean MASTERPUCK = false;
+  float MASTERrotation = 280;
+  int selectedMASTER = 0;
   int id;
   float x, y;
   float size, aurasize, ringthickness;
@@ -107,13 +109,7 @@ class Puck{
       //===== DRAW THE MENUS ABOVE THE DISC =====
       drawMenu();
       //if(showDebug){
-        pushMatrix();
-        rotate(radians(baserotation));
-        fill(255,0,0);
-        noStroke();
-        rectMode(CENTER);
-        rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
-        popMatrix();
+      //drawRotationMarker();
       //}
       
       if(showDebug){
@@ -133,7 +129,12 @@ class Puck{
         }
       }
     }
+    
+    drawRotationMarker();
     popMatrix();
+    if(MASTERPUCK){
+      drawMenu();
+    }
     if(puckGraph != null){
       puckGraph.setAnchor(x,y);
     }
@@ -297,6 +298,8 @@ class Puck{
       rotate(radians(catrotation));
     }else if(currZone == 1){
       rotate(radians(valrotation));
+    }else if(currZone == 2){
+      rotate(radians(MASTERrotation));
     }else if(currZone == 3){
       rotate(radians(comrotation));
     }else if(currZone == 4){
@@ -331,6 +334,16 @@ class Puck{
     }
   }
   
+  void drawRotationMarker(){
+    pushMatrix();
+    rotate(radians(baserotation));
+    fill(255,0,0);
+    noStroke();
+    rectMode(CENTER);
+    rect(0,(size-ringthickness)/2,ringthickness/2,ringthickness/2);
+    popMatrix();
+  }
+  
   void drawMenu(){
     if(menushow){
       if(currZone == 0){
@@ -345,6 +358,15 @@ class Puck{
           hideMenu();
         }
       }else if(currZone == 2){
+        if(MASTERPUCK){
+          if(runzone.state == 3 || runzone.state == 4){
+            drawMasterMenu();
+          }else{
+            hideMenu();
+          }
+        }else{
+          hideMenu();
+        }
       }else if(currZone == 3){
         if(selectedCategory.cat.size() > 1){
           drawComponentMenu();
@@ -515,6 +537,22 @@ class Puck{
     }
   }
   
+  void drawMasterMenu(){
+    pushMatrix();
+    translate(x,y);
+    drawPointers();
+    popMatrix();
+    if(menuclock > 0){
+      if(mspassed(menums,10)){
+        menuclock--;
+        menums = millis();
+      }
+      runzone.displayBar(menualpha,aurasize,selectedMASTER);
+    }else{
+      menushow = false;
+    }
+  }
+  
   //===========================================================
   //==================== INTERACTION STUFF ====================  
   //===========================================================
@@ -581,6 +619,13 @@ class Puck{
       
       showMenu();
     }else if(currZone == 2){
+      if(MASTERPUCK){
+        if(runzone.state == 3 || runzone.state == 4){
+          MASTERrotation = min(290,max(250,limdegrees(MASTERrotation + delta)));
+          selectMASTERMult();
+          showMenu();
+        }
+      }
     }else if(currZone == 3){
       comrotation = limdegrees(comrotation + delta);
       selectCategoryComponent();
@@ -631,6 +676,11 @@ class Puck{
   
   void selectState(){
     selectedstate = min(selectedComponent.noStates-1,int(map(staterotation,0,360,0,selectedComponent.noStates)));
+  }
+  
+  void selectMASTERMult(){
+    selectedMASTER = int(map(MASTERrotation,250,290,-2,2));
+    runzone.setmultiplier(selectedMASTER);
   }
   
   void selectCategoryComponent(){

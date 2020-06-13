@@ -21,6 +21,7 @@ float shakeSettings = 0.5;
 float scrollSettings = 0.5;
 float puckSize;
 float elapsedTime = 0; //Seconds
+float circuitSimMultiplier = 1;
 
 
 Icon knobIC = new Icon("knob");
@@ -72,7 +73,9 @@ void draw(){
   textAlign(LEFT);
   text(frameRate,10,10);
   //text(graphs.size(),50,10);
+  textAlign(CENTER);
   text(elapsedTime , width/2, 10);
+  text("x"+circuitSimMultiplier,width/2,20);
   
   drawZones();
   for(Button thisbutton:buttons){
@@ -188,7 +191,7 @@ void savePucks(){
 
 void loadPucks(){
   String[] lines = loadStrings("layout.txt");
-  runzone.ThePuck = null;
+  runzone.reset();
   pucks.clear();
   wires.clear();
   graphs.clear();

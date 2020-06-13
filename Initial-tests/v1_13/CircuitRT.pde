@@ -317,5 +317,7 @@ void NGparseOutputRT(StringList output){
       } 
     }
   }
-  
+  //String line = output.get(lineptr);
+  //String[] list = split(line, " = ");
+  //return float(list[1].trim());
 }
