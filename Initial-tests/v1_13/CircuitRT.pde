@@ -182,7 +182,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
             colVs += colI + " " + chkpuck.connectedWires[0].id + " 0";
             basVs += basI + " " + chkpuck.connectedWires[2].id + " 0";
             emiVs += emiI + " " + chkpuck.connectedWires[1].id + " 0";
-            
+              
             lines.append(thisline);
             lines.append(colVs);
             lines.append(basVs);

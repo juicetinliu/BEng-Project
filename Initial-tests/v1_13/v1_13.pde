@@ -191,6 +191,7 @@ void loadPucks(){
   runzone.ThePuck = null;
   pucks.clear();
   wires.clear();
+  graphs.clear();
   addPucks(int(lines[0]));
   addWires(int(lines[1]));
   int linectr = 2;

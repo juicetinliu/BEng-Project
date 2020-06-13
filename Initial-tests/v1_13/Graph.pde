@@ -52,7 +52,7 @@ class Graph{
     stroke(255);
     strokeWeight(2);
     rect(0,0,w,h);
-    
+    rect(0,0,w*0.9,h*0.8);
     popMatrix();
     
     drawAxes();
@@ -63,7 +63,7 @@ class Graph{
     rectMode(CENTER);
     stroke(graphColor,128);
     strokeWeight(2);
-    float mapyanch = map(values[0],minval,maxval,h*0.45,-h*0.45);
+    float mapyanch = map(min(maxval,max(minval,values[0])),minval,maxval,h*0.4,-h*0.4);
     line(x+w*0.45,y+mapyanch,anchorx,anchory);
   }
   
@@ -73,10 +73,9 @@ class Graph{
     noFill();
     stroke(255);
     strokeWeight(2);
-    float mapzeroy = map(0,minval,maxval,h*0.45,-h*0.45);
+    float mapzeroy = map(0,minval,maxval,h*0.4,-h*0.4);
     line(-w*0.45,mapzeroy,w*0.45,mapzeroy);
-    line(-w*0.45,h*0.45,-w*0.45,-h*0.45);
-    
+    line(-w*0.45,h*0.4,-w*0.45,-h*0.4);
     popMatrix();
   }
   
@@ -87,6 +86,9 @@ class Graph{
       fill(graphColor);
       textAlign(LEFT);
       text("Src " + (osccounter + 1) + ":" + rangetext, -w*0.5 + (osccounter*w/4), -h*0.55);
+      textAlign(LEFT,CENTER);
+      text(rangetext,-w*0.475 + (osccounter*w/4),-h*0.45);
+      text("-" + rangetext,-w*0.475 + (osccounter*w/4),h*0.45);
     }
     //if(type == 0){
     //  stroke(0,200,255);
@@ -99,7 +101,7 @@ class Graph{
     beginShape();
     for(int i = 0; i < values.length; i++){
       float mapxval = map(i,0,values.length-1,w*0.45,-w*0.45);
-      float mapyval = map(values[i],minval,maxval,h*0.45,-h*0.45);
+      float mapyval = map(min(maxval,max(minval,values[i])),minval,maxval,h*0.4,-h*0.4);
       vertex(mapxval,mapyval);
     }
     endShape();

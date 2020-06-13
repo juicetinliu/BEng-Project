@@ -49,7 +49,7 @@ void createComponents(){
 
 void createCategories(){
   categories.add(new ComponentCategory(0, "Passive Components",0));
-  categories.get(0).addComponent(components.get(0));
+  //categories.get(0).addComponent(components.get(0));
   categories.get(0).addComponent(components.get(1));
   categories.get(0).addComponent(components.get(2));
   categories.get(0).addComponent(components.get(3));
