@@ -44,7 +44,12 @@ void createComponents(){
   components.add(new Component(13, false, "Voltmeter", "", 2, false, 1));
   components.add(new Component(14, true, "Ammeter", "A", 2, false, 1));
   
-  components.add(new Component(15, true, "LED", "D", 2, false, 1));
+  components.add(new Component(15, true, "LED - Red", "D", 2, false, 1));
+  components.add(new Component(16, true, "LED - Green", "D", 2, false, 1));
+  components.add(new Component(17, true, "LED - Blue", "D", 2, false, 1));
+  
+  components.add(new Component(18, true, "NMOSFET", "M", 3, false, 1));
+  components.add(new Component(19, true, "PMOSFET", "M", 3, false, 1));
 }
 
 void createCategories(){
@@ -66,10 +71,14 @@ void createCategories(){
   categories.add(new ComponentCategory(3, "Diodes",0));  
   categories.get(3).addComponent(components.get(9));
   categories.get(3).addComponent(components.get(15));
+  categories.get(3).addComponent(components.get(16));
+  categories.get(3).addComponent(components.get(17));
 
   categories.add(new ComponentCategory(4, "Active Components",0));
   categories.get(4).addComponent(components.get(10));
   categories.get(4).addComponent(components.get(11));
+  categories.get(4).addComponent(components.get(18));
+  categories.get(4).addComponent(components.get(19));
   
   categories.add(new ComponentCategory(5, "Measurement Tools",0));
   categories.get(5).addComponent(components.get(13));
@@ -86,4 +95,18 @@ void createZones(){
   zones.add(new Zone(3, "Category Component Change", 0, width/8,height*0.9,width/4,height*0.2, wrenIC));
   zones.add(new Zone(4, "Component Time Change", 0, width*11/16,height*0.9,width/8,height*0.2, timeIC));
   runzone = (Runzone) zones.get(2);
+}
+
+void createButtons(){
+  buttons.add(new Button("Settings", height*2/80,height*3/80,height*3/80));
+  buttons.add(new Button("AddPucks", height*2/80,height*7/80,height*3/80));
+  buttons.add(new Button("RemovePucks", height*2/80,height*11/80,height*3/80));
+  //buttons.add(new Button("AddGraph", height*2/80,height*15/80,height*3/80));
+}
+
+void createSliders(){
+  sliders.add(new Slider("Scrollsen", width*0.6, height*0.2, width*0.5, height*2/80));
+  sliders.add(new Slider("Shakesen", width*0.6, height*0.3, width*0.5, height*2/80));
+  sliders.add(new Slider("DiscSize", width*0.6, height*0.4, width*0.5, height*2/80));
+  //sliders.add(new Slider("DiscRotType", width*0.6, height*0.5, width*0.5, height*2/80));
 }

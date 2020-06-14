@@ -105,7 +105,7 @@ class Wire{
         PVector thisanch = lines.get(l);
         PVector thiscont = lines.get(l+1);
         
-        if(thispuck.selectedCategory.name.equals("Active")){
+        if(thispuck.selectedCategory.name.equals("Active Components")){
           if(sides.get(l/2) == 1){
             current = thispuck.currents[0];
           }else if(sides.get(l/2) == 2){
@@ -124,7 +124,7 @@ class Wire{
       }
     }else{
       Puck thispuck = connectedPucks.get(0);
-      if(thispuck.selectedCategory.name.equals("Active")){
+      if(thispuck.selectedCategory.name.equals("Active Components")){
           if(sides.get(0) == 1){
             current = thispuck.currents[0];
           }else if(sides.get(0) == 2){
@@ -273,7 +273,7 @@ class Wire{
   void moveElectrons(int index, float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy, float current, float density){
     float wireLength = bezierLength(ax,ay,bx,by,cx,cy,dx,dy,0.01);
     int electronNo = max(1,int(wireLength/density));
-    float newcurramount = currentCounter.get(index) + current*10*circuitSimMultiplier;
+    float newcurramount = currentCounter.get(index) + 500*sigmoid(current*circuitSimMultiplier);
     newcurramount = (newcurramount < 0) ? newcurramount + 1000 : newcurramount;
     currentCounter.set(index, newcurramount % 1000);
     fill(255,255,0);

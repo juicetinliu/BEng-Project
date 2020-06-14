@@ -133,7 +133,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           }else{
             if(thiscomp.name.equals("Diode")){ //ADD DIODE MODEL
               thisline += "diode1";
-            }else if(thiscomp.name.equals("LED")){ //ADD LED MODEL
+            }else if(thiscomp.name.equals("LED - Red") || thiscomp.name.equals("LED - Green") || thiscomp.name.equals("LED - Blue")){ //ADD LED MODEL
               thisline += "led";
             }else{
               thisline += val; //ADD VALUE OF COMPONENT
@@ -143,7 +143,7 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
               thisline += " ic=" + chkpuck.currents[0]; //ADD INITIAL CURRENT
             }else if(thiscomp.name.equals("Capacitor")){ //CAPACITOR
               thisline += " ic=" + chkpuck.voltages[0]; //ADD INITIAL VOLTAGE
-            }else if(thiscomp.name.equals("Diode") || thiscomp.name.equals("LED")){ //DIODE
+            }else if(thiscomp.name.equals("Diode") || thiscomp.name.equals("LED - Red") || thiscomp.name.equals("LED - Green") || thiscomp.name.equals("LED - Blue")){ //DIODE
               thisline += " ic=" + chkpuck.voltages[0]; //ADD INITIAL VOLTAGE
             }
           }
@@ -158,35 +158,57 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           lines.append(thisline);
           
         }else if(thiscomp.terminals == 3){ //FOR THREE TERMINAL COMPONENTS
-          if(thiscat.name.equals("Active Components")){ //BJT
+          if(thiscat.name.equals("Active Components")){ //BJT or MOSFET
             thisline += IDcode + " "; //ADD NAME AND ID
           
             //===== ADD NODES =====
-            String colI = chkpuck.connectedWires[0].id + IDcode; //CREATING CURRENT
-            String basI = chkpuck.connectedWires[2].id + IDcode; //SENSING
-            String emiI = chkpuck.connectedWires[1].id + IDcode; //NODES
+            String upI = chkpuck.connectedWires[0].id + IDcode; //CREATING CURRENT
+            String sideI = chkpuck.connectedWires[2].id + IDcode; //SENSING
+            String downI = chkpuck.connectedWires[1].id + IDcode; //NODES
             
-            thisline += colI + " "; //ADD COLLECTOR NODE
-            thisline += basI + " "; //ADD BASE NODE
-            thisline += emiI + " "; //ADD EMITTER NODE
+            thisline += upI + " "; //ADD COLLECTOR/DRAIN NODE
+            thisline += sideI + " "; //ADD BASE/GATE NODE
+            thisline += downI + " "; //ADD EMITTER/SOURCE NODE
+            
+            if(thiscomp.name.endsWith("MOSFET")){
+              thisline += downI + " "; //ADD BODY = SOURCE NODE
+            }
+            
             if(thiscomp.name.equals("NPN BJT")){
               thisline += "QMODN"; //ADD NPN BJT MODEL
-            }else{
+            }else if(thiscomp.name.equals("PNP BJT")){
               thisline += "QMODP"; //ADD PNP BJT MODEL
+            }else if(thiscomp.name.equals("NMOSFET")){
+              thisline += "MOSN"; //ADD NMOSFET MODEL
+            }else if(thiscomp.name.equals("PMOSFET")){
+              thisline += "MOSP"; //ADD PMOSFET MODEL
             }
-            thisline += " ic=" + chkpuck.voltages[0] + ", " + chkpuck.voltages[1]; //ADD INITIAL VOLTAGES (VBE, VCE)
             
-            String colVs = "V" + IDcode + "C ";
-            String basVs = "V" + IDcode + "B ";
-            String emiVs = "V" + IDcode + "E ";
-            colVs += colI + " " + chkpuck.connectedWires[0].id + " 0";
-            basVs += basI + " " + chkpuck.connectedWires[2].id + " 0";
-            emiVs += emiI + " " + chkpuck.connectedWires[1].id + " 0";
+            if(thiscomp.name.endsWith("BJT")){
+              thisline += " ic=" + chkpuck.voltages[0] + ", " + chkpuck.voltages[1]; //ADD INITIAL VOLTAGES (VBE, VCE)
+            }else{
+              thisline += " ic=" + chkpuck.voltages[0] + ", " + chkpuck.voltages[1] + ", " + chkpuck.voltages[2]; //ADD INITIAL VOLTAGES (VDS, VGS, VBS)              
+            }
+            String upVs = "V" + IDcode;
+            String sideVs = "V" + IDcode;
+            String downVs = "V" + IDcode;
+            if(thiscomp.name.endsWith("BJT")){
+              upVs += "C ";
+              sideVs += "B ";
+              downVs += "E ";
+            }else{
+              upVs += "D ";
+              sideVs += "G ";
+              downVs += "S ";
+            }
+            upVs += upI + " " + chkpuck.connectedWires[0].id + " 0";
+            sideVs += sideI + " " + chkpuck.connectedWires[2].id + " 0";
+            downVs += downI + " " + chkpuck.connectedWires[1].id + " 0";
               
             lines.append(thisline);
-            lines.append(colVs);
-            lines.append(basVs);
-            lines.append(emiVs);
+            lines.append(upVs);
+            lines.append(sideVs);
+            lines.append(downVs);
           }
           
         }
@@ -200,6 +222,8 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
   lines.append(".model led D(is=1e-22 rs=6 n=1.5 cjo=50p xti=100)");
   lines.append(".model QMODN NPN level=1");
   lines.append(".model QMODP PNP level=1");
+  lines.append(".model MOSN NMOS level=1");
+  lines.append(".model MOSP PMOS level=1");
   
   //lines.append(".MODEL diode1 D(IS=4.352E-9 N=1.906 BV=110 IBV=0.0001 RS=0.6458 CJO=7.048E-13 VJ=0.869 M=0.03 FC=0.5 TT=3.48E-9 ");
   //lines.append(".option rshunt = 1.0e12");
@@ -227,9 +251,15 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           printline += " i(V" + chkpuck.id + ")[k]";
         }else if(thiscat.name.equals("Active Components")){
           String idcode = thiscomp.NGname + chkpuck.id;
-          printline += " i(V" + idcode + "C)[k]";
-          printline += " i(V" + idcode + "B)[k]";
-          printline += " i(V" + idcode + "E)[k]";
+          if(thiscomp.name.endsWith("BJT")){
+              printline += " i(V" + idcode + "C)[k]";
+              printline += " i(V" + idcode + "B)[k]";
+              printline += " i(V" + idcode + "E)[k]";
+            }else{
+              printline += " i(V" + idcode + "D)[k]";
+              printline += " i(V" + idcode + "G)[k]";
+              printline += " i(V" + idcode + "S)[k]";
+            }
         }else{
           printline += " i(V" + thiscomp.NGname + chkpuck.id + ")[k]";
         }
@@ -309,7 +339,7 @@ void NGparseOutputRT(StringList output){
           lineptr--;
           if(thiscomp.name.equals("Capacitor")){ //CAPACITOR VOLTAGE
             thispuck.voltages[0] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
-          }else if(thiscomp.name.equals("Diode") || thiscomp.name.equals("LED")){ //DIODE VOLTAGE
+          }else if(thiscomp.name.equals("Diode") || thiscomp.name.equals("LED - Red") || thiscomp.name.equals("LED - Green") || thiscomp.name.equals("LED - Blue")){ //DIODE VOLTAGE
             thispuck.voltages[0] = thispuck.connectedWires[0].voltage - thispuck.connectedWires[1].voltage;
             //lineptr--;
           }

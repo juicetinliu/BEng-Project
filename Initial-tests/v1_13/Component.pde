@@ -240,16 +240,82 @@ class Component{
         line(-size*0.2,0,-size*0.3,0);
       break;
       
-      case 15: //LED
+      case 15: //LED R
+        fill(100,0,0);
         triangle(size*0.15,-size*0.2,size*0.15,size*0.2,-size*0.15,0);
+        noFill();        
         line(-size/2,0,-size*0.15,0);
         line(size/2,0,size*0.15,0);
         line(-size*0.15,-size*0.2,-size*0.15,size*0.2);
         line(size*0.1,size*0.25,0,size*0.35);
-        triangle(-size*0.05,size*0.4,-size*0.02,size*0.33,size*0.02,size*0.37);
+        
                 
         line(0,size*0.2,-size*0.1,size*0.3);
+        triangle(-size*0.05,size*0.4,-size*0.02,size*0.33,size*0.02,size*0.37);
         triangle(-size*0.15,size*0.35,-size*0.12,size*0.28,-size*0.08,size*0.32);
+      break;
+      
+      case 16: //LED G
+        fill(0,100,0);
+        triangle(size*0.15,-size*0.2,size*0.15,size*0.2,-size*0.15,0);
+        noFill();
+        line(-size/2,0,-size*0.15,0);
+        line(size/2,0,size*0.15,0);
+        line(-size*0.15,-size*0.2,-size*0.15,size*0.2);
+        line(size*0.1,size*0.25,0,size*0.35);
+                
+        line(0,size*0.2,-size*0.1,size*0.3);
+        triangle(-size*0.05,size*0.4,-size*0.02,size*0.33,size*0.02,size*0.37);
+        triangle(-size*0.15,size*0.35,-size*0.12,size*0.28,-size*0.08,size*0.32);
+      break;
+      
+      case 17: //LED B
+        fill(0,0,100);
+        triangle(size*0.15,-size*0.2,size*0.15,size*0.2,-size*0.15,0);
+        noFill();
+        line(-size/2,0,-size*0.15,0);
+        line(size/2,0,size*0.15,0);
+        line(-size*0.15,-size*0.2,-size*0.15,size*0.2);
+        line(size*0.1,size*0.25,0,size*0.35);
+                
+        line(0,size*0.2,-size*0.1,size*0.3);
+        
+        triangle(-size*0.05,size*0.4,-size*0.02,size*0.33,size*0.02,size*0.37);
+        triangle(-size*0.15,size*0.35,-size*0.12,size*0.28,-size*0.08,size*0.32);
+      break;
+      
+      case 18: //NMOSFET
+        line(-size/2,0,-size*0.15,0);
+        line(-size*0.15,-size*0.2,-size*0.15,size*0.2);
+        line(0,-size*0.3,0,size*0.3);
+        
+        line(size*0.1,0,size*0.15,0);
+        line(0,size*0.2,size*0.15,size*0.2);
+        line(0,-size*0.2,size*0.15,-size*0.2);
+        
+        line(size*0.15,-size*0.2,size*0.15,-size/2);
+        line(size*0.15,0,size*0.15,size/2);
+        
+        triangle(0,0,size*0.1,size*0.05,size*0.1,-size*0.05);
+        
+        ellipse(0,0,size,size);
+      break;
+      
+      case 19: //PMOSFET
+        line(-size/2,0,-size*0.15,0);
+        line(-size*0.15,-size*0.2,-size*0.15,size*0.2);
+        line(0,-size*0.3,0,size*0.3);
+        
+        line(0,0,size*0.05,0);
+        line(0,size*0.2,size*0.15,size*0.2);
+        line(0,-size*0.2,size*0.15,-size*0.2);
+        
+        line(size*0.15,size*0.2,size*0.15,size/2);
+        line(size*0.15,0,size*0.15,-size/2);
+        
+        triangle(size*0.15,0,size*0.05,size*0.05,size*0.05,-size*0.05);
+        
+        ellipse(0,0,size,size);
       break;
       
       default: //wire

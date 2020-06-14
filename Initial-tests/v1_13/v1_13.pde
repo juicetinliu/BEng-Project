@@ -23,6 +23,7 @@ float puckSize;
 float elapsedTime = 0; //Seconds
 float circuitSimMultiplier = 1;
 
+PShader LED;
 
 Icon knobIC = new Icon("knob");
 Icon chipIC = new Icon("chip");
@@ -33,30 +34,27 @@ Icon timeIC = new Icon("time");
 float oscX, oscY, oscRange;
 
 void setup(){
-  size(1200,800);
+  size(1200,800,P2D);
   surface.setTitle("CircuitSim");
   //size(900,600);
   //smooth();
-  //pixelDensity(displayDensity());
+  pixelDensity(displayDensity());
   puckSize = height/8;
   randomSeed(7);
-  buttons.add(new Button("Settings", height*2/80,height*3/80,height*3/80));
-  buttons.add(new Button("AddPucks", height*2/80,height*7/80,height*3/80));
-  buttons.add(new Button("RemovePucks", height*2/80,height*11/80,height*3/80));
-  //buttons.add(new Button("AddGraph", height*2/80,height*15/80,height*3/80));
   createComponents();
   createCategories();
   createZones();
+  createButtons();
+  createSliders();
   addPucksRandom(5);
   
   PFont font = loadFont("HelveticaNeue-20.vlw");
   textFont(font);
   textSize(12);
+  
+  LED = loadShader("Frag.glsl", "Vert.glsl");
+  LED.set("ratio",float(width)/float(height));
   //textFont(font, 9);
-  sliders.add(new Slider("Scrollsen", width*0.6, height*0.2, width*0.5, height*2/80));
-  sliders.add(new Slider("Shakesen", width*0.6, height*0.3, width*0.5, height*2/80));
-  sliders.add(new Slider("DiscSize", width*0.6, height*0.4, width*0.5, height*2/80));
-  //sliders.add(new Slider("DiscRotType", width*0.6, height*0.5, width*0.5, height*2/80));
   oscX = width*0.13;
   oscY = height*0.67;
   oscRange = 1;
@@ -96,6 +94,26 @@ void draw(){
   for(Puck thispuck:pucks){
     thispuck.run();
     thispuck.display();
+  }
+  
+  for(Puck thispuck:pucks){
+    if(circuitRun){
+      if(thispuck.selectedComponent.name.equals("LED - Red") || thispuck.selectedComponent.name.equals("LED - Green") || thispuck.selectedComponent.name.equals("LED - Blue")){ //LED
+        float brightness = min(100,map(thispuck.currents[0],0,0.03,0,255));
+        noStroke();
+        LED.set("cirxy",thispuck.x/width,1-thispuck.y/height);
+        shader(LED);
+        if(thispuck.selectedComponent.name.equals("LED - Red")){
+          fill(255,0,0,brightness);
+        }else if(thispuck.selectedComponent.name.equals("LED - Green")){
+          fill(0,255,0,brightness);
+        }else if(thispuck.selectedComponent.name.equals("LED - Blue")){
+          fill(0,0,255,brightness);
+        }
+        rect(width/2,height/2,width,height);
+        resetShader();
+      }
+    }
   }
   
   if(settingsOpen){

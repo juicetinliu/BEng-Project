@@ -26,6 +26,10 @@ float limdegrees(float indegrees){ //keeps input angle between 0 - 360
   }
 }
 
+float sigmoid(float input){
+  return 2/(1+exp(-input)) - 1;
+}
+
 float limradians(float inrads){ //keeps input angle between 0 - 2PI
   if(inrads > 2*PI){
     return inrads % (2*PI);

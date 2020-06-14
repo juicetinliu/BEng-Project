@@ -23,8 +23,8 @@ class Puck{
   IntList connectms = new IntList();
     
   Wire[] connectedWires;
-  float[] voltages = new float[3]; //ALL: 0 - voltage || BJT: 0 - VBE, 1 - VCE
-  float[] currents = new float[3]; //ALL: 0 - current || BJT: 0 - iC, 1 - iB, 2 - iE
+  float[] voltages = new float[3]; //ALL: 0 - voltage || BJT: 0 - VBE, 1 - VCE || MOSFET: 0 - VDS, 1 - VGS, 2 - VBS
+  float[] currents = new float[3]; //ALL: 0 - current || BJT: 0 - iC, 1 - iB, 2 - iE || MOSFET: 0 - iD, 1 - iG, 2 - iS
   
   String valtext, timetext;
   int menuclock = 0, menums = millis(), menualpha;
@@ -117,10 +117,17 @@ class Puck{
         text("ID: " + id, 0, -75);
         text(selectedComponent.name,0,-115);
         text(selectedCategory.name,0,-100);
-        if(selectedCategory.name.equals("Active")){
-          text("IC: " + currents[0], 100, -15);
-          text("IB: " + currents[1], 100, 0);
-          text("IE: " + currents[2], 100, 15);
+        if(selectedCategory.name.equals("Active Components")){
+          if(selectedComponent.name.endsWith("BJT")){
+            text("IC: " + currents[0], 100, -15);
+            text("IB: " + currents[1], 100, 0);
+            text("IE: " + currents[2], 100, 15);
+          }else{
+            text("ID: " + currents[0], 100, -15);
+            text("IG: " + currents[1], 100, 0);
+            text("IS: " + currents[2], 100, 15);
+          }
+          
         }else{
           text("I: " + currents[0], 100, 0);
         }
@@ -280,13 +287,6 @@ class Puck{
         rotate(connectAng);
       }
       popMatrix();
-    }else if(circuitRun){
-      if(selectedComponent.name.equals("LED")){ //LED
-        float brightness = min(100,map(currents[0],0,0.03,0,100));
-        noStroke();
-        fill(255,0,0,brightness);
-        ellipse(0,0,500,500);
-      }
     }
   }
   
