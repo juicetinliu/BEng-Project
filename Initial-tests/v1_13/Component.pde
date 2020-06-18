@@ -142,14 +142,14 @@ class Component{
         }
       break;
       
-      case 5: //DC
+      case 5: //VDC
         line(size*0.2,0,size*0.3,0);
         line(size*0.25,size*0.05,size*0.25,-size*0.05);
         line(-size*0.2,0,-size*0.3,0);
         ellipse(0,0,size,size);
       break;
       
-      case 6: //AC - Sinusoidal
+      case 6: //VAC - Sinusoidal
         arc(-size*0.2,0,size*0.4,size*0.4,PI,2*PI);
         arc(size*0.2,0,size*0.4,size*0.4,0,PI);
         ellipse(0,0,size,size);
@@ -158,7 +158,7 @@ class Component{
         stroke(255);
       break;
       
-      case 7: //AC - Triangle
+      case 7: //VAC - Triangle
         line(-size*0.4,0,-size*0.2,-size*0.2);
         line(-size*0.2,-size*0.2,size*0.2,size*0.2);
         line(size*0.4,0,size*0.2,size*0.2);
@@ -168,7 +168,7 @@ class Component{
         stroke(255);
       break;
       
-      case 8: //AC - Square
+      case 8: //VAC - Square
         line(-size*0.4,0,-size*0.4,-size*0.2);
         line(-size*0.4,-size*0.2,0,-size*0.2);
         line(0,-size*0.2,0,size*0.2);
@@ -315,6 +315,20 @@ class Component{
         
         triangle(size*0.15,0,size*0.05,size*0.05,size*0.05,-size*0.05);
         
+        ellipse(0,0,size,size);
+      break;
+      
+      case 20: //IDC
+        triangle(-size*0.25,0,-size*0.15,size*0.07,-size*0.15,-size*0.07);
+        
+        line(size*0.25,0,-size*0.15,0);
+        ellipse(0,0,size,size);
+      break;
+      
+      case 21: //DC
+        line(size*0.2,0,size*0.3,0);
+        line(size*0.25,size*0.05,size*0.25,-size*0.05);
+        line(-size*0.2,0,-size*0.3,0);
         ellipse(0,0,size,size);
       break;
       

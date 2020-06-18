@@ -19,9 +19,9 @@ void addWires(int num){
 void createComponents(){
   components.add(new Component(0, false, "Wire", "", 2, false, 1));
   
-  components.add(new Component(1, true, "Resistor", "R", 2, "Ω", 0, 4, -4, 1, 999, 1, true, 1));
-  components.add(new Component(2, true, "Capacitor", "C", 2, "F", 0, 4, -4, 1, 999, 1, true, 1));
-  components.add(new Component(3, true, "Inductor", "L", 2, "H", 0, 4, -4, 1, 999, 1, true, 1));
+  components.add(new Component(1, true, "Resistor", "R", 2, "Ω", 1, 4, 0, 1, 999, 1, true, 1));
+  components.add(new Component(2, true, "Capacitor", "C", 2, "F", 0, 0, -4, 1, 999, 1, true, 1));
+  components.add(new Component(3, true, "Inductor", "L", 2, "H", 0, 0, -4, 1, 999, 1, true, 1));
   
   components.add(new Component(4, true, "Switch", "S", 2, false, 2));
   
@@ -50,6 +50,11 @@ void createComponents(){
   
   components.add(new Component(18, true, "NMOSFET", "M", 3, false, 1));
   components.add(new Component(19, true, "PMOSFET", "M", 3, false, 1));
+  
+  
+  components.add(new Component(20, true, "Current Source", "I", 2, "A", 0, 4, -4, 1, 999, 1, true, 1));
+  components.add(new Component(21, true, "Sinusoidal Current Source", "I", 2, "A", 0, 4, -4, 1, 999, 1, true, 1));
+  components.get(21).setTime("Hz", 0, 4, -4, 1, 999, 1);
 }
 
 void createCategories(){
@@ -66,7 +71,8 @@ void createCategories(){
   categories.get(2).addComponent(components.get(5));
   categories.get(2).addComponent(components.get(6));
   categories.get(2).addComponent(components.get(7));
-  categories.get(2).addComponent(components.get(8));
+  categories.get(2).addComponent(components.get(20));
+  //categories.get(2).addComponent(components.get(21));
   
   categories.add(new ComponentCategory(3, "Diodes",0));  
   categories.get(3).addComponent(components.get(9));

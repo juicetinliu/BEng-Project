@@ -1,20 +1,11 @@
 HEHE
-.ic v(1)=5.0 v(2)=0.2955935 v(3)=6.340964 v(4)=707066.8
-VR1 3R1 3 0
-R1 0 3R1 50
-V2 1 0 PULSE(5 5 0s 1fs 1fs)
-VC3 0C3 0 0
-C3 3 0C3 1 ic=6.340964
-VL4 1L4 1 0
-L4 2 1L4 100m ic=-4.18009
-RD5 2 2DD5 1
-VD5 3D5 3 0
-D5 2DD5 3D5 diode1 ic=-6.04537
-M7 2M7 4M7 0M7 0M7 MOSN ic=0.0, 0.0, 0.0
-VM7D 2M7 2 0
-VM7G 4M7 4 0
-VM7S 0M7 0 0
-V8 4 0 SIN(0 1Meg 5 -2.875002s 0)
+.ic v(1)=1.958823
+VR1 0R1 0 0
+R1 1 0R1 2
+I2 0 1 PULSE(1 1 0s 1fs 1fs)
+RD4 1 1DD4 1
+VD4 0D4 0 0
+D4 1DD4 0D4 led ic=1.958823
 .model switch1 sw vt=1
 .model diode1 D
 .model led D(is=1e-22 rs=6 n=1.5 cjo=50p xti=100)
@@ -25,6 +16,6 @@ V8 4 0 SIN(0 1Meg 5 -2.875002s 0)
 .control
 tran 0.0025s 0.025s uic
 let k = length(time) - 1
-print time[k] i(VR1)[k] i(V2)[k] i(VC3)[k] i(VL4)[k] i(VD5)[k] i(VM7D)[k] i(VM7G)[k] i(VM7S)[k] i(V8)[k] v(1)[k] v(2)[k] v(3)[k] v(4)[k]
+print time[k] i(VR1)[k] i(VD4)[k] v(1)[k]
 .endc
 .end

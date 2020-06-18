@@ -115,13 +115,17 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
           
           //===== ADD INFORMATION =====
           if(thiscat.name.equals("Power Sources")){ //VOLTAGE SOURCES
-            if(thiscomp.name.equals("Sinusoidal Voltage Source")){ //PERIODIC SOURCE SIN(0 1 hZ -time 0)
+            if(thiscomp.name.equals("Sinusoidal Voltage Source") || thiscomp.name.equals("Sinusoidal Current Source")){ //PERIODIC SOURCE SIN(0 1 hZ -time 0)
               thisline += "SIN(0 " + val + " " + timeval + " -";
               thisline += elapsedTime + "s 0)";
-            //}else if(thiscat.indComponent(thiscomp) == 3){ //PERIODIC SOURCE PWL(T1 V1 <T2 V2 T3 V3 T4 V4 ...>) <r=value> <td=value>
-            //  String htimeval = chkpuck.selectedTvalue/2 + intCodetoNGCode(chkpuck.selectedTprefix);
-            //  thisline += "PULSE(0 " + val + " " + htimeval + " " + val + ;
-            //  thisline += elapsedtime + "s 1fs 1fs" + htimeval + "s " + timeval + "s ";
+            }else if(thiscomp.name.equals("Triangular Wave Voltage Source")){ //PERIODIC SOURCE PWL(T1 V1 <T2 V2 T3 V3 T4 V4 ...>) <r=value> <td=value>    
+              float newtvalue = 4*float(chkpuck.selectedTvalue);
+              String onetimeval = 1/(newtvalue) + intCodetoNGCode(-chkpuck.selectedTprefix);    //(selectedTValue is frequency), 1/selectedTValue   , invert selectedTprefix
+              //String twotimeval = chkpuck.selectedTvalue/2 + intCodetoNGCode(chkpuck.selectedTprefix);
+              String thrtimeval = 3/(newtvalue) + intCodetoNGCode(-chkpuck.selectedTprefix);
+              thisline += "PWL(0 0 " + onetimeval + " " + val + " ";
+              thisline += thrtimeval + " -" + val + " " + timeval + " 0)";
+              thisline += " r=0 td=-" + elapsedTime;
             }else{ //DC SOURCE
               if(firstiteration){
                 thisline += "PULSE(0 " + val;
@@ -248,7 +252,11 @@ void NGCircuitRT(float RTStepSize, boolean firstiteration){
       ComponentCategory thiscat = chkpuck.selectedCategory;
       if(thiscomp.NGusable){
         if(thiscat.name.equals("Power Sources")){
-          printline += " i(V" + chkpuck.id + ")[k]";
+          if(thiscomp.name.endsWith("Current Source")){
+            //printline += " i(I" + chkpuck.id + ")[k]";
+          }else{
+            printline += " i(V" + chkpuck.id + ")[k]";
+          }
         }else if(thiscat.name.equals("Active Components")){
           String idcode = thiscomp.NGname + chkpuck.id;
           if(thiscomp.name.endsWith("BJT")){
@@ -332,6 +340,8 @@ void NGparseOutputRT(StringList output){
           list = split(line, " = ");
           thispuck.currents[0] = float(list[1].trim());
           lineptr--;
+        }else if(thiscomp.name.equals("Current Source")){
+          thispuck.currents[0] = thispuck.selectedvalue * pow(1000, thispuck.selectedprefix);
         }else{
           String line = output.get(lineptr);
           String[] list = split(line, " = ");
