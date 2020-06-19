@@ -11,11 +11,11 @@ Latest working versions of the interface will be found in the `Releases` folder.
 
 Before running, make sure the latest version of `ngspice` is installed as follows:
 
-##### For Windows:
+#### For Windows:
   
   Installation instructions can be found at: http://ngspice.sourceforge.net/download.html
   
-##### For MacOS: 
+#### For MacOS: 
   
   Make sure `Homebrew` is installed. (Instructions at : https://brew.sh/)
   
