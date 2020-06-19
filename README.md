@@ -6,7 +6,7 @@ Notes:
 - (v2) LED shader and HD graphics disabled due to `Processing 3` exporting issues (https://github.com/processing/processing/issues/5983).
 
 
-## Installation
+## Installation:
 Latest working versions of the interface will be found in the `Releases` folder. Download the **folder** corresponding to the version `v_`.
 
 Before running, make sure the latest version of `ngspice` is installed as follows:
@@ -20,6 +20,10 @@ Before running, make sure the latest version of `ngspice` is installed as follow
   Make sure `Homebrew` is installed. (Instructions at : https://brew.sh/)
   
   Install `ngspice` by entering `brew install ngspice` in Terminal.
+  
+  Check that it is installed by entering `ngspice` in Terminal. A text UI should come up
+  
+## Running:
 
 Once `ngspice` is installed, run the application `v_.app` from within the folder.
 
