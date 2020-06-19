@@ -3,7 +3,9 @@ This is a repo for the BEng project.
 
 Latest working versions of the interface will be found in the `Releases` folder. Download the folder corresponding to the version `v_` and run the application within the folder.
 
-Note: Latest release `v2.app` currently only works on MacOS.
+Notes: 
+- Latest release `v2.app` currently only works on MacOS (pending Windows testing). 
+- (v2) LED shader and HD graphics disabled due to `Processing 3` exporting issues (https://github.com/processing/processing/issues/5983).
 
 To run, make sure the latest version of `ngspice` is installed as follows:
 
@@ -23,5 +25,27 @@ To run, make sure the latest version of `ngspice` is installed as follows:
 disc that should be removed.
 - Rotating a disc — While holding the left mouse button on a disc, scroll up/down to rotate the disc clockwise/anticlockwise.
 - Show debugging text — Press the ’x’ key.
-- (v2 only) Saving a circuit layout — Press the ’s’ key.
-- (v2 only)  Loading a circuit layout — Press the ’l’ key.
+- (v2) Saving a circuit layout — Press the ’s’ key.
+- (v2)  Loading a circuit layout — Press the ’l’ key.
+
+### Versions:
+#### v2
+- Full component functionality:
+  - Passive components: Resistors, Capacitors, Inductors.
+  - Switches.
+  - Power sources: DC voltage and current sources, Sinusoidal and Triangular wave voltage sources.
+  - Diodes: PN diodes, (RGB) LEDs.
+  - Active Components: n-type and p-type BJTs, n-channel and p-channel MOSFETs.
+  - Measurement Tools: Voltmeters, Ammeters, Oscilloscope probes.
+- Components sorted into categories.
+- Time zone added for frequency changing.
+- Simulation speed changeable.
+- LED Shaders.
+- Save and load functionality.
+- Settings: Added Disc Size
+
+#### v1
+- Most components functioning:
+  - Resistor, Capacitor, Inductor, Switch, DC voltage source, Diode, NPN and PNP BJTs, Oscilloscope, Voltmeter.
+- Working simulation.
+- Settings: Scroll and Shake Sensitivity.
