@@ -25,7 +25,7 @@ Before running, make sure the latest version of `ngspice` is installed as follow
   
 ## Running:
 
-#### For MacOS
+#### For MacOS:
 Once `ngspice` is installed, run the application `v_.app` from within the folder.
 
 ## Controls:
