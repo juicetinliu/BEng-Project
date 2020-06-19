@@ -180,12 +180,15 @@ class Puck{
   void drawComponent(){
     if(MASTERPUCK){ //ON-OFF ICON
       noFill();
-      stroke(255);
+      stroke(255,255-menualpha);
       strokeWeight(2);
       
       float offsetamount = (size - ringthickness)*0.20;
       arc(0,0,offsetamount,offsetamount,-PI/2+PI/5,1.5*PI-PI/5);
       line(0,0,0,-offsetamount*0.5);
+      fill(255,menualpha);
+      float mult = pow(2,selectedMASTER);
+      text("x" + mult,0,0);
     }else{
       if(circuitRun){   //SPECIAL DRAWS FOR COMPONENTS IN CIRCUIT RUN MODE
         fill(255);
@@ -239,7 +242,7 @@ class Puck{
           textAlign(CENTER,CENTER);
           text(timetext,0,-size/4);
           text(valtext,0,size/4);
-          if(errors.hasValue(404)){
+          if(errors.hasValue(404)){ //WIRE ERROR
             stroke(255,0,0);
             strokeWeight(2);
             noFill();

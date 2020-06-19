@@ -1,11 +1,18 @@
 HEHE
-.ic v(1)=1.958823
-VR1 0R1 0 0
-R1 1 0R1 2
-I2 0 1 PULSE(1 1 0s 1fs 1fs)
-RD4 1 1DD4 1
-VD4 0D4 0 0
-D4 1DD4 0D4 led ic=1.958823
+.ic v(1)=-7.60842 v(2)=-3.41232E-9 v(3)=-0.0255312
+V0 1 0 SIN(0 8 1 -4.699998s 0)
+RD1 3 3DD1 1
+VD1 2D1 2 0
+D1 3DD1 2D1 led ic=-0.025531197
+S2 3 1S2 6 0 switch1 OFF
+VST2 6 0 0
+VS2 1S2 1 0
+VR4 0R4 0 0
+R4 2 0R4 150
+Q5 3Q5 1Q5 2Q5 QMODN ic=0.0, 0.0
+VQ5C 3Q5 3 0
+VQ5B 1Q5 1 0
+VQ5E 2Q5 2 0
 .model switch1 sw vt=1
 .model diode1 D
 .model led D(is=1e-22 rs=6 n=1.5 cjo=50p xti=100)
@@ -14,8 +21,8 @@ D4 1DD4 0D4 led ic=1.958823
 .model MOSN NMOS level=1
 .model MOSP PMOS level=1
 .control
-tran 0.0025s 0.025s uic
+tran 0.01s 0.1s uic
 let k = length(time) - 1
-print time[k] i(VR1)[k] i(VD4)[k] v(1)[k]
+print time[k] i(V0)[k] i(VD1)[k] i(VS2)[k] i(VR4)[k] i(VQ5C)[k] i(VQ5B)[k] i(VQ5E)[k] v(1)[k] v(2)[k] v(3)[k]
 .endc
 .end

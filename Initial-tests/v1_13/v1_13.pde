@@ -76,6 +76,7 @@ void draw(){
   text("x"+circuitSimMultiplier,width/2,20);
   
   drawZones();
+  
   for(Button thisbutton:buttons){
     thisbutton.display();
   }

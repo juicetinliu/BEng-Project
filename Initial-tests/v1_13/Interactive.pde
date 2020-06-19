@@ -102,6 +102,7 @@ class Button{
   void doAction(){
     switch(purpose){
       case "AddPucks":
+        removemode = false;
         pucks.add(new Puck(pucks.size()+1, x, y,puckSize, shakeSettings, scrollSettings));
       break;
       
@@ -116,6 +117,7 @@ class Button{
       break;
       
       case "Settings":
+        removemode = false;
         settingsOpen = !settingsOpen;
       break;
       
