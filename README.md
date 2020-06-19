@@ -11,9 +11,9 @@ Latest working versions of the interface will be found in the `Releases` folder.
 
 Before running, make sure the latest version of `ngspice` is installed as follows:
 
-#### For Windows:
+<!--#### For Windows:--> 
   
-  Installation instructions can be found at: http://ngspice.sourceforge.net/download.html
+  <!--Installation instructions can be found at: http://ngspice.sourceforge.net/download.html-->
   
 #### For MacOS: 
   
@@ -21,10 +21,11 @@ Before running, make sure the latest version of `ngspice` is installed as follow
   
   Install `ngspice` by entering `brew install ngspice` in Terminal.
   
-  Check that it is installed by entering `ngspice` in Terminal. A text UI should come up
+  Check that it is installed by entering `ngspice` in Terminal. A text UI should come up.
   
 ## Running:
 
+#### For MacOS
 Once `ngspice` is installed, run the application `v_.app` from within the folder.
 
 ## Controls:
