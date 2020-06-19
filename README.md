@@ -13,7 +13,7 @@ To run, make sure the latest version of `ngspice` is installed as follows:
   
 ### For MacOS: 
   
-  Make sure `Homebrew` is installed (instructions at : https://brew.sh/)
+  Make sure `Homebrew` is installed. (Instructions at : https://brew.sh/)
   
   Install `ngspice` by entering `brew install ngspice` in terminal.
 
@@ -22,6 +22,6 @@ To run, make sure the latest version of `ngspice` is installed as follows:
 - Removing a disc from the interface — Click on the ’−’ button in the top left corner, then click on the
 disc that should be removed.
 - Rotating a disc — While holding the left mouse button on a disc, scroll up/down to rotate the disc clockwise/anticlockwise.
-- Saving a circuit layout — Press the ’s’ key.
-- Loading a circuit layout — Press the ’l’ key.
 - Show debugging text — Press the ’x’ key.
+- (v2 only) Saving a circuit layout — Press the ’s’ key.
+- (v2 only)  Loading a circuit layout — Press the ’l’ key.
