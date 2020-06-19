@@ -1,4 +1,4 @@
-# BEng-Project - A Circuit Table
+# BEng-Project - CircuitTable
 This is a repo for the BEng project. 
 
 Latest working versions of the interface will be found in the `Releases` folder. Download the folder corresponding to the version `v_` and run the application within the folder.
@@ -15,7 +15,7 @@ To run, make sure the latest version of `ngspice` is installed as follows:
   
   Make sure `Homebrew` is installed. (Instructions at : https://brew.sh/)
   
-  Install `ngspice` by entering `brew install ngspice` in terminal.
+  Install `ngspice` by entering `brew install ngspice` in Terminal.
 
 ### Controls:
 - Adding a disc to the interface — Click on the ’+’ button in the top left corner.
