@@ -1,0 +1,24 @@
+HEHE
+.ic v(1)=-9.9998997E11 v(2)=-149.999 v(3)=-9.9998997E11
+I0 1 0 PULSE(1 1 0s 1fs 1fs)
+RD1 3 3DD1 1
+VD1 2D1 2 0
+D1 3DD1 2D1 led ic=-9.9998997E11
+S2 3 1S2 6 0 switch1 ON
+VST2 6 0 2
+VS2 1S2 1 0
+VR4 0R4 0 0
+R4 2 0R4 150
+.model switch1 sw vt=1
+.model diode1 D
+.model led D(is=1e-22 rs=6 n=1.5 cjo=50p xti=100)
+.model QMODN NPN level=1
+.model QMODP PNP level=1
+.model MOSN NMOS level=1
+.model MOSP PMOS level=1
+.control
+tran 0.01s 0.1s uic
+let k = length(time) - 1
+print time[k] i(VD1)[k] i(VS2)[k] i(VR4)[k] v(1)[k] v(2)[k] v(3)[k]
+.endc
+.end

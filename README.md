@@ -1,11 +1,11 @@
 # BEng-Project - A Circuit Table
 This is a repo for the BEng project. 
 
-Latest working versions of the interface will be found in the `Releases` folder.
+Latest working versions of the interface will be found in the `Releases` folder. Download the folder corresponding to the version `v_` and run the application within the folder.
 
 Note: Latest release `v2.app` currently only works on MacOS.
 
-To run, make sure the latest version of `ngspice` is installed.
+To run, make sure the latest version of `ngspice` is installed as follows:
 
 ### For Windows:
   
