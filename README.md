@@ -1,25 +1,29 @@
 # BEng-Project - CircuitTable
 This is a repo for the BEng project. 
 
-Latest working versions of the interface will be found in the `Releases` folder. Download the folder corresponding to the version `v_` and run the application within the folder.
-
 Notes: 
 - Latest release `v2.app` currently only works on MacOS (pending Windows testing). 
 - (v2) LED shader and HD graphics disabled due to `Processing 3` exporting issues (https://github.com/processing/processing/issues/5983).
 
-To run, make sure the latest version of `ngspice` is installed as follows:
 
-### For Windows:
+## Installation
+Latest working versions of the interface will be found in the `Releases` folder. Download the **folder** corresponding to the version `v_`.
+
+Before running, make sure the latest version of `ngspice` is installed as follows:
+
+##### For Windows:
   
   Installation instructions can be found at: http://ngspice.sourceforge.net/download.html
   
-### For MacOS: 
+##### For MacOS: 
   
   Make sure `Homebrew` is installed. (Instructions at : https://brew.sh/)
   
   Install `ngspice` by entering `brew install ngspice` in Terminal.
 
-### Controls:
+Once `ngspice` is installed, run the application `v_.app` from within the folder.
+
+## Controls:
 - Adding a disc to the interface — Click on the ’+’ button in the top left corner.
 - Removing a disc from the interface — Click on the ’−’ button in the top left corner, then click on the
 disc that should be removed.
@@ -28,7 +32,7 @@ disc that should be removed.
 - (v2) Saving a circuit layout — Press the ’s’ key.
 - (v2)  Loading a circuit layout — Press the ’l’ key.
 
-### Versions:
+## Versions:
 #### v2
 - Full component functionality:
   - Passive components: Resistors, Capacitors, Inductors.
