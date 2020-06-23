@@ -61,6 +61,23 @@ class Icon{
         line(-0.15,0.9,-0.15,0.7);
         line(0.15,0.9,0.15,0.7);
         line(-0.15,0.7,0.15,0.7);
+        noStroke();
+        fill(sc);
+        float r = sw/size;
+        ellipse(0.15,-0.4,r,r);
+        ellipse(0.15,0.4,r,r);
+        ellipse(-0.15,-0.4,r,r);
+        ellipse(-0.15,0.4,r,r);
+        
+        ellipse(-0.15,-0.9,r,r);
+        ellipse(-0.15,-0.7,r,r);
+        ellipse(0.15,-0.7,r,r);
+        ellipse(0.15,-0.9,r,r);
+        
+        ellipse(-0.15,0.9,r,r);
+        ellipse(-0.15,0.7,r,r);
+        ellipse(0.15,0.7,r,r);
+        ellipse(0.15,0.9,r,r);
       break;
       
       case "knob":

@@ -193,6 +193,19 @@ color intCodetoColour(int intCode, int alpha){
   
 }
 
+String floatToPreInt(float in, int count){
+  if(in == 0){
+    return "0";
+  }
+  if(abs(in) < 1){
+    return floatToPreInt(in * 1000, count - 1);
+  }else if(abs(in) > 999){
+    return floatToPreInt(in / 1000, count + 1);
+  }else{
+    return nf(in,0,3).substring(0,4) + intCodetoPrefix(count);
+  }
+}
+
 //void lerpColorRing(color ca, color cb, float x, float y, float r, float sweight, int angstart, int angend){
 //  int angdiff = angend - angstart;
 //  strokeWeight(sweight);

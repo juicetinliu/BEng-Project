@@ -5,8 +5,10 @@ class Graph{
   float w, h;
   float mouseoffx, mouseoffy;
   float[] values = new float[100];
+  IntList times = new IntList();
   int novalues;
   float minval, maxval;
+  float minpoint = 0, maxpoint = 0;
   String rangetext = "1V";
   int interval; //MILLISECONDS0
   int type; //0 - VOLTAGE; 1 - CURRENT
@@ -26,8 +28,8 @@ class Graph{
     this.mouseoffx = 0;
     this.mouseoffy = 0;
     this.novalues = novalues;
-    this.minval = -oscRange;
-    this.maxval = oscRange;
+    this.minval = -1;
+    this.maxval = 1;
     this.interval = interval;
     this.type = type;
     this.selected = false;
@@ -108,6 +110,33 @@ class Graph{
     popMatrix();
   }
   
+  void drawMaxMin(){
+    pushMatrix();
+    translate(x,y);
+    textAlign(CENTER,CENTER);
+    if(maxpoint != 0){
+      strokeWeight(1);
+      stroke(graphColor,128);
+      float maxpointy = min(h*0.4,max(-h*0.4,map(maxpoint,minval,maxval,h*0.4,-h*0.4)));
+      line(-w*0.45,maxpointy,-w*0.05,maxpointy);
+      line(w*0.45,maxpointy,w*0.05,maxpointy);
+      fill(graphColor);
+      
+      text(floatToPreInt(maxpoint,0) + "V",0,maxpointy-h*0.05);
+    }
+    if(minpoint != 0){
+      strokeWeight(1);
+      stroke(graphColor,128);
+      float minpointy = min(h*0.4,max(-h*0.4,map(minpoint,minval,maxval,h*0.4,-h*0.4)));
+      line(-w*0.45,minpointy,-w*0.05,minpointy);
+      line(w*0.45,minpointy,w*0.05,minpointy);
+      fill(graphColor);
+
+      text(floatToPreInt(minpoint,0) + "V",0,minpointy+h*0.05);
+    }
+    popMatrix();
+  }
+  
   void move(float x, float y){
     this.x = x;
     this.y = y;
@@ -136,33 +165,29 @@ class Graph{
     }
     values[0] = val;
     
-    if(!OSCILLOSCOPE){
-      if(val > maxval){
-        maxval = val;
-      }else if(val < minval){
-        minval = val;
-      }
-    }
+    //if(!OSCILLOSCOPE){
+    //  if(val > maxval){
+    //    maxval = val;
+    //  }else if(val < minval){
+    //    minval = val;
+    //  }
+    //}
+    maxpoint = max(values);
+    minpoint = min(values);
   }
   
   void resetValues(){
     for(int i = 0; i < values.length; i++){
       values[i] = 0;
     }
+    maxpoint = 0;
+    minpoint = 0;
   }
   
   void setMaxMin(float range, String rangetext){
     this.maxval = range;
     this.minval = -range;
     this.rangetext = rangetext;
-  }
-  
-  void updateMax(float max){
-    this.maxval = max;
-  }
-  
-  void updateMin(float min){
-    this.minval = min;
   }
   
   void run(){
@@ -186,6 +211,9 @@ void showGraphs(){
       osccounter++;
     }else{
       thisgraph.show(0);
+    }
+    if(osccounter == 1){
+      graphs.get(0).drawMaxMin();
     }
   }
 }
