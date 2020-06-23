@@ -2,11 +2,11 @@
 
 This is a repo for the BEng project
 
-*Software with tested and working disc tracking* can be found in the `Complete-tests`  folder.
+**Software with tested and working disc tracking** can be found in the `Complete-tests`  folder.
 
-*Software that is being worked on for functionality* can be found in the `Initial-tests` folder.
+**Software that is being worked on for functionality** can be found in the `Initial-tests` folder.
 
-The following relates to the *exported software for interface testing*:
+The following relates to the **exported software for interface testing**:
 
 Notes: 
 - Latest release `v2.app` currently only works on MacOS (pending Windows testing). 
