@@ -1,6 +1,6 @@
 # BEng-Project - CircuitTable
 
-This is a repo for the BEng project
+This is a repo for the BEng project.
 
 **Software with tested and working disc tracking** can be found in the `Complete-tests`  folder.
 
