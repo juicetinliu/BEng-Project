@@ -15,7 +15,7 @@
 //7, "BJT"
 
 boolean checkCircuit(){
-  boolean hasError = true;
+  boolean noError = true;
   for(int p = 0; p < pucks.size(); p++){
     Puck checkpuck = pucks.get(p);
     if(!checkpuck.MASTERPUCK){
@@ -23,16 +23,35 @@ boolean checkCircuit(){
       for(int ck = 0; ck < thiscomp.terminals; ck++){ 
         if(checkpuck.connectedWires[ck] == null){ //all pucks must have connections to nodes
           checkpuck.addError(ck);
-          hasError = false;
+          noError = false;
         }
       }
-      if(thiscomp.name.equals("Wire")){ //no pucks can be wires
-        checkpuck.addError(404);
-        hasError = false;
+      //if(thiscomp.name.equals("Wire")){ //no pucks can be wires
+      //  checkpuck.addError(404);
+      //  noError = false;
+      //}
+      if(thiscomp.name.equals("Voltmeter") || thiscomp.name.equals("Oscilloscope")){ //
+        for(int ck = 0; ck < thiscomp.terminals; ck++){
+          if(checkpuck.connectedWires[ck] != null){
+            Wire thiswire = checkpuck.connectedWires[ck];
+            int compcounter = 0;
+            for(Puck tp:thiswire.connectedPucks){
+              if(!tp.selectedComponent.name.equals("Voltmeter") && !tp.selectedComponent.name.equals("Oscilloscope")){
+                compcounter++;
+              }
+            }
+            if(compcounter <= 1){ //all pucks must have connections to nodes
+              checkpuck.addError(404);
+              noError = false;
+            }
+          }
+        }
       }
     }   
   }
-  return hasError;
+  return noError;
+  
+  
 }
 
 void NGCircuitRT(float RTStepSize, boolean firstiteration){
