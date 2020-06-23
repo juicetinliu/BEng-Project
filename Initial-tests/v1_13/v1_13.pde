@@ -31,7 +31,7 @@ Icon wrenIC = new Icon("wrench");
 Icon gearIC = new Icon("gear");
 Icon timeIC = new Icon("time");
 
-float oscX, oscY, oscRange;
+float oscX, oscY; //oscRange
 
 void setup(){
   size(1200,800,P2D);
@@ -57,7 +57,7 @@ void setup(){
   //textFont(font, 9);
   oscX = width*0.13;
   oscY = height*0.67;
-  oscRange = 1;
+  //oscRange = 1;
 }
 void draw(){
   //if(showDebug){
@@ -77,8 +77,10 @@ void draw(){
   
   drawZones();
   
-  for(Button thisbutton:buttons){
-    thisbutton.display();
+  if(!circuitRun){
+    for(Button thisbutton:buttons){
+      thisbutton.display();
+    }
   }
   
   showGraphs();
@@ -206,6 +208,7 @@ void savePucks(){
   
   String savepath = "layout.txt";
   saveStrings(savepath, linesout.array(string));
+  println("Circuit Saved!");
 }
 
 void loadPucks(){
@@ -268,4 +271,5 @@ void loadPucks(){
     linectr++;
   }
   updated = true;
+  println("Circuit Loaded!");
 }

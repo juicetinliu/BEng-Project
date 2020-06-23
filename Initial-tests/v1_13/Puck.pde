@@ -117,6 +117,7 @@ class Puck{
         text("ID: " + id, 0, -75);
         text(selectedComponent.name,0,-115);
         text(selectedCategory.name,0,-100);
+        text(selectedvalue,0,100);
         if(selectedCategory.name.equals("Active Components")){
           if(selectedComponent.name.endsWith("BJT")){
             text("IC: " + currents[0], 100, -15);
@@ -202,9 +203,10 @@ class Puck{
           strokeWeight(3);
           drawOscilloscope(size, rotation);
         }else if(selectedComponent.name.equals("Voltmeter")){ //VOLTMETER
-          text(voltageAcross + "V",0,0);
+          //String voltag = str(voltageAcross);
+          text(floatToPreInt(voltageAcross,0) + "V",0,0);
         }else if(selectedComponent.name.equals("Ammeter")){ //AMMETER
-          text(-currents[0] + "A",0,0);
+          text(floatToPreInt(-currents[0],0) + "A",0,0);
         //}else if(selectedComponent.name.equals("LED")){ //LED
         //  text(currents[0],0,0);
         //  float brightness = min(100,map(currents[0],0,0.05,0,100));
@@ -746,7 +748,7 @@ class Puck{
   void updateValtext(){
     valtext = selectedComponent.generateComponentText(selectedvalue, selectedprefix);
     if(selectedComponent.name.equals("Oscilloscope")){
-      oscRange = selectedvalue * pow(1000,selectedprefix);
+      float oscRange = selectedvalue * pow(1000,selectedprefix);
       if(puckGraph != null){
         puckGraph.setMaxMin(oscRange, valtext);
       }
