@@ -189,6 +189,7 @@ class Puck{
       line(0,0,0,-offsetamount*0.5);
       fill(255,menualpha);
       float mult = pow(2,selectedMASTER);
+      textAlign(CENTER,CENTER);
       text("x" + mult,0,0);
     }else{
       if(circuitRun){   //SPECIAL DRAWS FOR COMPONENTS IN CIRCUIT RUN MODE
