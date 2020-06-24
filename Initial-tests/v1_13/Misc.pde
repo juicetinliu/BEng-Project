@@ -192,17 +192,25 @@ color intCodetoColour(int intCode, int alpha){
   }
   
 }
-
 String floatToPreInt(float in, int count){
-  if(in == 0){
+  if(in == 0 || count < -4){
     return "0";
   }
   if(abs(in) < 1){
     return floatToPreInt(in * 1000, count - 1);
-  }else if(abs(in) > 999){
+  }else if(abs(in) >= 1000){
     return floatToPreInt(in / 1000, count + 1);
+  }else if(abs(in) > 999){
+    return floatToPreInt((in >= 0) ? 1 : -1, count + 1);
   }else{
-    return nf(in,0,3).substring(0,4) + intCodetoPrefix(count);
+    String pref = (in >= 0)? "" : "-";
+    if(in == int(in)){
+      return pref + int(abs(in)) + intCodetoPrefix(count);
+    }else if(abs(in) >= 100){
+      return pref + nf(abs(in),0,3).substring(0,3) + intCodetoPrefix(count);
+    }else{
+      return pref + nf(abs(in),0,3).substring(0,4) + intCodetoPrefix(count);
+    }
   }
 }
 

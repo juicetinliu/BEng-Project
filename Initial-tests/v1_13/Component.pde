@@ -235,9 +235,10 @@ class Component{
         line(size*0.05,size*0.07,0,-size*0.07);
         
         ellipse(0,0,size,size);
-        line(size*0.2,0,size*0.3,0);
-        line(size*0.25,size*0.05,size*0.25,-size*0.05);
-        line(-size*0.2,0,-size*0.3,0);
+        line(size*0.2,0,size*0.15,0);        
+        triangle(size*0.3,0,size*0.2,size*0.07,size*0.2,-size*0.07);
+        
+        line(-size*0.15,0,-size*0.3,0);
       break;
       
       case 15: //LED R
