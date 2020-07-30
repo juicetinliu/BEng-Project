@@ -1,5 +1,7 @@
 # BEng-Project - CircuitTable
 
+![Cover](https://user-images.githubusercontent.com/37272242/88901871-f6b7a280-d283-11ea-8f46-f5768e14defe.png)
+
 This is a repo created for the final year (BEng) project at Imperial College London.
 
 **Software with tested and working disc tracking** can be found in the `Complete-tests`  folder.
