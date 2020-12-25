@@ -2,9 +2,13 @@
 
 ![Cover](https://user-images.githubusercontent.com/37272242/88901871-f6b7a280-d283-11ea-8f46-f5768e14defe.png)
 
-Feature Showcase: https://youtube.com/playlist?list=PLd89wyPwlBLTz_Mrqj-FfSWpPJAo7MBhb
-
 This is a repo created for the final year (BEng) project at Imperial College London.
+
+Complete feature showcase: https://youtube.com/playlist?list=PLd89wyPwlBLTz_Mrqj-FfSWpPJAo7MBhb
+
+## Demo
+
+For more information please contact me!
 
 **Software with tested and working disc tracking** can be found in the `Complete-tests`  folder.
 
@@ -17,7 +21,7 @@ Notes:
 - (v2) LED shader and HD graphics disabled due to `Processing 3` exporting issues (https://github.com/processing/processing/issues/5983).
 
 
-## Installation:
+### Installation:
 Latest working versions of the interface will be found in the `Releases` folder. Download the **folder** corresponding to the version `v_`.
 
 Before running, make sure the latest version of `ngspice` is installed as follows:
@@ -26,7 +30,7 @@ Before running, make sure the latest version of `ngspice` is installed as follow
   
   <!--Installation instructions can be found at: http://ngspice.sourceforge.net/download.html-->
   
-#### For MacOS: 
+##### For MacOS: 
   
   Make sure `Homebrew` is installed. (Instructions at : https://brew.sh/)
   
@@ -34,12 +38,12 @@ Before running, make sure the latest version of `ngspice` is installed as follow
   
   Check that it is installed by entering `ngspice` in Terminal. A text UI should come up.
   
-## Running:
+### Running:
 
-#### For MacOS:
+##### For MacOS:
 Once `ngspice` is installed, run the application `v_.app` from within the folder.
 
-## Controls:
+### Controls:
 - Adding a disc to the interface — Click on the ’+’ button in the top left corner.
 - Removing a disc from the interface — Click on the ’−’ button in the top left corner, then click on the
 disc that should be removed.
@@ -48,8 +52,8 @@ disc that should be removed.
 - (v2) Saving a circuit layout — Press the ’s’ key.
 - (v2)  Loading a circuit layout — Press the ’l’ key.
 
-## Versions:
-#### v2
+### Versions:
+##### v2
 - Full component functionality:
   - Passive components: Resistors, Capacitors, Inductors.
   - Switches.
@@ -64,7 +68,7 @@ disc that should be removed.
 - Save and load functionality.
 - Settings: Added Disc Size
 
-#### v1
+##### v1
 - Most components functioning:
   - Resistor, Capacitor, Inductor, Switch, DC voltage source, Diode, NPN and PNP BJTs, Oscilloscope, Voltmeter.
 - Working simulation.
